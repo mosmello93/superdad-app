@@ -8,8 +8,30 @@ import { Heart, Calendar, CheckCircle, Circle, MessageCircle, Activity, ChevronR
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
 // *****************************************************************
-// FIREBASE CONFIG 
+// FIREBASE CONFIGURATION
 // *****************************************************************
+
+/* !!! WICHTIG FÜR GITHUB / LOKALE ENTWICKLUNG !!!
+   
+   Wenn du diesen Code lokal in deinem Projekt verwendest:
+   1. Erstelle eine .env Datei mit deinen Keys.
+   2. LÖSCHE den Block "KONFIGURATION FÜR VORSCHAU".
+   3. ENT-KOMMENTIERE den Block "KONFIGURATION FÜR GITHUB".
+*/
+
+/* --- KONFIGURATION FÜR GITHUB (SECURE) ---
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+*/
+
+// --- KONFIGURATION FÜR VORSCHAU (LOKAL IM BROWSER) ---
 const firebaseConfig = {
   apiKey: "AIzaSyAL2t8wMFxzEco3Z1JIu73aSzroJBeBw0M",
   authDomain: "superdad-app.firebaseapp.com",
@@ -20,9 +42,17 @@ const firebaseConfig = {
   measurementId: "G-V6WWJ3F6NG"
 };
 
+
 // *****************************************************************
 // GEMINI API KEY
 // *****************************************************************
+
+/* --- FÜR GITHUB (SECURE) --- 
+   Bitte lokal ent-kommentieren:
+*/
+// const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+/* --- FÜR VORSCHAU --- */
 const apiKey = "AIzaSyCo_EE1xAwRsN4qmKzHFezUUB9syGmCxWQ"; 
 
 
@@ -102,10 +132,11 @@ const POSTPARTUM_EMPATHY = {
   12: { feeling: 'Alltag spielt sich ein', tip: 'Plant ein erstes kleines Date zuhause.' },
 };
 
+// New detailed logic for loss based on SSW
 const LOSS_EMPATHY = {
-  early: { feeling: 'Schock & Leere', tip: 'Nimm ihr alles ab. Sei einfach da. Schweigen ist okay.' },
-  middle: { feeling: 'Körperlicher & seelischer Schmerz', tip: 'Sorge für Schmerzmittel, Wärmflasche und Tee. Keine Ratschläge.' },
-  late: { feeling: 'Tiefe Trauer & Abschied', tip: 'Schaffe Erinnerungen (Fotos, Fußabdruck). Organisiere Abschiednahme.' },
+  early: { feeling: 'Schock & Hormonabfall', tip: 'Nimm ihr alles ab. Sei einfach da. Schokolade & Wärmflasche.' },
+  middle: { feeling: 'Körperlicher & seelischer Schmerz', tip: 'Sorge für Schmerzmittel. Hilf ihr, den Körper anzunehmen.' },
+  late: { feeling: 'Wochenbett & Trauer', tip: 'Körperliche Schonung ist Pflicht (Rückbildung). Organisiere Abschiednahme.' },
   after: { feeling: 'Wellen der Trauer', tip: 'Erinnere an Jahrestage. Akzeptiere, dass Trauer nicht linear ist.' }
 };
 
@@ -116,14 +147,19 @@ const HOSPITAL_BAG_CONTENT = {
     baby: { title: "Fürs Baby", items: [{ id: 'baby-1', text: 'Body & Strampler (50/56)' }, { id: 'baby-2', text: 'Mützchen' }, { id: 'baby-3', text: 'Spucktuch' }, { id: 'baby-4', text: 'Babyschale (Auto)' }] }
 };
 
-const getTasks = (mode, stage) => {
+const getTasks = (mode, stage, lossWeek) => {
   if (mode === 'pregnancy') {
       if (stage === 1) return [{ id: 'p1-1', text: 'Arzttermine planen', category: 'Logistik' }, { id: 'p1-2', text: 'Codewörter definieren', category: 'Emotional' }, { id: 'p1-3', text: 'Snack-Notfall-Kit', category: 'Support' }];
       if (stage === 2) return [{ id: 'p2-1', text: 'Zimmer planen', category: 'Vorbereitung' }, { id: 'p2-2', text: 'Geburtskurs buchen', category: 'Logistik' }];
       if (stage === 3) return [{ id: 'p3-1', text: 'Klinikweg testen', category: 'Notfall' }, { id: 'p3-2', text: 'Elterngeld Antrag', category: 'Bürokratie' }];
   } 
   if (mode === 'postpartum') return [{ id: 'pp-1', text: 'Geburtsurkunde', category: 'Bürokratie' }, { id: 'pp-2', text: 'Krankenkasse', category: 'Bürokratie' }, { id: 'pp-3', text: 'Kinderarzt U3', category: 'Gesundheit' }];
-  if (mode === 'loss') return [{ id: 'l-1', text: 'Krankmeldung', category: 'Bürokratie' }, { id: 'l-2', text: 'Bestatter', category: 'Logistik' }];
+  if (mode === 'loss') {
+      const basic = [{ id: 'l-1', text: 'Krankmeldung', category: 'Bürokratie' }];
+      if (lossWeek > 12) basic.push({ id: 'l-2', text: 'Bestatter kontaktieren?', category: 'Logistik' });
+      if (lossWeek > 24) basic.push({ id: 'l-3', text: 'Rückbildungsgymnastik', category: 'Gesundheit' });
+      return basic;
+  }
   return [];
 };
 
@@ -250,9 +286,13 @@ const ProgressCard = ({ statusData, mode, onClick, gender, babyName }) => {
     );
 };
 
-const EmpathyCard = ({ statusData, mode, onClick }) => {
+const EmpathyCard = ({ statusData, mode, onClick, lossWeek }) => {
     let guideEntry = null;
-    if (mode === 'loss') guideEntry = LOSS_EMPATHY.middle; 
+    if (mode === 'loss') {
+        if (lossWeek < 13) guideEntry = LOSS_EMPATHY.early;
+        else if (lossWeek < 25) guideEntry = LOSS_EMPATHY.middle;
+        else guideEntry = LOSS_EMPATHY.late;
+    } 
     else if (mode === 'postpartum') {
         const guideWeeks = Object.keys(POSTPARTUM_EMPATHY).map(Number).sort((a, b) => a - b);
         for (let i = guideWeeks.length - 1; i >= 0; i--) {
@@ -381,7 +421,7 @@ const EmergencyOverlay = ({ contacts, updateContact, closeEmergency }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeEmergency}></div>
-            <div className="bg-[#F7F7F5] w-full max-w-md h-[90vh] sm:h-[auto] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative">
+            <div className="bg-[#F7F7F5] w-full max-w-md h-[85vh] sm:h-[auto] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative">
                 <div className="bg-white p-6 pb-4 border-b border-stone-100 flex justify-between items-center sticky top-0 z-10">
                     <div><h2 className="text-2xl font-bold text-stone-800">Notfall-Infos</h2><p className="text-stone-500 text-xs">Alles griffbereit wenn's losgeht.</p></div>
                     <button onClick={closeEmergency} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition"><X size={20} className="text-stone-600" /></button>
@@ -437,7 +477,7 @@ const EmergencyOverlay = ({ contacts, updateContact, closeEmergency }) => {
 };
 
 // ... (DailyTalkAI, AIVibeCheck, ModeSelection, HeaderBento, DueDateSetup remain mostly the same)
-const DailyTalkAI = ({ mode, statusData, gender, babyName }) => {
+const DailyTalkAI = ({ mode, statusData, gender, babyName, lossWeek }) => {
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -448,7 +488,7 @@ const DailyTalkAI = ({ mode, statusData, gender, babyName }) => {
     const genderCtx = gender === 'boy' ? 'Sohn' : (gender === 'girl' ? 'Tochter' : 'Kind');
     
     let context = "";
-    if (mode === 'loss') context = `Verlust/Sternenkind (${genderCtx}, Name: ${babyName || 'unbekannt'})`;
+    if (mode === 'loss') context = `Verlust/Sternenkind (${genderCtx}, Name: ${babyName || 'unbekannt'}, SSW: ${lossWeek || 'unbekannt'})`;
     else if (mode === 'postpartum') context = `Eltern mit ${statusData.week} Wochen altem Baby (${genderCtx}, Name: ${babyName || 'unbekannt'})`;
     else context = `Werdende Eltern SSW ${statusData.week} (${genderCtx}, Name: ${babyName || 'unbekannt'})`;
 
@@ -457,7 +497,7 @@ const DailyTalkAI = ({ mode, statusData, gender, babyName }) => {
     const result = await callGemini(prompt);
     setQuestion(result);
     setLoading(false);
-  }, [mode, statusData.week, gender, babyName]);
+  }, [mode, statusData.week, gender, babyName, lossWeek]);
 
   useEffect(() => { if (!question) fetchQuestion(); }, [fetchQuestion, question]);
 
@@ -476,7 +516,7 @@ const DailyTalkAI = ({ mode, statusData, gender, babyName }) => {
   );
 };
 
-const AIVibeCheck = ({ vibeCheck, saveVibeCheck, mode, gender, babyName }) => {
+const AIVibeCheck = ({ vibeCheck, saveVibeCheck, mode, gender, babyName, lossWeek }) => {
     const [vibeInput, setVibeInput] = useState(vibeCheck || '');
     const [aiAdvice, setAiAdvice] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -487,7 +527,8 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, mode, gender, babyName }) => {
         saveVibeCheck(vibeInput);
         setLoading(true);
         const babyRef = getBabyTermSmall(gender, babyName);
-        const prompt = `Kurzer Support-Tipp für Vater (Phase: ${mode}, Status: "${vibeInput}", Baby: ${babyRef}). Max 2 Sätze. Du-Form.`;
+        const lossCtx = lossWeek ? `, Verlust SSW ${lossWeek}` : '';
+        const prompt = `Kurzer Support-Tipp für Vater (Phase: ${mode}${lossCtx}, Status: "${vibeInput}", Baby: ${babyRef}). Max 2 Sätze. Du-Form.`;
         const result = await callGemini(prompt);
         setAiAdvice(result);
         setLoading(false);
@@ -512,7 +553,7 @@ const HeaderBento = ({ statusData, mode, babyName, gender }) => {
   const isLoss = mode === 'loss';
   
   // Dynamic Title Logic
-  let title = statusData.status === 'NotSet' ? 'Hey, SuperDad.' : statusData.label;
+  let title = statusData.status === 'NotSet' ? 'Hey, Dad.' : statusData.label;
   if (isLoss) title = 'Für dich & sie.';
   
   // Dynamic Subtitle Logic
@@ -558,9 +599,9 @@ const HabitGrid = ({ habits, toggleHabit, mode }) => {
     );
 };
 
-const TodoWidget = ({ statusData, tasks, toggleTask, mode }) => {
+const TodoWidget = ({ statusData, tasks, toggleTask, mode, lossWeek }) => {
     const stage = (mode === 'loss') ? 0 : (mode === 'postpartum' ? 0 : statusData.stage);
-    const defaultTasks = useMemo(() => getTasks(mode, stage), [mode, stage]);
+    const defaultTasks = useMemo(() => getTasks(mode, stage, lossWeek), [mode, stage, lossWeek]);
     if (defaultTasks.length === 0) return null;
     const currentTasks = defaultTasks.map(defaultTask => {
         const savedTask = tasks.find(t => t.id === defaultTask.id);
@@ -615,8 +656,16 @@ const DueDateSetup = ({ saveProfile, mode }) => {
     const [localDate, setLocalDate] = useState('');
     const [name, setName] = useState('');
     const [selectedGender, setSelectedGender] = useState(null); // 'boy', 'girl', 'surprise'
+    const [lossWeek, setLossWeek] = useState(''); // NEW: SSW of loss
 
-    const handleSave = () => { saveProfile({ dueDate: localDate, babyName: name, gender: selectedGender }); };
+    const handleSave = () => { 
+        saveProfile({ 
+            dueDate: localDate, 
+            babyName: name, 
+            gender: selectedGender, 
+            lossWeek: lossWeek ? parseInt(lossWeek) : null 
+        }); 
+    };
     
     let dateLabel = 'Geburtstermin';
     if (mode === 'postpartum') dateLabel = 'Geburtstag';
@@ -640,6 +689,21 @@ const DueDateSetup = ({ saveProfile, mode }) => {
                     <span className="text-2xl mb-1">🎁</span><span className="text-xs font-bold">???</span>
                 </button>
             </div>
+            
+            {/* NEW: Loss Week Input */}
+            {mode === 'loss' && (
+                <div className="mb-6 text-left">
+                    <label className="text-xs font-bold text-stone-400 uppercase ml-2">In welcher SSW war der Verlust?</label>
+                    <input 
+                        type="number" 
+                        min="4" max="42"
+                        value={lossWeek} 
+                        onChange={(e) => setLossWeek(e.target.value)} 
+                        placeholder="z.B. 12" 
+                        className="w-full p-4 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" 
+                    />
+                </div>
+            )}
 
             <div className="mb-8"><input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (Optional)" className="w-full p-4 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" /></div>
             <button onClick={handleSave} disabled={!localDate} className="w-full py-4 bg-stone-900 text-white font-bold rounded-2xl hover:bg-stone-800 transition disabled:opacity-50 shadow-xl shadow-stone-200">Starten</button>
@@ -659,6 +723,7 @@ const App = () => {
   const [dueDate, setDueDate] = useState(null);
   const [babyName, setBabyName] = useState('');
   const [gender, setGender] = useState(null); // 'boy', 'girl', 'surprise'
+  const [lossWeek, setLossWeek] = useState(null); // NEW
 
   const [tasks, setTasks] = useState([]);
   const [bagItems, setBagItems] = useState([]);
@@ -693,7 +758,7 @@ const App = () => {
     const unsubscribe = onSnapshot(profileDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setMode(data.mode); setDueDate(data.dueDate); setBabyName(data.babyName); setGender(data.gender);
+        setMode(data.mode); setDueDate(data.dueDate); setBabyName(data.babyName); setGender(data.gender); setLossWeek(data.lossWeek);
         setTasks(data.tasks || []); setBagItems(data.bagItems || []); setContacts(data.contacts || {}); setVibeCheck(data.vibeCheck || '');
         const todayStr = new Date().toISOString().split('T')[0];
         const savedHabits = data.habits || {};
@@ -709,8 +774,8 @@ const App = () => {
 
   const saveMode = (m) => { setMode(m); setDoc(profileDocRef, { mode: m }, { merge: true }); };
   const saveProfile = (p) => { 
-      setDueDate(p.dueDate); setBabyName(p.babyName); setGender(p.gender);
-      setDoc(profileDocRef, { dueDate: p.dueDate, babyName: p.babyName, gender: p.gender }, { merge: true }); 
+      setDueDate(p.dueDate); setBabyName(p.babyName); setGender(p.gender); setLossWeek(p.lossWeek);
+      setDoc(profileDocRef, { dueDate: p.dueDate, babyName: p.babyName, gender: p.gender, lossWeek: p.lossWeek }, { merge: true }); 
   };
   const saveVibeCheck = (v) => { setVibeCheck(v); setDoc(profileDocRef, { vibeCheck: v }, { merge: true }); };
   
@@ -735,11 +800,11 @@ const App = () => {
   };
   
   const resetProfile = () => { 
-      setDoc(profileDocRef, { mode: null, dueDate: null, tasks: [], bagItems: [], contacts: {}, gender: null, babyName: null }, { merge: true });
+      setDoc(profileDocRef, { mode: null, dueDate: null, tasks: [], bagItems: [], contacts: {}, gender: null, babyName: null, lossWeek: null }, { merge: true });
       setMode(null);
   };
 
-  if (loading || !isAuthReady) return <div className="flex h-screen items-center justify-center bg-[#F7F7F5] text-stone-400">Lade SuperDad...</div>;
+  if (loading || !isAuthReady) return <div className="flex h-screen items-center justify-center bg-[#F7F7F5] text-stone-400">Lade DadReady...</div>;
 
   // --- CONTENT FOR MODALS ---
   
@@ -799,14 +864,14 @@ const App = () => {
         {!mode && <ModeSelection setMode={saveMode} />}
         {(mode === 'pregnancy' || mode === 'postpartum' || mode === 'loss') && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
 
-        {((mode === 'pregnancy' || mode === 'postpartum' || mode === 'loss') && dueDate) && (
+        {(( (mode === 'pregnancy' || mode === 'postpartum') && dueDate) || (mode === 'loss' && dueDate)) && (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <HeaderBento statusData={statusData} mode={mode} babyName={babyName} gender={gender} />
 
                 {/* UPDATED GRID WITH CLICKABLE CARDS */}
                 <div className="grid grid-cols-2 gap-4 h-48">
                     <div className="col-span-1 h-full"><ProgressCard statusData={statusData} mode={mode} onClick={() => setActiveModal('progress')} gender={gender} babyName={babyName} /></div>
-                    <div className="col-span-1 h-full"><EmpathyCard statusData={statusData} mode={mode} onClick={() => setActiveModal('empathy')} /></div>
+                    <div className="col-span-1 h-full"><EmpathyCard statusData={statusData} mode={mode} onClick={() => setActiveModal('empathy')} lossWeek={lossWeek} /></div>
                 </div>
 
                 <HabitGrid habits={habits} toggleHabit={toggleHabit} mode={mode} />
@@ -816,9 +881,9 @@ const App = () => {
                     {(mode === 'pregnancy' || mode === 'postpartum') && <EmergencyWidget openEmergency={() => setActiveModal('emergency')} />}
                 </div>
 
-                <DailyTalkAI mode={mode} statusData={statusData} gender={gender} babyName={babyName} />
-                <TodoWidget statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
-                <AIVibeCheck vibeCheck={vibeCheck} saveVibeCheck={saveVibeCheck} mode={mode} gender={gender} babyName={babyName} />
+                <DailyTalkAI mode={mode} statusData={statusData} gender={gender} babyName={babyName} lossWeek={lossWeek} />
+                <TodoWidget statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} lossWeek={lossWeek} />
+                <AIVibeCheck vibeCheck={vibeCheck} saveVibeCheck={saveVibeCheck} mode={mode} gender={gender} babyName={babyName} lossWeek={lossWeek} />
             </div>
         )}
       </div>
