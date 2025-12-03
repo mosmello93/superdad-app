@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Damit es sich auf dem Handy wie eine App anfühlt (kein "Gummiband"-Effekt) */
+body {
+  overscroll-behavior-y: none; 
+  background-color: #F7F7F5;
+}
