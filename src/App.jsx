@@ -8,7 +8,7 @@ import {
   Baby, Star, CloudRain, Feather, HelpCircle, BookOpen, User, Moon, Utensils, 
   RefreshCw, Wand2, Trash2, Backpack, X, CheckSquare, Phone, MapPin, 
   AlertTriangle, Navigation, Scale, Home, LayoutGrid, Sprout, Ruler, Weight,
-  Timer, Play, Square, Clock, History, Bell
+  Timer, Play, Square, Clock, History, Bell, Trophy, Award, Zap
 } from 'lucide-react';
 
 // Global variables provided by the Canvas environment
@@ -123,6 +123,7 @@ const OASIS_IDEAS = {
     ]
 };
 
+// UPDATED: Returns 3 options instead of 1
 const getDailyOasis = (mode, week) => {
     const today = new Date();
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
@@ -134,7 +135,13 @@ const getDailyOasis = (mode, week) => {
         else if (week < 28) pool = OASIS_IDEAS.trimester2;
         else pool = OASIS_IDEAS.trimester3;
     }
-    return pool[dayOfYear % pool.length] || pool[0];
+    
+    // Return 3 distinct items rotating daily
+    return [
+        pool[dayOfYear % pool.length],
+        pool[(dayOfYear + 1) % pool.length],
+        pool[(dayOfYear + 2) % pool.length]
+    ];
 };
 
 const PREGNANCY_WEEKS = {
@@ -246,36 +253,69 @@ const calculateStatus = (dateString, mode) => {
   };
 };
 
+// --- GAMIFICATION UTILS ---
+const calculateLevel = (xp) => {
+    if (xp < 100) return { level: 1, title: "Anwärter", next: 100 };
+    if (xp < 300) return { level: 2, title: "Rookie Dad", next: 300 };
+    if (xp < 600) return { level: 3, title: "Profi Dad", next: 600 };
+    if (xp < 1000) return { level: 4, title: "SuperDad", next: 1000 };
+    return { level: 5, title: "Legende", next: 2000 };
+};
+
 // --- COMPONENTS ---
 
-// 1. HeaderSoft
-const HeaderSoft = ({ statusData, mode, babyName }) => {
+// 1. HeaderSoft (UPDATED with Gamification)
+const HeaderSoft = ({ statusData, mode, babyName, xp }) => {
   const isLoss = mode === 'loss';
   let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
   if (isLoss) title = 'Für euch';
   if (mode === 'postpartum') title = `${statusData.week} Wochen`;
 
+  const levelInfo = calculateLevel(xp || 0);
+  const progressPercent = Math.min(100, (xp / levelInfo.next) * 100);
+
   return (
-    <div className="pt-10 pb-6 px-4 flex justify-between items-start">
-        <div>
-            <div className="flex items-center mb-2">
+    <div className="pt-10 pb-6 px-4">
+        {/* Top Row: Logo & Level Badge */}
+        <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center">
                 <img 
                     src="/images/superdad_logo.png" 
                     alt="SuperDad Logo" 
                     className="w-10 h-10 object-contain mr-2"
-                    onError={(e) => {
-                        e.target.style.display = 'none'; 
-                    }} 
+                    onError={(e) => { e.target.style.display = 'none'; }} 
                 />
-                <p className="text-stone-400 text-sm font-medium uppercase tracking-wide">
-                    {isLoss ? 'Begleiter' : 'SuperDad Dashboard'}
-                </p>
+                 <div className="flex flex-col">
+                    <span className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">SuperDad App</span>
+                    {babyName && <span className="text-stone-600 font-bold text-sm">für {babyName}</span>}
+                 </div>
             </div>
-            <h1 className="text-4xl font-bold text-stone-800 leading-tight">{title}</h1>
-            {babyName && <p className="text-stone-500 font-medium mt-1">für {babyName}</p>}
+
+            {/* GAMIFICATION BADGE */}
+            <div className="bg-white pl-2 pr-3 py-1.5 rounded-full border border-stone-100 shadow-sm flex items-center gap-2">
+                <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
+                    <Trophy size={14} />
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-bold text-stone-400 uppercase">Lvl {levelInfo.level}</span>
+                    <span className="text-xs font-bold text-stone-700 leading-none">{levelInfo.title}</span>
+                </div>
+            </div>
         </div>
-        <div className="bg-white p-3 rounded-full border border-stone-100 shadow-sm text-stone-800">
-            {mode === 'loss' ? <Star size={24} /> : (mode === 'postpartum' ? <Baby size={24} /> : <Activity size={24} />)}
+
+        {/* Main Title */}
+        <h1 className="text-4xl font-bold text-stone-800 leading-tight mb-4">{title}</h1>
+
+        {/* Level Progress Bar */}
+        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-1">
+            <div 
+                className="bg-gradient-to-r from-indigo-400 to-purple-500 h-full rounded-full transition-all duration-1000" 
+                style={{ width: `${progressPercent}%` }}
+            ></div>
+        </div>
+        <div className="flex justify-between text-[10px] text-stone-400 font-medium">
+            <span>{xp} XP</span>
+            <span>{levelInfo.next} XP</span>
         </div>
     </div>
   );
@@ -441,16 +481,60 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
     );
 };
 
-// 4. Knowledge View (Placeholder for now)
-const KnowledgeView = ({ week }) => (
-    <div className="space-y-4 animate-in fade-in">
-        <div className="bg-indigo-50 p-6 rounded-[32px] border border-indigo-100">
-            <h2 className="text-xl font-bold text-indigo-900 mb-2">Woche {week}</h2>
-            <p className="text-indigo-700/80">Hier findest du bald detaillierte Infos zu jeder Schwangerschaftswoche.</p>
+// 4. Knowledge View
+const KnowledgeView = ({ week }) => {
+    // Fallback für Wochen ohne Daten
+    const defaultInfo = { size: 'ein Geheimnis', feeling: 'Wachstum', tip: 'Sei für sie da.' };
+    const info = PREGNANCY_WEEKS[week] || defaultInfo;
+
+    return (
+        <div className="space-y-4 animate-in fade-in pb-24">
+            {/* Hero Card */}
+            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-[32px] shadow-lg text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-4">
+                        <span className="inline-block py-1 px-3 rounded-full bg-white/20 text-xs font-bold backdrop-blur-md border border-white/10">
+                            Woche {week}
+                        </span>
+                        <BookOpen size={20} className="text-indigo-200" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2 leading-tight">Der Fokus der Woche</h2>
+                    <p className="text-indigo-100 font-medium">"{info.feeling}"</p>
+                </div>
+            </div>
+
+            {/* Baby Size Card */}
+            <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm flex items-center gap-5">
+                 <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <Sprout size={32} className="text-emerald-600" />
+                 </div>
+                 <div>
+                     <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">Baby-Größe</h3>
+                     <p className="text-xl font-bold text-stone-800 leading-tight">Wie {info.size}</p>
+                 </div>
+            </div>
+
+            {/* Pro Tip Card */}
+            <div className="bg-[#FFFBEB] p-6 rounded-[32px] border border-amber-100 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-amber-100 p-2 rounded-full text-amber-600">
+                        <Sparkles size={20} />
+                    </div>
+                    <h3 className="font-bold text-amber-900">Dein Pro-Tipp</h3>
+                </div>
+                <p className="text-amber-800 leading-relaxed">
+                    {info.tip}
+                </p>
+            </div>
+
+             {/* Placeholder for more generic content */}
+             <div className="p-4 rounded-2xl border border-dashed border-stone-200 text-center">
+                <p className="text-xs text-stone-400">Mehr Inhalte (Videos, Checklisten) folgen bald...</p>
+             </div>
         </div>
-        {/* Placeholder for more content */}
-    </div>
-);
+    );
+};
 
 // ... (Other Soft Components: ProgressCardSoft, HabitGridSoft, DeepTalkSoft, ToolGridSoft, TodoWidgetSoft, etc. - kept as they were)
 
@@ -734,15 +818,65 @@ const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
     );
 };
 
-const OasisOverlay = ({ mission, closeOasis, markDone, isDone }) => {
-    if (!mission) return null;
+// UPDATED: OasisOverlay with 3 Options
+const OasisOverlay = ({ missions, closeOasis, markDone, isDone }) => {
+    const [selectedIdx, setSelectedIdx] = useState(null);
+
+    if (!missions || missions.length === 0) return null;
+
+    const handleAccept = () => {
+        if (selectedIdx !== null) {
+            markDone(); // Logic to save is done in App
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeOasis}></div>
-            <div className="bg-[#FDFCF8] w-full max-w-md p-6 rounded-t-[40px] shadow-2xl flex flex-col pointer-events-auto relative">
-                <div className="flex justify-between items-start mb-6"><div className="bg-amber-100 p-3 rounded-2xl text-amber-600"><Sparkles size={28} /></div><button onClick={closeOasis} className="bg-stone-100 p-2 rounded-full"><X size={20} /></button></div>
-                <h3 className="text-xs font-bold text-amber-600 uppercase">Deine Oase heute</h3><h2 className="text-2xl font-bold mb-4">{mission.title}</h2><p className="text-lg mb-8">{mission.text}</p>
-                <button onClick={markDone} disabled={isDone} className={`w-full py-4 rounded-2xl font-bold text-white transition flex items-center justify-center ${isDone ? 'bg-green-500' : 'bg-stone-900 hover:bg-stone-800'}`}>{isDone ? (<><CheckCircle size={20} className="mr-2" /> Erledigt</>) : ("Mission annehmen")}</button>
+            <div className="bg-[#FDFCF8] w-full max-w-md p-6 rounded-t-[40px] sm:rounded-[40px] shadow-2xl flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative max-h-[85vh] overflow-y-auto">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="bg-amber-100 p-3 rounded-2xl text-amber-600">
+                        <Sparkles size={28} />
+                    </div>
+                    <button onClick={closeOasis} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition">
+                        <X size={20} className="text-stone-600" />
+                    </button>
+                </div>
+                
+                <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">Deine Oase heute</h3>
+                <h2 className="text-2xl font-bold text-stone-800 mb-6">Wähle deine Mission</h2>
+
+                <div className="space-y-3 mb-8">
+                    {missions.map((mission, idx) => (
+                        <div 
+                            key={idx}
+                            onClick={() => !isDone && setSelectedIdx(idx)}
+                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                                selectedIdx === idx 
+                                ? 'border-amber-400 bg-amber-50 ring-2 ring-amber-200 ring-offset-1' 
+                                : 'border-stone-100 bg-white hover:border-amber-200'
+                            } ${isDone && selectedIdx !== idx ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                            <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-stone-800">{mission.title}</h4>
+                                {selectedIdx === idx && <CheckCircle size={18} className="text-amber-500" />}
+                            </div>
+                            <p className="text-sm text-stone-600">{mission.text}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <button 
+                    onClick={handleAccept} 
+                    disabled={isDone || selectedIdx === null} 
+                    className={`w-full py-4 rounded-2xl font-bold text-white transition flex items-center justify-center ${
+                        isDone 
+                        ? 'bg-green-500 cursor-default' 
+                        : (selectedIdx !== null ? 'bg-stone-900 hover:bg-stone-800 shadow-lg' : 'bg-stone-300 cursor-not-allowed')
+                    }`}
+                >
+                    {isDone ? (<><CheckCircle size={20} className="mr-2" /> Erledigt</>) : ("Mission annehmen")}
+                </button>
             </div>
         </div>
     );
@@ -1023,7 +1157,20 @@ const App = () => {
   }
 
   const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
-  const currentOasis = useMemo(() => { if (!mode) return null; return getDailyOasis(mode, statusData.week); }, [mode, statusData.week]);
+  // UPDATED: Use the new getDailyOasis which returns array
+  const currentOasisOptions = useMemo(() => { 
+      if (!mode) return []; 
+      return getDailyOasis(mode, statusData.week); 
+  }, [mode, statusData.week]);
+
+  // Helper for Gamification XP Calculation
+  const calculateXP = () => {
+      const tasksDone = tasks.filter(t => t.completed).length * 50; // 50 XP per task
+      const habitsDone = Object.values(habits).filter(v => v === true).length * 10; // 10 XP per active habit (approx)
+      return tasksDone + habitsDone;
+  };
+  const currentXP = calculateXP();
+
   const markOasisDone = async () => { await toggleHabit('oasis'); setTimeout(() => setShowOasis(false), 500); };
   
   if (loading && !isAuthReady) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
@@ -1039,7 +1186,8 @@ const App = () => {
         
         {mode && dueDate && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <HeaderSoft statusData={statusData} mode={mode} babyName={babyName} />
+                {/* UPDATED: Header now receives XP */}
+                <HeaderSoft statusData={statusData} mode={mode} babyName={babyName} xp={currentXP} />
                 <div className="px-4">
                     {/* VIEW SWITCHER */}
                     {activeTab === 'home' && (
@@ -1088,7 +1236,8 @@ const App = () => {
       
       {/* OVERLAYS */}
       {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
-      {showOasis && (<OasisOverlay mission={currentOasis} closeOasis={() => setShowOasis(false)} markDone={markOasisDone} isDone={habits.oasis} />)}
+      {/* UPDATED: OasisOverlay now receives missions array */}
+      {showOasis && (<OasisOverlay missions={currentOasisOptions} closeOasis={() => setShowOasis(false)} markDone={markOasisDone} isDone={habits.oasis} />)}
       {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} />}
       {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
     </div>
