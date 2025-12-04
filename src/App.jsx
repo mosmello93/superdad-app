@@ -8,7 +8,7 @@ import {
   Baby, Star, CloudRain, Feather, HelpCircle, BookOpen, User, Moon, Utensils, 
   RefreshCw, Wand2, Trash2, Backpack, X, CheckSquare, Phone, MapPin, 
   AlertTriangle, Navigation, Scale, Home, LayoutGrid, Sprout, Ruler, Weight,
-  Timer, Play, Square, Clock, History
+  Timer, Play, Square, Clock, History, Bell
 } from 'lucide-react';
 
 // Global variables provided by the Canvas environment
@@ -178,29 +178,6 @@ const PREGNANCY_WEEKS = {
     41: { size: 'ein Riesen-Kürbis', image: '/images/riesenkuerbis.png', cm: 51.7, g: 3597, feeling: 'Überfällig', tip: 'Nervige Nachfragen von Verwandten abblocken.' }
 };
 
-const POSTPARTUM_EMPATHY = {
-  0: { feeling: 'Adrenalin & Erschöpfung', tip: 'Besuch abwehren. Windeln wechseln. Essen ans Bett.' },
-  1: { feeling: 'Baby Blues & Heilung', tip: 'Zuhören bei Tränen. Keine Ratschläge. Haushalt schmeißen.' },
-  2: { feeling: 'Clusterfeeding & Müdigkeit', tip: 'Nachts das Baby nach dem Stillen wickeln/tragen.' },
-  4: { feeling: 'Neue Routine finden', tip: 'Ermutige sie, mal 1h rauszugehen (ohne Baby).' },
-  8: { feeling: 'Körpergefühl kehrt zurück', tip: 'Rückbildungskurs organisieren/freischaufeln.' },
-  12: { feeling: 'Alltag spielt sich ein', tip: 'Plant ein erstes kleines Date zuhause.' },
-};
-
-const LOSS_EMPATHY = {
-  early: { feeling: 'Schock & Leere', tip: 'Nimm ihr alles ab. Sei einfach da. Schweigen ist okay.' },
-  middle: { feeling: 'Körperlicher & seelischer Schmerz', tip: 'Sorge für Schmerzmittel, Wärmflasche und Tee. Keine Ratschläge.' },
-  late: { feeling: 'Tiefe Trauer & Abschied', tip: 'Schaffe Erinnerungen (Fotos, Fußabdruck). Organisiere Abschiednahme.' },
-  after: { feeling: 'Wellen der Trauer', tip: 'Erinnere an Jahrestage. Akzeptiere, dass Trauer nicht linear ist.' }
-};
-
-const HOSPITAL_BAG_CONTENT = {
-    documents: { title: "Papierkram (Wichtig!)", items: [{ id: 'doc-1', text: 'Mutterpass' }, { id: 'doc-2', text: 'Personalausweise' }, { id: 'doc-3', text: 'Krankenkassenkarte' }, { id: 'doc-4', text: 'Einweisungsschein' }, { id: 'doc-5', text: 'Vaterschaftsanerkennung' }] },
-    mom: { title: "Für Sie", items: [{ id: 'mom-1', text: 'Nachthemden (aufknöpfbar)' }, { id: 'mom-2', text: 'Still-BHs / Einlagen' }, { id: 'mom-3', text: 'Warme Socken' }, { id: 'mom-4', text: 'Jogginghose' }, { id: 'mom-5', text: 'Kulturbeutel' }, { id: 'mom-6', text: 'Lippenbalsam' }, { id: 'mom-7', text: 'Playlist / Kopfhörer' }] },
-    dad: { title: "Für Dich (Support)", items: [{ id: 'dad-1', text: 'SNACKS!' }, { id: 'dad-2', text: 'Kleingeld' }, { id: 'dad-3', text: 'Powerbank' }, { id: 'dad-4', text: 'Frisches Shirt' }, { id: 'dad-5', text: 'Badehose' }] },
-    baby: { title: "Fürs Baby", items: [{ id: 'baby-1', text: 'Body (Gr. 50/56)' }, { id: 'baby-2', text: 'Mützchen' }, { id: 'baby-3', text: 'Spucktuch' }, { id: 'baby-4', text: 'Babyschale (Auto)' }, { id: 'baby-5', text: 'Decke' }] }
-};
-
 const getTasks = (mode, stage) => {
   if (mode === 'pregnancy') {
       if (stage === 1) return [ { id: 'p1-1', text: 'Arzttermine planen', category: 'Logistik' }, { id: 'p1-2', text: 'Codewörter definieren', category: 'Emotional' }, { id: 'p1-3', text: 'Snack-Notfall-Kit kaufen', category: 'Support' } ];
@@ -304,7 +281,58 @@ const HeaderSoft = ({ statusData, mode, babyName }) => {
   );
 };
 
-// 2. Contraction Timer
+// 2. Notification / Push Simulator
+const NotificationSimulator = ({ habits, mode, dueDate }) => {
+    const [notification, setNotification] = useState(null);
+
+    useEffect(() => {
+        // Conditions check loop
+        const checkNotification = () => {
+            // 1. Check if setup is complete
+            if (!mode || !dueDate) return;
+
+            // 2. Check time of day (Daytime only: 08:00 - 22:00)
+            const now = new Date();
+            const currentHour = now.getHours();
+            const isNight = currentHour < 8 || currentHour >= 22;
+            if (isNight) return;
+
+            // 3. Check hydration time
+            const lastHydration = habits.hydrationTime;
+            const tenHoursMs = 10 * 60 * 60 * 1000;
+            
+            // Show if never done OR last done > 10 hours ago
+            if (!lastHydration || (now.getTime() - lastHydration > tenHoursMs)) {
+                setNotification({
+                    title: "💧 Trink-Erinnerung",
+                    text: "Hey Dad, hast du ihr heute schon Wasser gebracht?",
+                    icon: Droplets
+                });
+            }
+        };
+
+        // Initial check after 3 seconds
+        const timer = setTimeout(checkNotification, 3000);
+        return () => clearTimeout(timer);
+    }, [habits, mode, dueDate]);
+
+    if (!notification) return null;
+
+    return (
+        <div className="fixed top-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-indigo-100 z-50 animate-in slide-in-from-top duration-500 flex items-center gap-3" onClick={() => setNotification(null)}>
+            <div className="bg-indigo-100 p-2 rounded-full text-indigo-600">
+                <notification.icon size={20} />
+            </div>
+            <div className="flex-1">
+                <h4 className="font-bold text-sm text-stone-800">{notification.title}</h4>
+                <p className="text-xs text-stone-500">{notification.text}</p>
+            </div>
+            <button className="text-stone-400 hover:text-stone-600"><X size={16} /></button>
+        </div>
+    );
+};
+
+// 3. Contraction Timer
 const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
     const [isTiming, setIsTiming] = useState(false);
     const [startTime, setStartTime] = useState(null);
@@ -413,7 +441,7 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
     );
 };
 
-// 3. Knowledge View (Placeholder for now)
+// 4. Knowledge View (Placeholder for now)
 const KnowledgeView = ({ week }) => (
     <div className="space-y-4 animate-in fade-in">
         <div className="bg-indigo-50 p-6 rounded-[32px] border border-indigo-100">
@@ -474,6 +502,18 @@ const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
 
 const HabitGridSoft = ({ habits, toggleHabit, mode, openOasis }) => {
     let habitConfig = mode === 'loss' ? HABITS_LOSS : (mode === 'postpartum' ? HABITS_POSTPARTUM : HABITS_PREGNANCY);
+    
+    // Helper to calculate time ago
+    const getTimeLabel = (timestamp) => {
+        if (!timestamp) return null;
+        const diffMin = Math.floor((Date.now() - timestamp) / 60000);
+        if (diffMin < 1) return "Gerade eben";
+        if (diffMin < 60) return `Vor ${diffMin} Min`;
+        const diffHr = Math.floor(diffMin / 60);
+        if (diffHr < 24) return `Vor ${diffHr} Std`;
+        return "Gestern";
+    };
+
     const getColorClasses = (color, isActive) => {
         if (!isActive) return "bg-white border-stone-100 text-stone-400";
         const maps = { blue: "bg-[#E0F2FE] border-sky-100 text-sky-800", amber: "bg-[#FEF3C7] border-amber-100 text-amber-800", orange: "bg-[#FFEDD5] border-orange-100 text-orange-800", indigo: "bg-[#E0E7FF] border-indigo-100 text-indigo-800", stone: "bg-[#E7E5E4] border-stone-200 text-stone-800", zinc: "bg-[#E4E4E7] border-zinc-200 text-zinc-800" };
@@ -483,10 +523,17 @@ const HabitGridSoft = ({ habits, toggleHabit, mode, openOasis }) => {
         <div className="grid grid-cols-2 gap-4 mb-4">
             {habitConfig.map((habit) => {
                 const isActive = habits[habit.key];
+                const timestamp = habits[`${habit.key}Time`];
+                const timeLabel = getTimeLabel(timestamp);
+                
                 return (
                     <div key={habit.key} onClick={() => habit.key === 'oasis' ? openOasis() : toggleHabit(habit.key)} className={`${getColorClasses(habit.color, isActive)} p-6 rounded-[32px] flex flex-col justify-between h-40 transition-all cursor-pointer border shadow-sm`}>
                         <div className="flex justify-between items-start"><habit.icon size={20} className={isActive ? 'text-current' : 'text-stone-300'} />{isActive && <CheckCircle size={20} className="opacity-50" />}</div>
-                        <div><h3 className="font-bold text-lg leading-tight mb-1">{habit.title}</h3><p className="text-xs opacity-80">{habit.text}</p></div>
+                        <div>
+                            <h3 className="font-bold text-lg leading-tight mb-1">{habit.title}</h3>
+                            {/* Updated logic: Always show time if available, else show description text */}
+                            <p className="text-xs opacity-80">{timeLabel || habit.text}</p>
+                        </div>
                     </div>
                 );
             })}
@@ -539,9 +586,6 @@ const ToolGridSoft = ({ mode, openBag, openEmergency, bagItems, toggleTimer }) =
         </div>
     );
 };
-
-// ... TodoWidgetSoft, EmergencyOverlay, HospitalBagOverlay, ProgressDetailOverlay, OasisOverlay, AIVibeCheck, ModeSelection, DueDateSetup ...
-// (These remain exactly as provided in your snippet or previous context, just ensuring they are present)
 
 const TodoWidgetSoft = ({ statusData, tasks, toggleTask, mode }) => {
     const stage = (mode === 'loss') ? 0 : (mode === 'postpartum' ? 0 : statusData.stage);
@@ -601,7 +645,7 @@ const EmergencyOverlay = ({ contacts, updateContact, closeEmergency }) => {
                         )}
                     </div>
 
-                    {/* Important Numbers Section - THIS WAS MISSING */}
+                    {/* Important Numbers Section - RE-ADDED */}
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider ml-1">Wichtige Nummern</h3>
                         {[{id: 'midwife', icon: Phone, label: 'Hebamme', color: 'emerald'}, {id: 'doctor', icon: Activity, label: 'Kreißsaal / Arzt', color: 'indigo'}, {id: 'taxi', icon: Phone, label: 'Taxi / Support', color: 'amber'}].map(contact => (
@@ -633,22 +677,74 @@ const EmergencyOverlay = ({ contacts, updateContact, closeEmergency }) => {
 const HospitalBagOverlay = ({ bagItems, toggleItem, closeBag }) => {
     const categories = Object.keys(HOSPITAL_BAG_CONTENT);
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none"><div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto" onClick={closeBag}></div><div className="bg-[#F5F5F0] w-full max-w-md h-[90vh] rounded-t-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto relative"><div className="bg-white p-6 pb-4 border-b border-stone-100 flex justify-between items-center sticky top-0 z-10"><div><h2 className="text-2xl font-bold text-stone-800">Die Tasche</h2></div><button onClick={closeBag} className="bg-stone-100 p-2 rounded-full"><X size={20} /></button></div><div className="flex-1 overflow-y-auto p-6 space-y-8">{categories.map(catKey => { const category = HOSPITAL_BAG_CONTENT[catKey]; return (<div key={catKey}><h3 className="text-sm font-bold text-stone-400 uppercase mb-3">{category.title}</h3><div className="space-y-2">{category.items.map(item => { const isChecked = bagItems.includes(item.id); return (<div key={item.id} onClick={() => toggleItem(item.id)} className={`flex items-center p-4 rounded-2xl cursor-pointer border ${isChecked ? 'bg-amber-50 border-amber-100' : 'bg-white border-transparent'}`}><div className={`mr-4 ${isChecked ? 'text-amber-500' : 'text-stone-300'}`}>{isChecked ? <CheckSquare size={24} /> : <div className="w-6 h-6 border-2 border-stone-300 rounded-md"></div>}</div><span className={`text-sm font-medium ${isChecked ? 'text-stone-400 line-through' : 'text-stone-700'}`}>{item.text}</span></div>);})}</div></div>);})}</div></div></div>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeBag}></div>
+            <div className="bg-[#F5F5F0] w-full max-w-md h-[90vh] sm:h-[80vh] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative">
+                <div className="bg-white p-6 pb-4 border-b border-stone-100 flex justify-between items-center sticky top-0 z-10">
+                    <div><h2 className="text-2xl font-bold text-stone-800">Die Tasche</h2><p className="text-stone-500 text-xs">Alles dabei für Tag X?</p></div>
+                    <button onClick={closeBag} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition"><X size={20} className="text-stone-600" /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                    {categories.map(catKey => {
+                        const category = HOSPITAL_BAG_CONTENT[catKey];
+                        return (
+                            <div key={catKey}>
+                                <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-3 ml-1">{category.title}</h3>
+                                <div className="space-y-2">
+                                    {category.items.map(item => {
+                                        const isChecked = bagItems.includes(item.id);
+                                        return (
+                                            <div key={item.id} onClick={() => toggleItem(item.id)} className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all border ${isChecked ? 'bg-amber-50 border-amber-100' : 'bg-white border-transparent hover:border-stone-200 shadow-sm'}`}>
+                                                <div className={`mr-4 transition-all ${isChecked ? 'text-amber-500 scale-110' : 'text-stone-300'}`}>{isChecked ? <CheckSquare size={24} className="fill-current" /> : <div className="w-6 h-6 border-2 border-stone-300 rounded-md"></div>}</div>
+                                                <span className={`text-sm font-medium transition-colors ${isChecked ? 'text-stone-400 line-through' : 'text-stone-700'}`}>{item.text}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    <div className="h-12"></div>
+                </div>
+            </div>
+        </div>
     );
 };
 
 const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
     if (!statusData || !statusData.week) return null;
     const weekContent = PREGNANCY_WEEKS[statusData.week] || {};
+    const [imgError, setImgError] = useState(false);
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none"><div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto" onClick={closeDetail}></div><div className="bg-[#FDFCF8] w-full max-w-md h-[85vh] rounded-t-[40px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto relative"><button onClick={closeDetail} className="absolute top-6 right-6 bg-white p-2 rounded-full z-20"><X size={20} /></button><div className="flex-1 overflow-y-auto pb-8"><div className="bg-[#F0FDF4] pt-16 pb-10 px-6 flex flex-col items-center text-center"><img src={weekContent.image} alt={weekContent.size} className="w-48 h-48 object-contain mb-6" /><h2 className="text-3xl font-bold text-stone-800">{weekContent.size}</h2></div><div className="px-6 mt-6 space-y-6"><div><h3 className="text-sm font-bold text-stone-400 uppercase">Ihr Befinden</h3><p className="text-xl font-bold">{weekContent.feeling}</p></div><div className="bg-indigo-50 p-5 rounded-2xl"><h3 className="text-xs font-bold text-indigo-400 uppercase">Dein Pro-Tipp</h3><p className="text-stone-700">{weekContent.tip}</p></div></div></div></div></div>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeDetail}></div>
+            <div className="bg-[#FDFCF8] w-full max-w-md h-[85vh] rounded-t-[40px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto relative">
+                <button onClick={closeDetail} className="absolute top-6 right-6 bg-white p-2 rounded-full hover:bg-stone-100 shadow-sm z-20"><X size={20} className="text-stone-600" /></button>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="bg-[#F0FDF4] pt-16 pb-10 px-6 flex flex-col items-center text-center relative overflow-hidden">
+                         <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-200/30 rounded-full blur-3xl"></div><div className="absolute bottom-0 right-0 w-40 h-40 bg-emerald-200/20 rounded-full blur-3xl"></div>
+                         <div className="relative z-10">{weekContent.image && !imgError ? (<img src={weekContent.image} alt={weekContent.size} onError={() => setImgError(true)} className="w-48 h-48 object-contain drop-shadow-2xl transform hover:scale-105 transition duration-500" />) : (<div className="w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-lg"><Sprout size={64} className="text-emerald-500" /></div>)}</div>
+                         <h2 className="text-3xl font-bold text-stone-800 mt-6">{weekContent.size ? `So groß wie ${weekContent.size}` : `Woche ${statusData.week}`}</h2><p className="text-emerald-700 font-medium mt-1">{statusData.label}</p>
+                    </div>
+                    <div className="px-6 -mt-6 relative z-10"><div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex justify-around"><div className="text-center"><p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-1">Größe (ca.)</p><div className="flex items-center justify-center text-stone-800 font-bold text-lg"><Ruler size={18} className="text-emerald-500 mr-1.5" />{weekContent.cm || '--'} cm</div></div><div className="w-px bg-stone-100"></div><div className="text-center"><p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-1">Gewicht (ca.)</p><div className="flex items-center justify-center text-stone-800 font-bold text-lg"><Weight size={18} className="text-emerald-500 mr-1.5" />{weekContent.g || '--'} g</div></div></div></div>
+                    <div className="px-6 mt-6 space-y-6"><div><h3 className="text-sm font-bold text-stone-400 uppercase">Ihr Befinden</h3><p className="text-xl font-bold">{weekContent.feeling}</p></div><div className="bg-indigo-50 p-5 rounded-2xl"><h3 className="text-xs font-bold text-indigo-400 uppercase">Dein Pro-Tipp</h3><p className="text-stone-700">{weekContent.tip}</p></div></div>
+                </div>
+            </div>
+        </div>
     );
 };
 
 const OasisOverlay = ({ mission, closeOasis, markDone, isDone }) => {
     if (!mission) return null;
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none"><div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto" onClick={closeOasis}></div><div className="bg-[#FDFCF8] w-full max-w-md p-6 rounded-t-[40px] shadow-2xl flex flex-col pointer-events-auto relative"><div className="flex justify-between items-start mb-6"><div className="bg-amber-100 p-3 rounded-2xl text-amber-600"><Sparkles size={28} /></div><button onClick={closeOasis} className="bg-stone-100 p-2 rounded-full"><X size={20} /></button></div><h3 className="text-xs font-bold text-amber-600 uppercase">Deine Oase heute</h3><h2 className="text-2xl font-bold mb-4">{mission.title}</h2><p className="text-lg mb-8">{mission.text}</p><button onClick={markDone} disabled={isDone} className={`w-full py-4 rounded-2xl font-bold text-white ${isDone ? 'bg-green-500' : 'bg-stone-900'}`}>{isDone ? "Erledigt" : "Mission annehmen"}</button></div></div>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeOasis}></div>
+            <div className="bg-[#FDFCF8] w-full max-w-md p-6 rounded-t-[40px] shadow-2xl flex flex-col pointer-events-auto relative">
+                <div className="flex justify-between items-start mb-6"><div className="bg-amber-100 p-3 rounded-2xl text-amber-600"><Sparkles size={28} /></div><button onClick={closeOasis} className="bg-stone-100 p-2 rounded-full"><X size={20} /></button></div>
+                <h3 className="text-xs font-bold text-amber-600 uppercase">Deine Oase heute</h3><h2 className="text-2xl font-bold mb-4">{mission.title}</h2><p className="text-lg mb-8">{mission.text}</p>
+                <button onClick={markDone} disabled={isDone} className={`w-full py-4 rounded-2xl font-bold text-white transition flex items-center justify-center ${isDone ? 'bg-green-500' : 'bg-stone-900 hover:bg-stone-800'}`}>{isDone ? (<><CheckCircle size={20} className="mr-2" /> Erledigt</>) : ("Mission annehmen")}</button>
+            </div>
+        </div>
     );
 };
 
@@ -656,22 +752,102 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, mode }) => {
     const [vibeInput, setVibeInput] = useState(vibeCheck || '');
     const [aiAdvice, setAiAdvice] = useState(null);
     const [loading, setLoading] = useState(false);
+
     useEffect(() => { setVibeInput(vibeCheck || ''); }, [vibeCheck]);
+
     const handleAnalyze = async () => {
         if (!vibeInput) return;
         saveVibeCheck(vibeInput);
         setLoading(true);
-        const result = await callGemini(`Vibe Check für Vater (${mode}): ${vibeInput}. Kurz & knackig.`);
+        const prompt = `Du bist ein empathischer, bodenständiger Coach für Väter. Der Vater befindet sich in der Phase: ${mode === 'loss' ? 'Verlust/Trauer nach stiller Geburt' : (mode === 'postpartum' ? 'Wochenbett/Neugeborenes' : 'Schwangerschaft')}. Er hat gerade folgendes als seinen Status eingegeben: "${vibeInput}". Gib ihm eine sehr kurze, unterstützende Antwort (max. 2 Sätze) auf Deutsch. Sei wie ein guter Freund: verständnisvoll aber stärkend.`;
+        const result = await callGemini(prompt);
         setAiAdvice(result);
         setLoading(false);
     };
+    
+    const bgClass = mode === 'loss' ? 'bg-[#E5E5E0]' : 'bg-[#E0E7FF]';
+    const textClass = mode === 'loss' ? 'text-stone-900' : 'text-indigo-900';
+    const iconColor = mode === 'loss' ? 'text-stone-500' : 'text-indigo-500';
+  
     return (
-      <div className={`bg-[#E0E7FF] p-6 rounded-[32px] mt-4 mb-24`}><div className="flex items-center mb-4"><Battery size={20} className="text-indigo-500 mr-2" /><h3 className="font-bold text-indigo-900">Dein Status</h3></div><div className="relative mb-4"><input type="text" value={vibeInput} onChange={(e) => setVibeInput(e.target.value)} className="w-full bg-white/60 border-0 rounded-2xl p-4 text-indigo-900" /><button onClick={handleAnalyze} className="absolute right-2 top-2 p-2 rounded-xl bg-indigo-500 text-white">{loading ? <RefreshCw className="animate-spin" size={16} /> : <Wand2 size={16} />}</button></div>{aiAdvice && <div className="bg-white/80 p-4 rounded-2xl text-indigo-800 text-sm">{aiAdvice}</div>}</div>
+      <div className={`${bgClass} p-6 rounded-[32px] mt-4 mb-24 transition-all duration-500`}>
+          <div className="flex items-center mb-4"><div className="bg-white p-2 rounded-full mr-3 shadow-sm"><Battery size={20} className={iconColor} /></div><h3 className={`font-bold ${textClass}`}>Dein Status</h3></div>
+          <div className="relative mb-4"><input type="text" value={vibeInput} onChange={(e) => setVibeInput(e.target.value)} placeholder="Wie geht's dir heute?" className={`w-full bg-white/60 border-0 rounded-2xl p-4 placeholder-opacity-50 focus:outline-none font-medium ${textClass}`} /><button onClick={handleAnalyze} disabled={loading || !vibeInput} className={`absolute right-2 top-2 p-2 rounded-xl transition text-white ${mode === 'loss' ? 'bg-stone-500 hover:bg-stone-600' : 'bg-indigo-500 hover:bg-indigo-600'}`}>{loading ? <RefreshCw size={16} className="animate-spin" /> : <Wand2 size={16} />}</button></div>
+          {aiAdvice && (<div className="bg-white/80 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2"><div className="flex items-start space-x-3"><div className="mt-1"><Sparkles size={16} className={mode === 'loss' ? 'text-stone-400' : 'text-indigo-400'} /></div><div><p className={`text-sm font-medium ${mode === 'loss' ? 'text-stone-700' : 'text-indigo-800'}`}>{aiAdvice}</p></div></div></div>)}
+      </div>
     );
 };
 
 const ModeSelection = ({ setMode }) => (
-    <div className="p-6 pt-12 text-center"><h1 className="text-3xl font-bold mb-2">Willkommen, Dad.</h1><div className="space-y-4"><button onClick={() => setMode('pregnancy')} className="w-full bg-white p-5 rounded-[24px] shadow-sm flex items-center"><Baby className="text-emerald-600 mr-4" /><div className="text-left"><h3 className="font-bold">Schwangerschaft</h3></div></button><button onClick={() => setMode('postpartum')} className="w-full bg-white p-5 rounded-[24px] shadow-sm flex items-center"><User className="text-indigo-600 mr-4" /><div className="text-left"><h3 className="font-bold">Baby ist da</h3></div></button><button onClick={() => setMode('loss')} className="w-full bg-white p-5 rounded-[24px] shadow-sm flex items-center"><Star className="text-stone-600 mr-4" /><div className="text-left"><h3 className="font-bold">Verlust</h3></div></button></div></div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#F5F5F0]">
+        <div className="w-full max-w-sm">
+            {/* Logo Section */}
+            <div className="flex flex-col items-center mb-10">
+                <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-lg mb-6 p-4">
+                    <img 
+                        src="/images/superdad_logo.png" 
+                        alt="SuperDad Logo" 
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+                <h1 className="text-4xl font-extrabold text-stone-800 tracking-tight text-center">
+                    Willkommen, <br/><span className="text-indigo-600">SuperDad.</span>
+                </h1>
+                <p className="text-stone-500 mt-3 text-center text-lg">
+                    Dein Begleiter für das größte Abenteuer.
+                </p>
+            </div>
+
+            {/* Selection Buttons */}
+            <div className="space-y-4 w-full">
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest text-center mb-4">
+                    Wo steht ihr gerade?
+                </p>
+                
+                <button 
+                    onClick={() => setMode('pregnancy')} 
+                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
+                >
+                    <div className="bg-emerald-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
+                        <Baby className="text-emerald-600 w-6 h-6" />
+                    </div>
+                    <div className="text-left">
+                        <h3 className="font-bold text-stone-800 text-lg">Schwangerschaft</h3>
+                        <p className="text-stone-400 text-xs mt-0.5">Begleitung bis zur Geburt</p>
+                    </div>
+                    <ChevronRight className="ml-auto text-stone-300" />
+                </button>
+
+                <button 
+                    onClick={() => setMode('postpartum')} 
+                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
+                >
+                    <div className="bg-indigo-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
+                        <User className="text-indigo-600 w-6 h-6" />
+                    </div>
+                    <div className="text-left">
+                        <h3 className="font-bold text-stone-800 text-lg">Baby ist da</h3>
+                        <p className="text-stone-400 text-xs mt-0.5">Wochenbett & Alltag</p>
+                    </div>
+                    <ChevronRight className="ml-auto text-stone-300" />
+                </button>
+
+                <button 
+                    onClick={() => setMode('loss')} 
+                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
+                >
+                    <div className="bg-stone-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
+                        <Star className="text-stone-500 w-6 h-6" />
+                    </div>
+                    <div className="text-left">
+                        <h3 className="font-bold text-stone-800 text-lg">Verlust</h3>
+                        <p className="text-stone-400 text-xs mt-0.5">Stille Begleitung & Trost</p>
+                    </div>
+                    <ChevronRight className="ml-auto text-stone-300" />
+                </button>
+            </div>
+        </div>
+    </div>
 );
 
 const DueDateSetup = ({ saveProfile, mode }) => {
@@ -789,13 +965,38 @@ const App = () => {
     return () => unsub();
   }, [isAuthReady, userId]);
 
+  // --- AUTO-RESET LOGIC FOR HYDRATION (Every 2 hours) ---
+  useEffect(() => {
+      const checkReset = () => {
+          if (!habits.hydrationTime) return;
+          
+          const now = Date.now();
+          const twoHoursMs = 2 * 60 * 60 * 1000;
+          
+          // If hydration is marked as done AND it's been more than 2 hours
+          if (habits.hydration && (now - habits.hydrationTime > twoHoursMs)) {
+              const newHabits = { ...habits, hydration: false }; // Reset checked state only
+              setHabits(newHabits);
+              saveProfile({ habits: newHabits });
+          }
+      };
+
+      const interval = setInterval(checkReset, 60000); // Check every minute
+      return () => clearInterval(interval);
+  }, [habits]);
+
   const saveProfile = async (data) => {
       if (!userId) return;
       await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile'), data, { merge: true });
   };
 
   const toggleHabit = async (key) => {
-      const newHabits = { ...habits, [key]: !habits[key] };
+      const isDone = !habits[key];
+      const newHabits = { 
+          ...habits, 
+          [key]: isDone,
+          [`${key}Time`]: isDone ? Date.now() : (habits[`${key}Time`] || null) // Keep old time if unticking, or clear it? Usually keep for history, but here simpler. Let's keep old time if unticking so we know "last done".
+      };
       setHabits(newHabits);
       saveProfile({ habits: newHabits });
   };
@@ -830,6 +1031,9 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-stone-800 pb-safe selection:bg-stone-200 flex flex-col">
       <div className="max-w-md mx-auto w-full relative flex-grow pb-24">
+        {/* PUSH NOTIFICATION SIMULATION */}
+        <NotificationSimulator habits={habits} mode={mode} dueDate={dueDate} />
+
         {!mode && <ModeSelection setMode={saveMode} />}
         {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
         
