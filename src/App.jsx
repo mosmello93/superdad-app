@@ -1,1247 +1,299 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { 
-  Heart, Calendar, CheckCircle, Circle, MessageCircle, Activity, ChevronRight, 
-  ShieldCheck, Droplets, Sparkles, Cookie, ArrowUpRight, Battery, MessageSquare, 
-  Baby, Star, CloudRain, Feather, HelpCircle, BookOpen, User, Moon, Utensils, 
-  RefreshCw, Wand2, Trash2, Backpack, X, CheckSquare, Phone, MapPin, 
-  AlertTriangle, Navigation, Scale, Home, LayoutGrid, Sprout, Ruler, Weight,
-  Timer, Play, Square, Clock, History, Bell, Trophy, Award, Zap
-} from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Home, LayoutGrid, BookOpen } from 'lucide-react';
+import { signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+// Config
+import { auth, db } from './config/firebase';
+import { OASIS_IDEAS, LOSS_SHIELD_OPTIONS, LOSS_CARE_OPTIONS } from './data/content';
+
+// Utils
+import { calculateStatus, getDailyOasis } from './utils/calculations';
+
+// Hooks
+import { useHabits } from './hooks/useHabits';
+import { useGamification } from './hooks/useGamification';
+
+// Components
+import HeaderSoft from './components/layout/HeaderSoft';
+import ModeSelection from './components/layout/ModeSelection';
+
+import ProgressCardSoft from './components/dashboard/ProgressCardSoft';
+import HabitGridSoft from './components/dashboard/HabitGridSoft';
+import ToolGridSoft from './components/dashboard/ToolGridSoft';
+import TodoWidgetSoft from './components/dashboard/TodoWidgetSoft';
+import KnowledgeView from './components/dashboard/KnowledgeView';
+
+import DeepTalkSoft from './components/features/DeepTalkSoft';
+import AIVibeCheck from './components/features/AIVibeCheck';
+import PartnerPulse from './components/features/PartnerPulse';
+import ContractionTimer from './components/features/ContractionTimer';
+import DadLog from './components/features/DadLog';
+
+import EmergencyOverlay from './components/overlays/EmergencyOverlay';
+import HospitalBagOverlay from './components/overlays/HospitalBagOverlay';
+import HabitActionOverlay from './components/overlays/HabitActionOverlay';
+import ProgressDetailOverlay from './components/overlays/ProgressDetailOverlay';
+
+import DueDateSetup from './components/setup/DueDateSetup';
+import NotificationSimulator from './components/shared/NotificationSimulator';
 
 // Global variables provided by the Canvas environment
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-// *****************************************************************
-// FIREBASE CONFIG
-// *****************************************************************
-const firebaseConfig = {
-  apiKey: "AIzaSyAL2t8wMFxzEco3Z1JIu73aSzroJBeBw0M",
-  authDomain: "superdad-app.firebaseapp.com",
-  projectId: "superdad-app",
-  storageBucket: "superdad-app.firebasestorage.app",
-  messagingSenderId: "1022619437742",
-  appId: "1:1022619437742:web:63191dabcfc1d650d4bb3f",
-  measurementId: "G-V6WWJ3F6NG"
-};
-
-// *****************************************************************
-// GEMINI API KEY
-// *****************************************************************
-const apiKey = "AIzaSyCo_EE1xAwRsN4qmKzHFezUUB9syGmCxWQ"; 
-
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-// --- FIREBASE INITIALISIERUNG (NUR EINMAL) ---
-let app;
-let auth;
-let db;
+const App = () => {
+    const [userId, setUserId] = useState(null);
+    const [isAuthReady, setIsAuthReady] = useState(false);
+    const [mode, setMode] = useState(null);
+    const [dueDate, setDueDate] = useState(null);
+    const [babyName, setBabyName] = useState('');
+    const [gender, setGender] = useState('surprise');
+    const [ssw, setSsw] = useState(null);
+    // REMOVED: local habits state
+    const [vibeCheck, setVibeCheck] = useState('');
+    const [vibeHistory, setVibeHistory] = useState([]); // Added History
+    const [loading, setLoading] = useState(true);
+    const [contacts, setContacts] = useState({});
+    const [bagItems, setBagItems] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    const [contractions, setContractions] = useState([]);
+    const [dadLogs, setDadLogs] = useState([]);
 
-try {
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApp();
-  }
-  auth = getAuth(app);
-  db = getFirestore(app);
-} catch (error) {
-  console.error("Firebase Critical Init Error:", error);
-}
+    // Navigation State
+    const [activeTab, setActiveTab] = useState('home');
 
-// --- GEMINI API UTILITIES ---
-const callGemini = async (prompt) => {
-  if (!apiKey || apiKey === "DEIN_EIGENER_GOOGLE_AI_KEY_HIER") {
-      return "Fehler: Kein gültiger API Key hinterlegt.";
-  }
+    // Overlay States
+    const [showDetail, setShowDetail] = useState(false);
+    const [activeOverlayHabit, setActiveOverlayHabit] = useState(null); // Replaces showOasis, holds 'oasis', 'shield', 'hydration'
+    const [showBag, setShowBag] = useState(false);
+    const [showEmergency, setShowEmergency] = useState(false);
+    const [showTimer, setShowTimer] = useState(false);
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-      }
-    );
-    
-    if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 400 && errorData.error?.message?.includes("API key not valid")) {
-             return "Fehler: Der API-Key ist ungültig.";
-        }
-        throw new Error(`API Fehler (${response.status}): ${errorData.error?.message || response.statusText}`);
-    }
-    
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Der Coach denkt noch nach...";
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return `Fehler: ${error.message}`;
-  }
-};
+    // Initial Data for Hooks (Will be updated from Firestore)
+    const [initialHabits, setInitialHabits] = useState(null);
 
-// --- CONTENT DATA ---
+    const saveProfile = async (data) => {
+        if (!userId) return;
+        await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile'), data, { merge: true });
+    };
 
-const OASIS_IDEAS = {
-    trimester1: [
-        { title: "Ingwer-Held", text: "Koch ihr einen frischen Ingwer-Tee gegen die Übelkeit." },
-        { title: "Snack-Service", text: "Schneide ihr Obst klein und stell es kommentarlos hin." },
-        { title: "Ruhe-Pol", text: "Nimm ihr heute Abend alles ab, damit sie um 20 Uhr schlafen kann." },
-        { title: "Frische Luft", text: "Ein kurzer, langsamer Spaziergang im Park (hilft gegen Müdigkeit)." },
-        { title: "Geruchs-Wächter", text: "Lüfte die Wohnung gut durch und vermeide starke Parfums." }
-    ],
-    trimester2: [
-        { title: "Date Night", text: "Plan ein kleines Date (Kino oder schick essen), solange es noch leicht geht." },
-        { title: "Bauch-Öl", text: "Besorg ein gutes Pflegeöl und biete an, den Bauch einzucremen." },
-        { title: "Kompliment", text: "Sag ihr, wie wunderschön sie mit dem Babybauch aussieht." },
-        { title: "Ausflug", text: "Fahrt am Wochenende irgendwo hin, wo ihr noch nie wart." },
-        { title: "Nestbau-Support", text: "Frag sie: 'Was wolltest du im Kinderzimmer schon immer erledigt haben?' und mach es." }
-    ],
-    trimester3: [
-        { title: "Schuh-Service", text: "Binde ihr heute die Schuhe zu. Der Bauch ist im Weg!" },
-        { title: "Rücken-Retter", text: "Eine 5-Minuten Massage für den unteren Rücken wirkt Wunder." },
-        { title: "Kissen-Burg", text: "Arrangiere ihre Kissen im Bett oder auf dem Sofa neu für maximalen Komfort." },
-        { title: "Chauffeur", text: "Fahr sie überall hin. Laufen ist jetzt Sport." },
-        { title: "Beine hoch", text: "Leg ihre Beine hoch und massiere vorsichtig die Waden." }
-    ],
-    postpartum: [
-        { title: "Dusch-Wächter", text: "Nimm das Baby für 30 Min, damit sie in Ruhe (!) duschen kann." },
-        { title: "Chefkoch", text: "Koche ihr Lieblingsessen (oder bestell es). Stillen macht hungrig." },
-        { title: "Wasser-Marsch", text: "Stell ihr bei jedem Stillen ungefragt ein großes Glas Wasser hin." },
-        { title: "Nachtschicht", text: "Übernimm heute das Wickeln nach dem Stillen in der Nacht." },
-        { title: "Mutmacher", text: "Sag ihr, dass sie eine fantastische Mutter ist." }
-    ],
-    loss: [
-        { title: "Lichtblick", text: "Zünde abends eine Kerze für euer Sternchen an." },
-        { title: "Zuhörer", text: "Frag sie: 'Wie fühlst du dich heute wirklich?' und hör nur zu." },
-        { title: "Tee-Ritual", text: "Bring ihr eine warme Tasse Tee und eine Decke." },
-        { title: "Spaziergang", text: "Geht zusammen in die Natur, ohne Ziel, einfach laufen." },
-        { title: "Schutzraum", text: "Sag heute alle Termine ab, die nicht sein müssen." }
-    ]
-};
-
-// UPDATED: Returns 3 options instead of 1
-const getDailyOasis = (mode, week) => {
-    const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-    let pool = [];
-    if (mode === 'loss') pool = OASIS_IDEAS.loss;
-    else if (mode === 'postpartum') pool = OASIS_IDEAS.postpartum;
-    else {
-        if (week < 14) pool = OASIS_IDEAS.trimester1;
-        else if (week < 28) pool = OASIS_IDEAS.trimester2;
-        else pool = OASIS_IDEAS.trimester3;
-    }
-    
-    // Return 3 distinct items rotating daily
-    return [
-        pool[dayOfYear % pool.length],
-        pool[(dayOfYear + 1) % pool.length],
-        pool[(dayOfYear + 2) % pool.length]
-    ];
-};
-
-const PREGNANCY_WEEKS = {
-    4: { size: 'ein Mohnsamen', image: '/images/mohnsamen.png', cm: 0.1, g: 1, feeling: 'Hoffnung & Geheimnis', tip: 'Noch nix sagen, aber Folsäure checken.' },
-    5: { size: 'ein Sesamkorn', image: '/images/sesam.png', cm: 0.2, g: 1, feeling: 'Ahnung & Aufregung', tip: 'Verzicht auf Alkohol/Zigaretten unterstützen.' },
-    6: { size: 'eine Erbse', image: '/images/erbse.png', cm: 0.5, g: 1, feeling: 'Müdigkeit kickt rein', tip: 'Lass sie schlafen. Übernimm den Einkauf.' },
-    7: { size: 'eine Blaubeere', image: '/images/blaubeere.png', cm: 1.0, g: 1, feeling: 'Übelkeit & Ekel', tip: 'Koche geruchsneutral. Ingwertee besorgen.' },
-    8: { size: 'eine Himbeere', image: '/images/himbeere.png', cm: 1.6, g: 1, feeling: 'Gefühlschaos', tip: 'Sei ihr Blitzableiter für Launen.' },
-    9: { size: 'eine Olive', image: '/images/olive.png', cm: 2.3, g: 2, feeling: 'Erschöpfung', tip: 'Bring ihr Snacks ans Bett bevor sie aufsteht.' },
-    10: { size: 'eine Pflaume', image: '/images/pflaume.png', cm: 3.1, g: 4, feeling: 'Hormon-Party', tip: 'Erster Ultraschall? Nimm dir frei!' },
-    11: { size: 'eine Limette', image: '/images/limette.png', cm: 4.1, g: 7, feeling: 'Durst & Harndrang', tip: 'Immer Wasserflasche auffüllen.' },
-    12: { size: 'eine Aprikose', image: '/images/aprikose.png', cm: 5.4, g: 14, feeling: 'Aufatmen (1. Etappe)', tip: 'Verkündet es der Familie!' },
-    13: { size: 'eine Zitrone', image: '/images/zitrone.png', cm: 7.4, g: 23, feeling: 'Energie kehrt zurück', tip: 'Plant einen kleinen Ausflug.' },
-    14: { size: 'eine Orange', image: '/images/orange.png', cm: 8.7, g: 43, feeling: 'Babybauch wächst', tip: 'Mach die ersten Bauch-Fotos.' },
-    15: { size: 'ein Apfel', image: '/images/apfel.png', cm: 10.1, g: 70, feeling: 'Libido schwankt', tip: 'Geduld und Zärtlichkeit ohne Druck.' },
-    16: { size: 'eine Avocado', image: '/images/avocado.png', cm: 11.6, g: 100, feeling: 'Nestbautrieb startet', tip: 'Entrümple das Arbeitszimmer/Zukünftiges Kinderzimmer.' },
-    17: { size: 'eine Birne', image: '/images/birne.png', cm: 13.0, g: 140, feeling: 'Bänderdehnung', tip: 'Biete ihr eine Rückenmassage an.' },
-    18: { size: 'eine Paprika', image: '/images/paprika.png', cm: 14.2, g: 190, feeling: 'Erstes Flattern?', tip: 'Hand auf den Bauch, Geduld haben.' },
-    19: { size: 'eine Mango', image: '/images/mango.png', cm: 15.3, g: 240, feeling: 'Heißhunger', tip: 'Geh auch nachts für Eis zur Tanke.' },
-    20: { size: 'eine Banane', image: '/images/banane.png', cm: 16.4, g: 300, feeling: 'Halbzeit!', tip: 'Feiert Bergfest. Geht schick essen.' },
-    21: { size: 'eine Karotte', image: '/images/karotte.png', cm: 26.7, g: 360, feeling: 'Bewegungsdrang', tip: 'Geht zusammen schwimmen (entlastet den Rücken).' },
-    22: { size: 'eine Papaya', image: '/images/papaya.png', cm: 27.8, g: 430, feeling: 'Tritte werden stärker', tip: 'Sprich mit dem Bauch, er hört dich jetzt.' },
-    23: { size: 'eine Grapefruit', image: '/images/grapefruit.png', cm: 28.9, g: 500, feeling: 'Schwere Beine', tip: 'Besorg ihr Kompressionsstrümpfe oder Fußmassage.' },
-    24: { size: 'ein Maiskolben', image: '/images/mais.png', cm: 30.0, g: 600, feeling: 'Sodbrennen', tip: 'Milch oder Mandeln bereitstellen.' },
-    25: { size: 'eine Rübe', image: '/images/ruebe.png', cm: 34.6, g: 660, feeling: 'Schlafprobleme', tip: 'Stillkissen zum Schlafen besorgen.' },
-    26: { size: 'eine Zucchini', image: '/images/zucchini.png', cm: 35.6, g: 760, feeling: 'Rückenschmerzen', tip: 'Schuhe binden übernehmen.' },
-    27: { size: 'ein Blumenkohl', image: '/images/blumenkohl.png', cm: 36.6, g: 875, feeling: 'Atemnot', tip: 'Treppen langsam gehen, Pausen machen.' },
-    28: { size: 'eine Aubergine', image: '/images/aubergine.png', cm: 37.6, g: 1005, feeling: '3. Trimester beginnt', tip: 'Kliniktasche Packliste durchgehen.' },
-    29: { size: 'ein Butternuss-Kürbis', image: '/images/kuerbis_klein.png', cm: 38.6, g: 1153, feeling: 'Kindsbewegungen', tip: 'Spiel "Tritt-Antwort" mit dem Bauch.' },
-    30: { size: 'eine Gurke', image: '/images/gurke.png', cm: 39.9, g: 1319, feeling: 'Sorgen & Ängste', tip: 'Geburtsvorbereitungskurs ernst nehmen.' },
-    31: { size: 'eine Ananas', image: '/images/ananas.png', cm: 41.1, g: 1502, feeling: 'Alles wird eng', tip: 'Hilf ihr aus dem Bett/Sofa hoch.' },
-    32: { size: 'ein Chinakohl', image: '/images/chinakohl.png', cm: 42.4, g: 1702, feeling: 'Übungswehen', tip: 'Lerne Wehen zu tracken (Abstand messen).' },
-    33: { size: 'ein Sellerie', image: '/images/sellerie.png', cm: 43.7, g: 1918, feeling: 'Ungeduld', tip: 'Kinderzimmer fertig streichen/aufbauen.' },
-    34: { size: 'eine Honigmelone', image: '/images/honigmelone.png', cm: 45.0, g: 2146, feeling: 'Mutterschutz!', tip: 'Feiert ihren letzten Arbeitstag.' },
-    35: { size: 'eine Kokosnuss', image: '/images/kokosnuss.png', cm: 46.2, g: 2383, feeling: 'Senkwehen', tip: 'Auto checken, Tank voll?' },
-    36: { size: 'ein Kopfsalat', image: '/images/salat.png', cm: 47.4, g: 2622, feeling: 'Nestbau-Finale', tip: 'Kliniktasche ins Auto stellen.' },
-    37: { size: 'ein Mangold', image: '/images/mangold.png', cm: 48.6, g: 2859, feeling: 'Bereit (Theoretisch)', tip: 'Dokumente griffbereit legen.' },
-    38: { size: 'ein Lauch', image: '/images/lauch.png', cm: 49.8, g: 3083, feeling: 'Warten...', tip: 'Lenk sie ab. Kino, Essen, Spazieren.' },
-    39: { size: 'eine Wassermelone', image: '/images/wassermelone.png', cm: 50.7, g: 3288, feeling: 'Jedes Ziehen zählt', tip: 'Handy immer auf Laut.' },
-    40: { size: 'ein Kürbis', image: '/images/kuerbis.png', cm: 51.2, g: 3462, feeling: 'Geburtstermin', tip: 'Ruhepol sein. Du schaffst das.' },
-    41: { size: 'ein Riesen-Kürbis', image: '/images/riesenkuerbis.png', cm: 51.7, g: 3597, feeling: 'Überfällig', tip: 'Nervige Nachfragen von Verwandten abblocken.' }
-};
-
-const getTasks = (mode, stage) => {
-  if (mode === 'pregnancy') {
-      if (stage === 1) return [ { id: 'p1-1', text: 'Arzttermine planen', category: 'Logistik' }, { id: 'p1-2', text: 'Codewörter definieren', category: 'Emotional' }, { id: 'p1-3', text: 'Snack-Notfall-Kit kaufen', category: 'Support' } ];
-      if (stage === 2) return [ { id: 'p2-1', text: 'Zimmer planen', category: 'Vorbereitung' }, { id: 'p2-2', text: 'Geburtskurs buchen', category: 'Logistik' }, { id: 'p2-3', text: 'Massage lernen', category: 'Support' } ];
-      if (stage === 3) return [ { id: 'p3-1', text: 'Weg zur Klinik testen', category: 'Notfall' }, { id: 'p3-2', text: 'Ruhe-Tag organisieren', category: 'Emotional' }, { id: 'p3-3', text: 'Anträge vorbereiten', category: 'Bürokratie' } ];
-  } 
-  if (mode === 'postpartum') {
-      return [ { id: 'pp-1', text: 'Geburtsurkunde beantragen', category: 'Bürokratie' }, { id: 'pp-2', text: 'Krankenkasse informieren', category: 'Bürokratie' }, { id: 'pp-3', text: 'Kinderarzt U3 Termin', category: 'Gesundheit' }, { id: 'pp-4', text: 'Einkauf erledigen', category: 'Support' }, { id: 'pp-5', text: 'Besuch koordinieren', category: 'Gatekeeping' } ];
-  }
-  if (mode === 'loss') {
-      return [ { id: 'l-1', text: 'Krankmeldung/Mutterschutz klären', category: 'Bürokratie' }, { id: 'l-2', text: 'Bestatter kontaktieren', category: 'Logistik' }, { id: 'l-3', text: 'Abschiedsritual', category: 'Emotional' }, { id: 'l-4', text: 'Umfeld informieren', category: 'Kommunikation' }, { id: 'l-5', text: 'Rückbildung', category: 'Gesundheit' } ];
-  }
-  return [];
-};
-
-const HABITS_PREGNANCY = [{ key: 'hydration', title: "Wasser", text: "Bring ihr ein Glas", icon: Droplets, color: 'blue' }, { key: 'oasis', title: "Oase", text: "Tägliche Geste", icon: Sparkles, color: 'amber' }];
-const HABITS_POSTPARTUM = [{ key: 'hydration', title: "Still-Snack", text: "Wasser & Nüsse", icon: Utensils, color: 'orange' }, { key: 'nightshift', title: "Nacht-Held", text: "Wickeln übernehmen", icon: Moon, color: 'indigo' }];
-const HABITS_LOSS = [{ key: 'hydration', title: "Fürsorge", text: "Tee hinstellen", icon: Droplets, color: 'stone' }, { key: 'shield', title: "Schutzschild", text: "Besuch abwehren", icon: ShieldCheck, color: 'zinc' }];
-
-// --- UTILITIES ---
-const calculateStatus = (dateString, mode) => {
-  if (mode === 'loss') return { status: 'Loss', progress: 0, stage: 'after', label: 'Sternenkind' };
-  if (!dateString) return { status: 'NotSet', progress: 0, stage: 0, label: '' };
-
-  const [y, m, d] = dateString.split('-').map(Number);
-  const refDate = new Date(y, m - 1, d); 
-  refDate.setHours(0, 0, 0, 0);
-  const today = new Date(); 
-  today.setHours(0, 0, 0, 0);
-  
-  if (mode === 'postpartum') {
-      const diffTime = Math.abs(today - refDate);
-      const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) % 7;
-      return { status: 'Postpartum', progress: 100, stage: diffWeeks, week: diffWeeks, days: diffDays, label: `${diffWeeks} Wochen alt` };
-  }
-
-  const totalDuration = 280;
-  if (refDate < today) {
-    const daysSinceDue = Math.floor((today - refDate) / (1000 * 60 * 60 * 24));
-    return { week: 40 + Math.floor(daysSinceDue / 7), days: daysSinceDue % 7, trimester: 4, status: 'Pregnant', progress: 100, stage: 3, label: 'Überfällig' };
-  }
-
-  const diffTime = refDate.getTime() - today.getTime();
-  const daysUntilDue = Math.round(diffTime / (1000 * 60 * 60 * 24));
-  const daysPregnant = 280 - daysUntilDue;
-
-  if (daysPregnant < 0) return { week: 0, days: 0, trimester: 0, status: 'Waiting', progress: 0, stage: 0, label: 'Warten' };
-
-  const completedWeeks = Math.floor(daysPregnant / 7);
-  const currentDays = daysPregnant % 7;
-  const currentWeek = completedWeeks + 1; 
-  const progress = Math.min(100, Math.max(0, (daysPregnant / totalDuration) * 100));
-  let trimester = 1;
-  if (currentWeek >= 14) trimester = 2;
-  if (currentWeek >= 28) trimester = 3;
-
-  return { 
-      week: currentWeek, 
-      days: currentDays, 
-      trimester, 
-      status: 'Pregnant', 
-      progress, 
-      stage: trimester, 
-      label: `SSW ${currentWeek} (${completedWeeks}+${currentDays})` 
-  };
-};
-
-// --- GAMIFICATION UTILS ---
-const calculateLevel = (xp) => {
-    if (xp < 100) return { level: 1, title: "Anwärter", next: 100 };
-    if (xp < 300) return { level: 2, title: "Rookie Dad", next: 300 };
-    if (xp < 600) return { level: 3, title: "Profi Dad", next: 600 };
-    if (xp < 1000) return { level: 4, title: "SuperDad", next: 1000 };
-    return { level: 5, title: "Legende", next: 2000 };
-};
-
-// --- COMPONENTS ---
-
-// 1. HeaderSoft (UPDATED with Gamification)
-const HeaderSoft = ({ statusData, mode, babyName, xp }) => {
-  const isLoss = mode === 'loss';
-  let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
-  if (isLoss) title = 'Für euch';
-  if (mode === 'postpartum') title = `${statusData.week} Wochen`;
-
-  const levelInfo = calculateLevel(xp || 0);
-  const progressPercent = Math.min(100, (xp / levelInfo.next) * 100);
-
-  return (
-    <div className="pt-10 pb-6 px-4">
-        {/* Top Row: Logo & Level Badge */}
-        <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center">
-                <img 
-                    src="/images/superdad_logo.png" 
-                    alt="SuperDad Logo" 
-                    className="w-10 h-10 object-contain mr-2"
-                    onError={(e) => { e.target.style.display = 'none'; }} 
-                />
-                 <div className="flex flex-col">
-                    <span className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">SuperDad App</span>
-                    {babyName && <span className="text-stone-600 font-bold text-sm">für {babyName}</span>}
-                 </div>
-            </div>
-
-            {/* GAMIFICATION BADGE */}
-            <div className="bg-white pl-2 pr-3 py-1.5 rounded-full border border-stone-100 shadow-sm flex items-center gap-2">
-                <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
-                    <Trophy size={14} />
-                </div>
-                <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-stone-400 uppercase">Lvl {levelInfo.level}</span>
-                    <span className="text-xs font-bold text-stone-700 leading-none">{levelInfo.title}</span>
-                </div>
-            </div>
-        </div>
-
-        {/* Main Title */}
-        <h1 className="text-4xl font-bold text-stone-800 leading-tight mb-4">{title}</h1>
-
-        {/* Level Progress Bar */}
-        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-1">
-            <div 
-                className="bg-gradient-to-r from-indigo-400 to-purple-500 h-full rounded-full transition-all duration-1000" 
-                style={{ width: `${progressPercent}%` }}
-            ></div>
-        </div>
-        <div className="flex justify-between text-[10px] text-stone-400 font-medium">
-            <span>{xp} XP</span>
-            <span>{levelInfo.next} XP</span>
-        </div>
-    </div>
-  );
-};
-
-// 2. Notification / Push Simulator
-const NotificationSimulator = ({ habits, mode, dueDate }) => {
-    const [notification, setNotification] = useState(null);
+    // --- HOOKS INTEGRATION ---
+    const { habits, toggleHabit } = useHabits(initialHabits, saveProfile);
+    const { currentXP } = useGamification(tasks, habits);
 
     useEffect(() => {
-        // Conditions check loop
-        const checkNotification = () => {
-            // 1. Check if setup is complete
-            if (!mode || !dueDate) return;
-
-            // 2. Check time of day (Daytime only: 08:00 - 22:00)
-            const now = new Date();
-            const currentHour = now.getHours();
-            const isNight = currentHour < 8 || currentHour >= 22;
-            if (isNight) return;
-
-            // 3. Check hydration time
-            const lastHydration = habits.hydrationTime;
-            const tenHoursMs = 10 * 60 * 60 * 1000;
-            
-            // Show if never done OR last done > 10 hours ago
-            if (!lastHydration || (now.getTime() - lastHydration > tenHoursMs)) {
-                setNotification({
-                    title: "💧 Trink-Erinnerung",
-                    text: "Hey Dad, hast du ihr heute schon Wasser gebracht?",
-                    icon: Droplets
-                });
+        // Auth Listener setup
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUserId(user.uid);
+                setIsAuthReady(true);
+            } else {
+                // Fallback if no user is signed in automatically
+                signInAnonymously(auth).catch((err) => console.error("Auth Fail:", err));
             }
-        };
+        });
 
-        // Initial check after 3 seconds
-        const timer = setTimeout(checkNotification, 3000);
-        return () => clearTimeout(timer);
-    }, [habits, mode, dueDate]);
+        // Initial Auth Attempt
+        if (!auth.currentUser) {
+            if (initialAuthToken) {
+                signInWithCustomToken(auth, initialAuthToken).catch(e => console.error(e));
+            } else {
+                signInAnonymously(auth).catch(e => console.error(e));
+            }
+        }
 
-    if (!notification) return null;
+        return () => unsubscribe();
+    }, []);
 
-    return (
-        <div className="fixed top-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-indigo-100 z-50 animate-in slide-in-from-top duration-500 flex items-center gap-3" onClick={() => setNotification(null)}>
-            <div className="bg-indigo-100 p-2 rounded-full text-indigo-600">
-                <notification.icon size={20} />
-            </div>
-            <div className="flex-1">
-                <h4 className="font-bold text-sm text-stone-800">{notification.title}</h4>
-                <p className="text-xs text-stone-500">{notification.text}</p>
-            </div>
-            <button className="text-stone-400 hover:text-stone-600"><X size={16} /></button>
-        </div>
-    );
-};
-
-// 3. Contraction Timer
-const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
-    const [isTiming, setIsTiming] = useState(false);
-    const [startTime, setStartTime] = useState(null);
-    const [elapsed, setElapsed] = useState(0);
-
+    // Data Loading
     useEffect(() => {
-        let interval;
-        if (isTiming) {
-            interval = setInterval(() => {
-                setElapsed(Date.now() - startTime);
-            }, 1000);
+        if (!isAuthReady || !userId || !db) return;
+        const docRef = doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile');
+        const unsub = onSnapshot(docRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                setMode(data.mode);
+                setDueDate(data.dueDate);
+                if (data.babyName) setBabyName(data.babyName);
+                if (data.gender) setGender(data.gender);
+                if (data.ssw) setSsw(data.ssw);
+                if (data.habits) setInitialHabits(data.habits);
+                if (data.vibeCheck) setVibeCheck(data.vibeCheck);
+                if (data.vibeHistory) setVibeHistory(data.vibeHistory);
+                if (data.contacts) setContacts(data.contacts);
+                if (data.bagItems) setBagItems(data.bagItems);
+                if (data.tasks) setTasks(data.tasks);
+                if (data.contractions) setContractions(data.contractions);
+                if (data.dadLogs) setDadLogs(data.dadLogs);
+            }
+            setLoading(false);
+        });
+        return () => unsub();
+    }, [isAuthReady, userId]);
+
+    // Save Functions
+    const saveMode = (m) => { setMode(m); saveProfile({ mode: m }); };
+
+    // Updated saveVibeCheck to handle history
+    const saveVibeCheck = (v, history) => {
+        setVibeCheck(v);
+        if (history) setVibeHistory(history);
+        saveProfile({ vibeCheck: v, vibeHistory: history || vibeHistory });
+    };
+
+    const updateContact = (c) => { setContacts(c); saveProfile({ contacts: c }); };
+
+    const toggleBagItem = (id) => {
+        let newItems = bagItems.includes(id) ? bagItems.filter(i => i !== id) : [...bagItems, id];
+        setBagItems(newItems);
+        saveProfile({ bagItems: newItems });
+    };
+
+    const toggleTask = (id, status) => {
+        const idx = tasks.findIndex(t => t.id === id);
+        let newTasks;
+        if (idx >= 0) newTasks = tasks.map((t, i) => i === idx ? { ...t, completed: !status } : t);
+        else newTasks = [...tasks, { id, completed: !status }];
+        setTasks(newTasks);
+        saveProfile({ tasks: newTasks });
+    };
+
+    const saveContractions = (newContractions) => {
+        setContractions(newContractions);
+        saveProfile({ contractions: newContractions });
+    };
+
+    const saveLog = (newLogEntry) => {
+        const newLogs = [newLogEntry, ...dadLogs];
+        setDadLogs(newLogs);
+        saveProfile({ dadLogs: newLogs });
+    };
+
+    const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
+
+    // --- OVERLAY DATA PREP ---
+    const getOverlayData = () => {
+        if (!activeOverlayHabit) return null;
+
+        if (activeOverlayHabit === 'oasis') {
+            return {
+                title: "Wähle deine Mission",
+                subtitle: "Deine Oase heute",
+                options: getDailyOasis(mode, statusData.week),
+                color: 'amber'
+            };
         }
-        return () => clearInterval(interval);
-    }, [isTiming, startTime]);
-
-    const handleStart = () => {
-        setStartTime(Date.now());
-        setIsTiming(true);
-        setElapsed(0);
-    };
-
-    const handleStop = () => {
-        if (!startTime) return;
-        const endTime = Date.now();
-        const durationSec = Math.floor((endTime - startTime) / 1000);
-        const newContraction = {
-            start: startTime,
-            end: endTime,
-            duration: durationSec,
-            id: Date.now()
-        };
-        
-        // Calculate distance from previous
-        if (contractions.length > 0) {
-            const prev = contractions[0];
-            const distanceMin = Math.floor((startTime - prev.start) / 60000);
-            newContraction.distance = distanceMin;
+        if (activeOverlayHabit === 'shield' && mode === 'loss') {
+            return {
+                title: "Schutzschild aufbauen",
+                subtitle: "Grenzen setzen",
+                options: LOSS_SHIELD_OPTIONS,
+                color: 'zinc'
+            };
         }
-
-        saveContractions([newContraction, ...contractions]);
-        setIsTiming(false);
-        setStartTime(null);
-        setElapsed(0);
+        if (activeOverlayHabit === 'hydration' && mode === 'loss') {
+            return {
+                title: "Fürsorge-Moment",
+                subtitle: "Tu euch was Gutes",
+                options: LOSS_CARE_OPTIONS,
+                color: 'stone'
+            };
+        }
+        return null;
     };
 
-    const formatTime = (ms) => {
-        const totalSec = Math.floor(ms / 1000);
-        const min = Math.floor(totalSec / 60);
-        const sec = totalSec % 60;
-        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    const markOverlayHabitDone = async () => {
+        if (activeOverlayHabit) {
+            await toggleHabit(activeOverlayHabit);
+            setTimeout(() => setActiveOverlayHabit(null), 500);
+        }
     };
+
+    if (loading && !isAuthReady) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
 
     return (
-        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-stone-100 mb-4 animate-in slide-in-from-bottom duration-500">
-            <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2 text-rose-500 font-bold">
-                    <Timer size={20} />
-                    <h3>Wehen-Timer</h3>
-                </div>
-                {closeTimer && <button onClick={closeTimer}><X size={20} className="text-stone-400" /></button>}
-            </div>
+        <div className="min-h-screen bg-[#F5F5F0] font-sans text-stone-800 pb-safe selection:bg-stone-200 flex flex-col">
+            <div className="max-w-md mx-auto w-full relative flex-grow pb-24">
+                {/* PUSH NOTIFICATION SIMULATION */}
+                <NotificationSimulator habits={habits} mode={mode} dueDate={dueDate} />
 
-            <div className="text-center mb-8">
-                <div className="text-6xl font-bold text-stone-800 tabular-nums mb-2">
-                    {formatTime(elapsed)}
-                </div>
-                <p className="text-stone-400 text-sm">{isTiming ? "Wehe läuft..." : "Bereit"}</p>
-            </div>
+                {!mode && <ModeSelection setMode={saveMode} />}
+                {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
 
-            <button
-                onClick={isTiming ? handleStop : handleStart}
-                className={`w-full py-6 rounded-3xl font-bold text-xl transition-all flex items-center justify-center gap-3 shadow-lg ${
-                    isTiming 
-                    ? 'bg-rose-500 text-white shadow-rose-200' 
-                    : 'bg-emerald-500 text-white shadow-emerald-200'
-                }`}
-            >
-                {isTiming ? <Square fill="currentColor" /> : <Play fill="currentColor" />}
-                {isTiming ? "Stoppen" : "Wehe Starten"}
-            </button>
+                {mode && dueDate && (
+                    <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+                        <HeaderSoft statusData={statusData} mode={mode} babyName={babyName} xp={currentXP} />
+                        <div className="px-4">
+                            {/* VIEW SWITCHER */}
+                            {activeTab === 'home' && (
+                                <>
+                                    <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
+                                    <HabitGridSoft
+                                        habits={habits}
+                                        toggleHabit={toggleHabit}
+                                        mode={mode}
+                                        openOverlay={(key) => setActiveOverlayHabit(key)}
+                                    />
+                                    <PartnerPulse mode={mode} />
+                                    <DeepTalkSoft mode={mode} statusData={statusData} />
+                                    <AIVibeCheck vibeCheck={vibeCheck} vibeHistory={vibeHistory} saveVibeCheck={saveVibeCheck} mode={mode} />
+                                </>
+                            )}
 
-            {contractions.length > 0 && (
-                <div className="mt-8">
-                    <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Letzte Wehen</h4>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {contractions.map((c, i) => (
-                            <div key={c.id} className="flex justify-between items-center p-3 bg-stone-50 rounded-2xl text-sm">
-                                <div className="flex items-center gap-3">
-                                    <span className="font-bold text-stone-600">{new Date(c.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                                    <span className="bg-white px-2 py-1 rounded-lg border border-stone-100 text-stone-500 text-xs">
-                                        {Math.floor(c.duration / 60)}m {c.duration % 60}s
-                                    </span>
+                            {activeTab === 'tools' && (
+                                <div className="animate-in fade-in">
+                                    {showTimer ? (
+                                        <ContractionTimer contractions={contractions} saveContractions={saveContractions} closeTimer={() => setShowTimer(false)} />
+                                    ) : (
+                                        <ToolGridSoft mode={mode} openBag={() => setShowBag(true)} openEmergency={() => setShowEmergency(true)} bagItems={bagItems} toggleTimer={() => setShowTimer(true)} />
+                                    )}
+                                    <DadLog logs={dadLogs} saveLog={saveLog} />
+                                    <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
                                 </div>
-                                {c.distance && (
-                                    <div className="flex items-center gap-1 text-stone-400 text-xs">
-                                        <History size={12} />
-                                        <span>{c.distance} min</span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+                            )}
 
-// 4. Knowledge View
-const KnowledgeView = ({ week }) => {
-    // Fallback für Wochen ohne Daten
-    const defaultInfo = { size: 'ein Geheimnis', feeling: 'Wachstum', tip: 'Sei für sie da.' };
-    const info = PREGNANCY_WEEKS[week] || defaultInfo;
-
-    return (
-        <div className="space-y-4 animate-in fade-in pb-24">
-            {/* Hero Card */}
-            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-[32px] shadow-lg text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-4">
-                        <span className="inline-block py-1 px-3 rounded-full bg-white/20 text-xs font-bold backdrop-blur-md border border-white/10">
-                            Woche {week}
-                        </span>
-                        <BookOpen size={20} className="text-indigo-200" />
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2 leading-tight">Der Fokus der Woche</h2>
-                    <p className="text-indigo-100 font-medium">"{info.feeling}"</p>
-                </div>
-            </div>
-
-            {/* Baby Size Card */}
-            <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm flex items-center gap-5">
-                 <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <Sprout size={32} className="text-emerald-600" />
-                 </div>
-                 <div>
-                     <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">Baby-Größe</h3>
-                     <p className="text-xl font-bold text-stone-800 leading-tight">Wie {info.size}</p>
-                 </div>
-            </div>
-
-            {/* Pro Tip Card */}
-            <div className="bg-[#FFFBEB] p-6 rounded-[32px] border border-amber-100 shadow-sm">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="bg-amber-100 p-2 rounded-full text-amber-600">
-                        <Sparkles size={20} />
-                    </div>
-                    <h3 className="font-bold text-amber-900">Dein Pro-Tipp</h3>
-                </div>
-                <p className="text-amber-800 leading-relaxed">
-                    {info.tip}
-                </p>
-            </div>
-
-             {/* Placeholder for more generic content */}
-             <div className="p-4 rounded-2xl border border-dashed border-stone-200 text-center">
-                <p className="text-xs text-stone-400">Mehr Inhalte (Videos, Checklisten) folgen bald...</p>
-             </div>
-        </div>
-    );
-};
-
-// ... (Other Soft Components: ProgressCardSoft, HabitGridSoft, DeepTalkSoft, ToolGridSoft, TodoWidgetSoft, etc. - kept as they were)
-
-const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
-    let sizeInfo = null;
-    let imageUrl = null;
-    let bgColor = mode === 'postpartum' ? "bg-[#EEF2FF]" : (mode === 'loss' ? "bg-[#E5E5E0]" : "bg-[#F0FDF4]");
-    
-    if (mode === 'pregnancy' && statusData.week && PREGNANCY_WEEKS[statusData.week]) {
-        const weekData = PREGNANCY_WEEKS[statusData.week];
-        sizeInfo = `So groß wie ${weekData.size}`;
-        imageUrl = weekData.image;
-    }
-
-    const [imgError, setImgError] = useState(false);
-    useEffect(() => { setImgError(false); }, [imageUrl]);
-
-    return (
-        <div onClick={openDetail} className={`${bgColor} rounded-[32px] p-6 relative overflow-hidden mb-4 shadow-sm border border-white/50 cursor-pointer hover:shadow-md transition active:scale-[0.98]`}>
-            <div className="relative z-10">
-                <div className="flex justify-between items-start mb-3">
-                    {imageUrl && !imgError ? (
-                        <img src={imageUrl} alt={sizeInfo} onError={() => setImgError(true)} className="w-20 h-20 object-contain drop-shadow-md" />
-                    ) : (
-                        <div className="flex flex-col items-center">
-                            <div className="bg-white/50 w-16 h-16 rounded-full flex items-center justify-center">
-                                {mode === 'postpartum' ? <Baby size={32} className="text-indigo-600"/> : <Sprout size={32} className="text-emerald-600" />}
-                            </div>
+                            {activeTab === 'knowledge' && (
+                                <KnowledgeView week={statusData.week} mode={mode} ssw={ssw} />
+                            )}
                         </div>
-                    )}
-                    <div className="text-right">
-                        <p className="text-stone-500 font-medium uppercase tracking-wider text-[10px] bg-white/40 px-2 py-1 rounded-lg inline-block backdrop-blur-sm">Aktueller Status</p>
-                    </div>
-                </div>
-                <div className="mt-2">
-                    {sizeInfo ? (
-                        <>
-                            <div className="text-2xl font-bold text-stone-800 leading-tight mb-1">{sizeInfo}</div>
-                            <div className="text-sm text-stone-500 font-medium">{Math.round(statusData.progress)}% geladen</div>
-                        </>
-                    ) : (
-                        <div className="text-5xl font-bold text-stone-800 mb-1">{statusData.days}<span className="text-lg text-stone-400 font-normal ml-2">Tage</span></div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const HabitGridSoft = ({ habits, toggleHabit, mode, openOasis }) => {
-    let habitConfig = mode === 'loss' ? HABITS_LOSS : (mode === 'postpartum' ? HABITS_POSTPARTUM : HABITS_PREGNANCY);
-    
-    // Helper to calculate time ago
-    const getTimeLabel = (timestamp) => {
-        if (!timestamp) return null;
-        const diffMin = Math.floor((Date.now() - timestamp) / 60000);
-        if (diffMin < 1) return "Gerade eben";
-        if (diffMin < 60) return `Vor ${diffMin} Min`;
-        const diffHr = Math.floor(diffMin / 60);
-        if (diffHr < 24) return `Vor ${diffHr} Std`;
-        return "Gestern";
-    };
-
-    const getColorClasses = (color, isActive) => {
-        if (!isActive) return "bg-white border-stone-100 text-stone-400";
-        const maps = { blue: "bg-[#E0F2FE] border-sky-100 text-sky-800", amber: "bg-[#FEF3C7] border-amber-100 text-amber-800", orange: "bg-[#FFEDD5] border-orange-100 text-orange-800", indigo: "bg-[#E0E7FF] border-indigo-100 text-indigo-800", stone: "bg-[#E7E5E4] border-stone-200 text-stone-800", zinc: "bg-[#E4E4E7] border-zinc-200 text-zinc-800" };
-        return maps[color] || maps.stone;
-    };
-    return (
-        <div className="grid grid-cols-2 gap-4 mb-4">
-            {habitConfig.map((habit) => {
-                const isActive = habits[habit.key];
-                const timestamp = habits[`${habit.key}Time`];
-                const timeLabel = getTimeLabel(timestamp);
-                
-                return (
-                    <div key={habit.key} onClick={() => habit.key === 'oasis' ? openOasis() : toggleHabit(habit.key)} className={`${getColorClasses(habit.color, isActive)} p-6 rounded-[32px] flex flex-col justify-between h-40 transition-all cursor-pointer border shadow-sm`}>
-                        <div className="flex justify-between items-start"><habit.icon size={20} className={isActive ? 'text-current' : 'text-stone-300'} />{isActive && <CheckCircle size={20} className="opacity-50" />}</div>
-                        <div>
-                            <h3 className="font-bold text-lg leading-tight mb-1">{habit.title}</h3>
-                            {/* Updated logic: Always show time if available, else show description text */}
-                            <p className="text-xs opacity-80">{timeLabel || habit.text}</p>
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    );
-};
-
-const DeepTalkSoft = ({ mode, statusData }) => {
-  const [question, setQuestion] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const fetchQuestion = useCallback(async () => {
-    setLoading(true);
-    const context = mode === 'loss' ? "Paar nach stiller Geburt." : (mode === 'postpartum' ? "Eltern mit Neugeborenem." : "Werdende Eltern.");
-    const prompt = `Eine kurze, tiefe Frage für ein Paar (${context}). Nur die Frage.`;
-    const result = await callGemini(prompt);
-    setQuestion(result);
-    setLoading(false);
-  }, [mode, statusData.week]);
-  useEffect(() => { if (!question) fetchQuestion(); }, [fetchQuestion, question]);
-  return (
-    <div className={`${mode === 'loss' ? 'bg-[#D6D3D1] text-stone-800' : 'bg-[#DDD6FE] text-violet-900'} p-6 rounded-[32px] mb-4 shadow-sm relative overflow-hidden`}>
-        <div className="flex items-center justify-between mb-3 relative z-10"><span className="text-xs font-bold uppercase tracking-wider opacity-60">Deep Talk</span><button onClick={fetchQuestion} disabled={loading} className="bg-white/40 p-2 rounded-full"><RefreshCw size={14} className={loading ? 'animate-spin' : ''} /></button></div>
-        <h3 className="text-xl font-bold leading-snug relative z-10 font-serif">"{loading ? "..." : (question || "Lade...")}"</h3>
-    </div>
-  );
-};
-
-const ToolGridSoft = ({ mode, openBag, openEmergency, bagItems, toggleTimer }) => {
-    return (
-        <div className="grid grid-cols-2 gap-4 mb-4">
-            {mode === 'pregnancy' && (
-                <div onClick={toggleTimer} className="bg-rose-50 p-6 rounded-[32px] cursor-pointer border border-rose-100 hover:shadow-md transition">
-                    <div className="mb-8 bg-white w-10 h-10 flex items-center justify-center rounded-full text-rose-500"><Timer size={20} /></div>
-                    <h3 className="font-bold text-rose-900">Wehen-<br/>Timer</h3>
-                    <p className="text-xs text-rose-700 mt-1">Starten</p>
-                </div>
-            )}
-            {mode === 'pregnancy' && (
-                <div onClick={openBag} className="bg-[#FFEDD5] p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-orange-100/50">
-                    <div className="mb-8 bg-white/60 w-10 h-10 flex items-center justify-center rounded-full text-orange-600"><Backpack size={20} /></div>
-                    <h3 className="font-bold text-orange-900">Klinik-<br/>tasche</h3>
-                    <p className="text-xs text-orange-700 mt-1">{bagItems.length} Items</p>
-                </div>
-            )}
-            <div onClick={openEmergency} className="bg-[#FEE2E2] p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-red-100/50">
-                <div className="mb-8 bg-white/60 w-10 h-10 flex items-center justify-center rounded-full text-red-600"><AlertTriangle size={20} /></div>
-                <h3 className="font-bold text-red-900">Notfall<br/>Infos</h3>
-                <p className="text-xs text-red-700 mt-1">Bereit?</p>
-            </div>
-        </div>
-    );
-};
-
-const TodoWidgetSoft = ({ statusData, tasks, toggleTask, mode }) => {
-    const stage = (mode === 'loss') ? 0 : (mode === 'postpartum' ? 0 : statusData.stage);
-    const defaultTasks = useMemo(() => getTasks(mode, stage), [mode, stage]);
-    if (!defaultTasks.length) return null;
-    const currentTasks = defaultTasks.map(t => {
-        const saved = tasks.find(st => st.id === t.id);
-        return { ...t, completed: saved ? saved.completed : false };
-    });
-    const done = currentTasks.filter(t => t.completed).length;
-    return (
-        <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm mb-4">
-            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-stone-800 text-lg">Checkliste</h3><span className="text-xs bg-stone-100 text-stone-500 px-2 py-1 rounded-full font-medium">{done}/{currentTasks.length}</span></div>
-            <div className="space-y-2">{currentTasks.map(task => (<div key={task.id} onClick={() => toggleTask(task.id, task.completed)} className={`flex items-center p-3 rounded-2xl cursor-pointer transition-all ${task.completed ? 'bg-stone-50 text-stone-400' : 'hover:bg-stone-50 text-stone-700'}`}><div className={`mr-3 ${task.completed ? 'text-emerald-500' : 'text-stone-300'}`}>{task.completed ? <CheckCircle size={22} /> : <Circle size={22} />}</div><span className={`text-sm font-medium ${task.completed ? 'line-through' : ''}`}>{task.text}</span></div>))}</div>
-        </div>
-    );
-};
-
-const EmergencyOverlay = ({ contacts, updateContact, closeEmergency }) => {
-    const [editMode, setEditMode] = useState(false);
-    const [localContacts, setLocalContacts] = useState(contacts);
-    const handleSave = () => { updateContact(localContacts); setEditMode(false); };
-    const handleChange = (field, value) => { setLocalContacts({ ...localContacts, [field]: value }); };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeEmergency}></div>
-            <div className="bg-[#F5F5F0] w-full max-w-md h-[85vh] sm:h-[auto] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative">
-                {/* Header */}
-                <div className="bg-white p-6 pb-4 border-b border-stone-100 flex justify-between items-center sticky top-0 z-10">
-                    <div><h2 className="text-2xl font-bold text-stone-800">Notfall-Infos</h2><p className="text-stone-500 text-xs">Alles griffbereit wenn's losgeht.</p></div>
-                    <button onClick={closeEmergency} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition"><X size={20} className="text-stone-600" /></button>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {/* Edit Button */}
-                    <div className="flex justify-end">
-                        <button onClick={editMode ? handleSave : () => setEditMode(true)} className={`px-4 py-2 rounded-xl text-xs font-bold transition ${editMode ? 'bg-stone-800 text-white' : 'bg-stone-200 text-stone-600'}`}>
-                            {editMode ? 'Speichern' : 'Bearbeiten'}
-                        </button>
-                    </div>
-
-                    {/* Clinic Section */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-100">
-                        <div className="flex items-center mb-4"><MapPin size={18} className="text-rose-500 mr-2" /><h3 className="font-bold text-stone-700">Die Klinik</h3></div>
-                        {editMode ? ( 
-                            <div className="space-y-3">
-                                <input placeholder="Name der Klinik" className="w-full bg-stone-50 p-3 rounded-xl text-sm" value={localContacts.clinicName || ''} onChange={(e) => handleChange('clinicName', e.target.value)} />
-                                <input placeholder="Adresse für Navi" className="w-full bg-stone-50 p-3 rounded-xl text-sm" value={localContacts.clinicAddress || ''} onChange={(e) => handleChange('clinicAddress', e.target.value)} />
-                            </div> 
-                        ) : ( 
-                            <div>
-                                <p className="font-bold text-lg text-stone-800">{localContacts.clinicName || 'Klinik noch nicht eingetragen'}</p>
-                                <p className="text-sm text-stone-500 mb-4">{localContacts.clinicAddress || 'Adresse fehlt'}</p>
-                                {localContacts.clinicAddress && (<a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(localContacts.clinicAddress)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition"><Navigation size={16} className="mr-2" />Navigation starten</a>)}
-                            </div> 
+                        {activeTab === 'home' && (
+                            <div className="py-6 text-center">
+                                <button onClick={() => saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' })} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
+                            </div>
                         )}
                     </div>
+                )}
+            </div>
 
-                    {/* Important Numbers Section - RE-ADDED */}
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider ml-1">Wichtige Nummern</h3>
-                        {[{id: 'midwife', icon: Phone, label: 'Hebamme', color: 'emerald'}, {id: 'doctor', icon: Activity, label: 'Kreißsaal / Arzt', color: 'indigo'}, {id: 'taxi', icon: Phone, label: 'Taxi / Support', color: 'amber'}].map(contact => (
-                            <div key={contact.id} className="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <div className={`bg-${contact.color}-100 p-2 rounded-full mr-3 text-${contact.color}-600`}><contact.icon size={18} /></div>
-                                    <div>
-                                        <p className="text-xs text-stone-400 font-bold uppercase">{contact.label}</p>
-                                        {editMode ? ( 
-                                            <div className="flex flex-col space-y-1 mt-1">
-                                                <input placeholder="Name" className="bg-stone-50 p-1.5 rounded-lg text-sm w-32" value={localContacts[`${contact.id}Name`] || ''} onChange={(e) => handleChange(`${contact.id}Name`, e.target.value)} />
-                                                <input placeholder="Tel-Nr." className="bg-stone-50 p-1.5 rounded-lg text-sm w-32" value={localContacts[`${contact.id}Phone`] || ''} onChange={(e) => handleChange(`${contact.id}Phone`, e.target.value)} />
-                                            </div> 
-                                        ) : ( 
-                                            <p className="font-bold text-stone-700">{localContacts[`${contact.id}Name`] || '---'}</p> 
-                                        )}
-                                    </div>
-                                </div>
-                                {!editMode && localContacts[`${contact.id}Phone`] && (<a href={`tel:${localContacts[`${contact.id}Phone`]}`} className="bg-green-500 text-white p-3 rounded-full shadow-md hover:bg-green-600 transition"><Phone size={20} /></a>)}
-                            </div>
-                        ))}
+            {/* BOTTOM NAVIGATION */}
+            {mode && dueDate && (
+                <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
+                    <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
+                        <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
+                        <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
+                        <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
                     </div>
                 </div>
-            </div>
+            )}
+
+            {/* OVERLAYS */}
+            {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
+            {getOverlayData() && (
+                <HabitActionOverlay
+                    title={getOverlayData().title}
+                    subtitle={getOverlayData().subtitle}
+                    options={getOverlayData().options}
+                    color={getOverlayData().color}
+                    isDone={habits[activeOverlayHabit]}
+                    onConfirm={markOverlayHabitDone}
+                    onClose={() => setActiveOverlayHabit(null)}
+                />
+            )}
+            {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
+            {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
         </div>
     );
-};
-
-const HospitalBagOverlay = ({ bagItems, toggleItem, closeBag }) => {
-    const categories = Object.keys(HOSPITAL_BAG_CONTENT);
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeBag}></div>
-            <div className="bg-[#F5F5F0] w-full max-w-md h-[90vh] sm:h-[80vh] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative">
-                <div className="bg-white p-6 pb-4 border-b border-stone-100 flex justify-between items-center sticky top-0 z-10">
-                    <div><h2 className="text-2xl font-bold text-stone-800">Die Tasche</h2><p className="text-stone-500 text-xs">Alles dabei für Tag X?</p></div>
-                    <button onClick={closeBag} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition"><X size={20} className="text-stone-600" /></button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                    {categories.map(catKey => {
-                        const category = HOSPITAL_BAG_CONTENT[catKey];
-                        return (
-                            <div key={catKey}>
-                                <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-3 ml-1">{category.title}</h3>
-                                <div className="space-y-2">
-                                    {category.items.map(item => {
-                                        const isChecked = bagItems.includes(item.id);
-                                        return (
-                                            <div key={item.id} onClick={() => toggleItem(item.id)} className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all border ${isChecked ? 'bg-amber-50 border-amber-100' : 'bg-white border-transparent hover:border-stone-200 shadow-sm'}`}>
-                                                <div className={`mr-4 transition-all ${isChecked ? 'text-amber-500 scale-110' : 'text-stone-300'}`}>{isChecked ? <CheckSquare size={24} className="fill-current" /> : <div className="w-6 h-6 border-2 border-stone-300 rounded-md"></div>}</div>
-                                                <span className={`text-sm font-medium transition-colors ${isChecked ? 'text-stone-400 line-through' : 'text-stone-700'}`}>{item.text}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
-                    <div className="h-12"></div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
-    if (!statusData || !statusData.week) return null;
-    const weekContent = PREGNANCY_WEEKS[statusData.week] || {};
-    const [imgError, setImgError] = useState(false);
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeDetail}></div>
-            <div className="bg-[#FDFCF8] w-full max-w-md h-[85vh] rounded-t-[40px] shadow-2xl overflow-hidden flex flex-col pointer-events-auto relative">
-                <button onClick={closeDetail} className="absolute top-6 right-6 bg-white p-2 rounded-full hover:bg-stone-100 shadow-sm z-20"><X size={20} className="text-stone-600" /></button>
-                <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="bg-[#F0FDF4] pt-16 pb-10 px-6 flex flex-col items-center text-center relative overflow-hidden">
-                         <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-200/30 rounded-full blur-3xl"></div><div className="absolute bottom-0 right-0 w-40 h-40 bg-emerald-200/20 rounded-full blur-3xl"></div>
-                         <div className="relative z-10">{weekContent.image && !imgError ? (<img src={weekContent.image} alt={weekContent.size} onError={() => setImgError(true)} className="w-48 h-48 object-contain drop-shadow-2xl transform hover:scale-105 transition duration-500" />) : (<div className="w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-lg"><Sprout size={64} className="text-emerald-500" /></div>)}</div>
-                         <h2 className="text-3xl font-bold text-stone-800 mt-6">{weekContent.size ? `So groß wie ${weekContent.size}` : `Woche ${statusData.week}`}</h2><p className="text-emerald-700 font-medium mt-1">{statusData.label}</p>
-                    </div>
-                    <div className="px-6 -mt-6 relative z-10"><div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex justify-around"><div className="text-center"><p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-1">Größe (ca.)</p><div className="flex items-center justify-center text-stone-800 font-bold text-lg"><Ruler size={18} className="text-emerald-500 mr-1.5" />{weekContent.cm || '--'} cm</div></div><div className="w-px bg-stone-100"></div><div className="text-center"><p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-1">Gewicht (ca.)</p><div className="flex items-center justify-center text-stone-800 font-bold text-lg"><Weight size={18} className="text-emerald-500 mr-1.5" />{weekContent.g || '--'} g</div></div></div></div>
-                    <div className="px-6 mt-6 space-y-6"><div><h3 className="text-sm font-bold text-stone-400 uppercase">Ihr Befinden</h3><p className="text-xl font-bold">{weekContent.feeling}</p></div><div className="bg-indigo-50 p-5 rounded-2xl"><h3 className="text-xs font-bold text-indigo-400 uppercase">Dein Pro-Tipp</h3><p className="text-stone-700">{weekContent.tip}</p></div></div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// UPDATED: OasisOverlay with 3 Options
-const OasisOverlay = ({ missions, closeOasis, markDone, isDone }) => {
-    const [selectedIdx, setSelectedIdx] = useState(null);
-
-    if (!missions || missions.length === 0) return null;
-
-    const handleAccept = () => {
-        if (selectedIdx !== null) {
-            markDone(); // Logic to save is done in App
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeOasis}></div>
-            <div className="bg-[#FDFCF8] w-full max-w-md p-6 rounded-t-[40px] sm:rounded-[40px] shadow-2xl flex flex-col pointer-events-auto animate-in slide-in-from-bottom duration-300 relative max-h-[85vh] overflow-y-auto">
-                <div className="flex justify-between items-start mb-4">
-                    <div className="bg-amber-100 p-3 rounded-2xl text-amber-600">
-                        <Sparkles size={28} />
-                    </div>
-                    <button onClick={closeOasis} className="bg-stone-100 p-2 rounded-full hover:bg-stone-200 transition">
-                        <X size={20} className="text-stone-600" />
-                    </button>
-                </div>
-                
-                <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">Deine Oase heute</h3>
-                <h2 className="text-2xl font-bold text-stone-800 mb-6">Wähle deine Mission</h2>
-
-                <div className="space-y-3 mb-8">
-                    {missions.map((mission, idx) => (
-                        <div 
-                            key={idx}
-                            onClick={() => !isDone && setSelectedIdx(idx)}
-                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                                selectedIdx === idx 
-                                ? 'border-amber-400 bg-amber-50 ring-2 ring-amber-200 ring-offset-1' 
-                                : 'border-stone-100 bg-white hover:border-amber-200'
-                            } ${isDone && selectedIdx !== idx ? 'opacity-50 pointer-events-none' : ''}`}
-                        >
-                            <div className="flex justify-between items-center mb-1">
-                                <h4 className="font-bold text-stone-800">{mission.title}</h4>
-                                {selectedIdx === idx && <CheckCircle size={18} className="text-amber-500" />}
-                            </div>
-                            <p className="text-sm text-stone-600">{mission.text}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <button 
-                    onClick={handleAccept} 
-                    disabled={isDone || selectedIdx === null} 
-                    className={`w-full py-4 rounded-2xl font-bold text-white transition flex items-center justify-center ${
-                        isDone 
-                        ? 'bg-green-500 cursor-default' 
-                        : (selectedIdx !== null ? 'bg-stone-900 hover:bg-stone-800 shadow-lg' : 'bg-stone-300 cursor-not-allowed')
-                    }`}
-                >
-                    {isDone ? (<><CheckCircle size={20} className="mr-2" /> Erledigt</>) : ("Mission annehmen")}
-                </button>
-            </div>
-        </div>
-    );
-};
-
-const AIVibeCheck = ({ vibeCheck, saveVibeCheck, mode }) => {
-    const [vibeInput, setVibeInput] = useState(vibeCheck || '');
-    const [aiAdvice, setAiAdvice] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => { setVibeInput(vibeCheck || ''); }, [vibeCheck]);
-
-    const handleAnalyze = async () => {
-        if (!vibeInput) return;
-        saveVibeCheck(vibeInput);
-        setLoading(true);
-        const prompt = `Du bist ein empathischer, bodenständiger Coach für Väter. Der Vater befindet sich in der Phase: ${mode === 'loss' ? 'Verlust/Trauer nach stiller Geburt' : (mode === 'postpartum' ? 'Wochenbett/Neugeborenes' : 'Schwangerschaft')}. Er hat gerade folgendes als seinen Status eingegeben: "${vibeInput}". Gib ihm eine sehr kurze, unterstützende Antwort (max. 2 Sätze) auf Deutsch. Sei wie ein guter Freund: verständnisvoll aber stärkend.`;
-        const result = await callGemini(prompt);
-        setAiAdvice(result);
-        setLoading(false);
-    };
-    
-    const bgClass = mode === 'loss' ? 'bg-[#E5E5E0]' : 'bg-[#E0E7FF]';
-    const textClass = mode === 'loss' ? 'text-stone-900' : 'text-indigo-900';
-    const iconColor = mode === 'loss' ? 'text-stone-500' : 'text-indigo-500';
-  
-    return (
-      <div className={`${bgClass} p-6 rounded-[32px] mt-4 mb-24 transition-all duration-500`}>
-          <div className="flex items-center mb-4"><div className="bg-white p-2 rounded-full mr-3 shadow-sm"><Battery size={20} className={iconColor} /></div><h3 className={`font-bold ${textClass}`}>Dein Status</h3></div>
-          <div className="relative mb-4"><input type="text" value={vibeInput} onChange={(e) => setVibeInput(e.target.value)} placeholder="Wie geht's dir heute?" className={`w-full bg-white/60 border-0 rounded-2xl p-4 placeholder-opacity-50 focus:outline-none font-medium ${textClass}`} /><button onClick={handleAnalyze} disabled={loading || !vibeInput} className={`absolute right-2 top-2 p-2 rounded-xl transition text-white ${mode === 'loss' ? 'bg-stone-500 hover:bg-stone-600' : 'bg-indigo-500 hover:bg-indigo-600'}`}>{loading ? <RefreshCw size={16} className="animate-spin" /> : <Wand2 size={16} />}</button></div>
-          {aiAdvice && (<div className="bg-white/80 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2"><div className="flex items-start space-x-3"><div className="mt-1"><Sparkles size={16} className={mode === 'loss' ? 'text-stone-400' : 'text-indigo-400'} /></div><div><p className={`text-sm font-medium ${mode === 'loss' ? 'text-stone-700' : 'text-indigo-800'}`}>{aiAdvice}</p></div></div></div>)}
-      </div>
-    );
-};
-
-const ModeSelection = ({ setMode }) => (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#F5F5F0]">
-        <div className="w-full max-w-sm">
-            {/* Logo Section */}
-            <div className="flex flex-col items-center mb-10">
-                <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-lg mb-6 p-4">
-                    <img 
-                        src="/images/superdad_logo.png" 
-                        alt="SuperDad Logo" 
-                        className="w-full h-full object-contain"
-                    />
-                </div>
-                <h1 className="text-4xl font-extrabold text-stone-800 tracking-tight text-center">
-                    Willkommen, <br/><span className="text-indigo-600">SuperDad.</span>
-                </h1>
-                <p className="text-stone-500 mt-3 text-center text-lg">
-                    Dein Begleiter für das größte Abenteuer.
-                </p>
-            </div>
-
-            {/* Selection Buttons */}
-            <div className="space-y-4 w-full">
-                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest text-center mb-4">
-                    Wo steht ihr gerade?
-                </p>
-                
-                <button 
-                    onClick={() => setMode('pregnancy')} 
-                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
-                >
-                    <div className="bg-emerald-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
-                        <Baby className="text-emerald-600 w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-stone-800 text-lg">Schwangerschaft</h3>
-                        <p className="text-stone-400 text-xs mt-0.5">Begleitung bis zur Geburt</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300" />
-                </button>
-
-                <button 
-                    onClick={() => setMode('postpartum')} 
-                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
-                >
-                    <div className="bg-indigo-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
-                        <User className="text-indigo-600 w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-stone-800 text-lg">Baby ist da</h3>
-                        <p className="text-stone-400 text-xs mt-0.5">Wochenbett & Alltag</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300" />
-                </button>
-
-                <button 
-                    onClick={() => setMode('loss')} 
-                    className="w-full bg-white p-5 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100"
-                >
-                    <div className="bg-stone-100 p-3 rounded-2xl mr-4 group-hover:scale-110 transition-transform">
-                        <Star className="text-stone-500 w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                        <h3 className="font-bold text-stone-800 text-lg">Verlust</h3>
-                        <p className="text-stone-400 text-xs mt-0.5">Stille Begleitung & Trost</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300" />
-                </button>
-            </div>
-        </div>
-    </div>
-);
-
-const DueDateSetup = ({ saveProfile, mode }) => {
-    const [localDate, setLocalDate] = useState('');
-    const [name, setName] = useState('');
-    const [gender, setGender] = useState('surprise');
-    
-    const handleSave = () => { saveProfile({ dueDate: localDate, babyName: name, gender: gender }); };
-    
-    const isPostpartum = mode === 'postpartum';
-    const labelDate = isPostpartum ? 'Geburtstag*' : 'Geburtstermin*';
-    const title = isPostpartum ? 'Willkommen, Baby!' : 'Dein Start';
-    const sub = isPostpartum ? 'Wann kam der kleine Schatz?' : 'Verrate uns ein paar Details.';
-
-    return (
-        <div className="bg-white p-8 rounded-[32px] border border-stone-100 shadow-lg text-center mt-6 animate-in fade-in slide-in-from-bottom-8">
-            <div className="bg-stone-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><Baby size={28} className="text-stone-600" /></div>
-            <h2 className="text-xl font-bold text-stone-800 mb-2">{title}</h2><p className="text-stone-500 mb-6 text-sm">{sub}</p>
-            
-            <div className="mb-4 text-left">
-                <label className="text-xs font-bold text-stone-400 uppercase ml-2">{labelDate}</label>
-                <input type="date" value={localDate} onChange={(e) => setLocalDate(e.target.value)} className="w-full p-4 mt-1 bg-stone-50 rounded-2xl text-center font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
-            </div>
-            
-            <div className="mb-4 text-left">
-                <label className="text-xs font-bold text-stone-400 uppercase ml-2">Name (Optional)</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="z.B. Krümel" className="w-full p-4 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
-            </div>
-            
-            <div className="mb-8 text-left">
-                <label className="text-xs font-bold text-stone-400 uppercase ml-2">Geschlecht</label>
-                <div className="flex gap-2 mt-1">
-                    <button onClick={() => setGender('boy')} className={`flex-1 py-3 rounded-xl text-sm font-bold transition ${gender === 'boy' ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-300' : 'bg-stone-50 text-stone-400'}`}>Junge</button>
-                    <button onClick={() => setGender('girl')} className={`flex-1 py-3 rounded-xl text-sm font-bold transition ${gender === 'girl' ? 'bg-rose-100 text-rose-600 ring-2 ring-rose-300' : 'bg-stone-50 text-stone-400'}`}>Mädchen</button>
-                    <button onClick={() => setGender('surprise')} className={`flex-1 py-3 rounded-xl text-sm font-bold transition ${gender === 'surprise' ? 'bg-amber-100 text-amber-600 ring-2 ring-amber-300' : 'bg-stone-50 text-stone-400'}`}>?</button>
-                </div>
-            </div>
-            
-            <button onClick={handleSave} disabled={!localDate} className="w-full py-4 bg-stone-900 text-white font-bold rounded-2xl hover:bg-stone-800 transition disabled:opacity-50 shadow-xl shadow-stone-200">Coach Starten</button>
-        </div>
-    );
-};
-
-// --- MAIN APP COMPONENT ---
-
-const App = () => {
-  const [userId, setUserId] = useState(null);
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [mode, setMode] = useState(null);
-  const [dueDate, setDueDate] = useState(null);
-  const [babyName, setBabyName] = useState('');
-  const [gender, setGender] = useState('surprise');
-  const [habits, setHabits] = useState({ hydration: false, oasis: false, shield: false, nightshift: false });
-  const [vibeCheck, setVibeCheck] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [contacts, setContacts] = useState({});
-  const [bagItems, setBagItems] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [contractions, setContractions] = useState([]);
-  
-  // Navigation State
-  const [activeTab, setActiveTab] = useState('home');
-
-  // Overlay States
-  const [showDetail, setShowDetail] = useState(false);
-  const [showOasis, setShowOasis] = useState(false);
-  const [showBag, setShowBag] = useState(false);
-  const [showEmergency, setShowEmergency] = useState(false);
-  const [showTimer, setShowTimer] = useState(false);
-
-  useEffect(() => {
-    // Auth Listener setup
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        setIsAuthReady(true);
-      } else {
-        // Fallback if no user is signed in automatically
-        signInAnonymously(auth).catch((err) => console.error("Auth Fail:", err));
-      }
-    });
-    
-    // Initial Auth Attempt
-    if (!auth.currentUser) {
-        if (initialAuthToken) {
-            signInWithCustomToken(auth, initialAuthToken).catch(e => console.error(e));
-        } else {
-            signInAnonymously(auth).catch(e => console.error(e));
-        }
-    }
-
-    return () => unsubscribe();
-  }, []);
-
-  // Data Loading
-  useEffect(() => {
-    if (!isAuthReady || !userId || !db) return;
-    const docRef = doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile');
-    const unsub = onSnapshot(docRef, (snap) => {
-        if (snap.exists()) {
-            const data = snap.data();
-            setMode(data.mode);
-            setDueDate(data.dueDate);
-            if (data.babyName) setBabyName(data.babyName);
-            if (data.gender) setGender(data.gender);
-            if (data.habits) setHabits(data.habits);
-            if (data.vibeCheck) setVibeCheck(data.vibeCheck);
-            if (data.contacts) setContacts(data.contacts);
-            if (data.bagItems) setBagItems(data.bagItems);
-            if (data.tasks) setTasks(data.tasks);
-            if (data.contractions) setContractions(data.contractions);
-        }
-        setLoading(false);
-    });
-    return () => unsub();
-  }, [isAuthReady, userId]);
-
-  // --- AUTO-RESET LOGIC FOR HYDRATION (Every 2 hours) ---
-  useEffect(() => {
-      const checkReset = () => {
-          if (!habits.hydrationTime) return;
-          
-          const now = Date.now();
-          const twoHoursMs = 2 * 60 * 60 * 1000;
-          
-          // If hydration is marked as done AND it's been more than 2 hours
-          if (habits.hydration && (now - habits.hydrationTime > twoHoursMs)) {
-              const newHabits = { ...habits, hydration: false }; // Reset checked state only
-              setHabits(newHabits);
-              saveProfile({ habits: newHabits });
-          }
-      };
-
-      const interval = setInterval(checkReset, 60000); // Check every minute
-      return () => clearInterval(interval);
-  }, [habits]);
-
-  const saveProfile = async (data) => {
-      if (!userId) return;
-      await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile'), data, { merge: true });
-  };
-
-  const toggleHabit = async (key) => {
-      const isDone = !habits[key];
-      const newHabits = { 
-          ...habits, 
-          [key]: isDone,
-          [`${key}Time`]: isDone ? Date.now() : (habits[`${key}Time`] || null) // Keep old time if unticking, or clear it? Usually keep for history, but here simpler. Let's keep old time if unticking so we know "last done".
-      };
-      setHabits(newHabits);
-      saveProfile({ habits: newHabits });
-  };
-
-  const saveMode = (m) => { setMode(m); saveProfile({ mode: m }); };
-  const saveVibeCheck = (v) => { setVibeCheck(v); saveProfile({ vibeCheck: v }); };
-  const updateContact = (c) => { setContacts(c); saveProfile({ contacts: c }); };
-  const toggleBagItem = (id) => {
-      let newItems = bagItems.includes(id) ? bagItems.filter(i => i !== id) : [...bagItems, id];
-      setBagItems(newItems);
-      saveProfile({ bagItems: newItems });
-  };
-  const toggleTask = (id, status) => {
-      const idx = tasks.findIndex(t => t.id === id);
-      let newTasks;
-      if (idx >= 0) newTasks = tasks.map((t, i) => i === idx ? { ...t, completed: !status } : t);
-      else newTasks = [...tasks, { id, completed: !status }];
-      setTasks(newTasks);
-      saveProfile({ tasks: newTasks });
-  };
-  const saveContractions = (newContractions) => {
-      setContractions(newContractions);
-      saveProfile({ contractions: newContractions });
-  }
-
-  const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
-  // UPDATED: Use the new getDailyOasis which returns array
-  const currentOasisOptions = useMemo(() => { 
-      if (!mode) return []; 
-      return getDailyOasis(mode, statusData.week); 
-  }, [mode, statusData.week]);
-
-  // Helper for Gamification XP Calculation
-  const calculateXP = () => {
-      const tasksDone = tasks.filter(t => t.completed).length * 50; // 50 XP per task
-      const habitsDone = Object.values(habits).filter(v => v === true).length * 10; // 10 XP per active habit (approx)
-      return tasksDone + habitsDone;
-  };
-  const currentXP = calculateXP();
-
-  const markOasisDone = async () => { await toggleHabit('oasis'); setTimeout(() => setShowOasis(false), 500); };
-  
-  if (loading && !isAuthReady) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
-
-  return (
-    <div className="min-h-screen bg-[#F5F5F0] font-sans text-stone-800 pb-safe selection:bg-stone-200 flex flex-col">
-      <div className="max-w-md mx-auto w-full relative flex-grow pb-24">
-        {/* PUSH NOTIFICATION SIMULATION */}
-        <NotificationSimulator habits={habits} mode={mode} dueDate={dueDate} />
-
-        {!mode && <ModeSelection setMode={saveMode} />}
-        {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
-        
-        {mode && dueDate && (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-                {/* UPDATED: Header now receives XP */}
-                <HeaderSoft statusData={statusData} mode={mode} babyName={babyName} xp={currentXP} />
-                <div className="px-4">
-                    {/* VIEW SWITCHER */}
-                    {activeTab === 'home' && (
-                        <>
-                            <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
-                            <HabitGridSoft habits={habits} toggleHabit={toggleHabit} mode={mode} openOasis={() => setShowOasis(true)} />
-                            <DeepTalkSoft mode={mode} statusData={statusData} />
-                            <AIVibeCheck vibeCheck={vibeCheck} saveVibeCheck={saveVibeCheck} mode={mode} />
-                        </>
-                    )}
-
-                    {activeTab === 'tools' && (
-                        <div className="animate-in fade-in">
-                            {showTimer ? (
-                                <ContractionTimer contractions={contractions} saveContractions={saveContractions} closeTimer={() => setShowTimer(false)} />
-                            ) : (
-                                <ToolGridSoft mode={mode} openBag={() => setShowBag(true)} openEmergency={() => setShowEmergency(true)} bagItems={bagItems} toggleTimer={() => setShowTimer(true)} />
-                            )}
-                            <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
-                        </div>
-                    )}
-
-                    {activeTab === 'knowledge' && (
-                        <KnowledgeView week={statusData.week} />
-                    )}
-                </div>
-                 {activeTab === 'home' && (
-                    <div className="py-6 text-center">
-                        <button onClick={() => saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' })} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
-                    </div>
-                 )}
-            </div>
-        )}
-      </div>
-      
-      {/* BOTTOM NAVIGATION */}
-      {mode && dueDate && (
-          <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
-              <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
-                  <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
-                  <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
-                  <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
-              </div>
-          </div>
-      )}
-      
-      {/* OVERLAYS */}
-      {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
-      {/* UPDATED: OasisOverlay now receives missions array */}
-      {showOasis && (<OasisOverlay missions={currentOasisOptions} closeOasis={() => setShowOasis(false)} markDone={markOasisDone} isDone={habits.oasis} />)}
-      {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} />}
-      {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
-    </div>
-  );
 };
 
 export default App;

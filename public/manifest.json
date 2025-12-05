@@ -1,0 +1,17 @@
+{
+    "name": "SuperDad - Dein Begleiter",
+    "short_name": "SuperDad",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#F7F7F5",
+    "theme_color": "#F7F7F5",
+    "description": "Dein Begleiter durch Schwangerschaft, Wochenbett und Verlust.",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
