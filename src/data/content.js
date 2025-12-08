@@ -164,9 +164,32 @@ export const getTasks = (mode, stage) => {
     return [];
 };
 
-export const HABITS_PREGNANCY = [{ key: 'hydration', title: "Wasser", text: "Bring ihr ein Glas", icon: Droplets, color: 'blue' }, { key: 'oasis', title: "Oase", text: "Tägliche Geste", icon: Sparkles, color: 'amber' }];
-export const HABITS_POSTPARTUM = [{ key: 'hydration', title: "Still-Snack", text: "Wasser & Nüsse", icon: Utensils, color: 'orange' }, { key: 'nightshift', title: "Nacht-Held", text: "Wickeln übernehmen", icon: Moon, color: 'indigo' }];
-export const HABITS_LOSS = [{ key: 'hydration', title: "Fürsorge", text: "Tee hinstellen", icon: Droplets, color: 'stone' }, { key: 'shield', title: "Schutzschild", text: "Besuch abwehren", icon: ShieldCheck, color: 'zinc' }];
+export const HABITS_PREGNANCY = [
+    { key: 'hydration', title: "Wasser", text: "Bring ihr ein Glas", icon: Droplets, color: 'blue' },
+    { key: 'oasis', title: "Oase", text: "Tägliche Geste", icon: Sparkles, color: 'amber' },
+    { key: 'reading', title: "Wissen", text: "Lies einen Artikel", icon: BookOpen, color: 'indigo' },
+    { key: 'movement', title: "Bewegung", text: "Spaziergang?", icon: Activity, color: 'emerald' },
+    { key: 'date_night', title: "Date Night", text: "Zeit zu zweit", icon: Heart, color: 'rose' },
+    { key: 'nesting', title: "Nestbau", text: "Zimmer planen", icon: Home, color: 'stone' }
+];
+
+export const HABITS_POSTPARTUM = [
+    { key: 'hydration', title: "Still-Snack", text: "Wasser & Nüsse", icon: Utensils, color: 'orange' },
+    { key: 'nightshift', title: "Nacht-Held", text: "Wickeln übernehmen", icon: Moon, color: 'indigo' },
+    { key: 'patience', title: "Geduld", text: "Durchatmen", icon: Feather, color: 'rose' },
+    { key: 'fresh_air', title: "Frische Luft", text: "Rausgehen", icon: Sprout, color: 'emerald' },
+    { key: 'shower', title: "Duschen", text: "Baby halten", icon: Droplets, color: 'blue' },
+    { key: 'sleep', title: "Schlaf", text: "Mittagsschlaf", icon: Moon, color: 'stone' }
+];
+
+export const HABITS_LOSS = [
+    { key: 'hydration', title: "Fürsorge", text: "Tee hinstellen", icon: Droplets, color: 'stone' },
+    { key: 'shield', title: "Schutzschild", text: "Besuch abwehren", icon: ShieldCheck, color: 'zinc' },
+    { key: 'silence', title: "Stille", text: "Kerze anzünden", icon: Sparkles, color: 'amber' },
+    { key: 'nature', title: "Natur", text: "Waldspaziergang", icon: Sprout, color: 'emerald' },
+    { key: 'writing', title: "Schreiben", text: "Tagebuch", icon: FileText, color: 'indigo' },
+    { key: 'music', title: "Musik", text: "Playlist hören", icon: Play, color: 'rose' }
+];
 
 export const HOSPITAL_BAG_CONTENT = {
     documents: {
@@ -207,3 +230,58 @@ export const HOSPITAL_BAG_CONTENT = {
         ]
     }
 };
+
+export const RESOURCES = [
+    {
+        title: "Gesundheit & Notfall",
+        color: "rose",
+        items: [
+            { name: "Embryotox", desc: "Medikamente in der Schwangerschaft", url: "https://www.embryotox.de", icon: Heart },
+            { name: "116 117", desc: "Ärztlicher Bereitschaftsdienst", url: "tel:116117", icon: AlertTriangle },
+            { name: "Giftnotruf", desc: "Übersicht aller Nummern", url: "https://www.bvl.bund.de/DE/Arbeitsbereiche/01_Lebensmittel/03_Verbraucher/09_Infothek/01_Notfallnummern/01_Giftnotruf/giftnotruf_node.html", icon: AlertTriangle }
+        ]
+    },
+    {
+        title: "Recht & Amt",
+        color: "blue",
+        items: [
+            { name: "ElterngeldDigital", desc: "Offizielles Antragsportal", url: "https://elterngeld-digital.de", icon: Scale },
+            { name: "Familienportal", desc: "Infos vom Bundesministerium", url: "https://familienportal.de", icon: Scale }
+        ]
+    },
+    {
+        title: "Support für Väter",
+        color: "emerald",
+        items: [
+            { name: "Väter gGmbH", desc: "Anlaufstelle für Väterarbeit", url: "https://vaeter-ggmbh.de", icon: Baby },
+            { name: "Männerberatungsnetz", desc: "Hilfe in Krisen", url: "https://www.maennerberatungsnetz.de", icon: Heart }
+        ]
+    }
+];
+
+export const LOSS_RESOURCES = [
+    {
+        title: "Akuthilfe & Seelsorge",
+        color: "rose",
+        items: [
+            { name: "Telefonseelsorge", desc: "0800 111 0 111 (24/7 erreichbar)", url: "tel:08001110111", icon: Phone },
+            { name: "Initiative Regenbogen", desc: "Kontaktkreis für trauernde Eltern", url: "https://www.initiative-regenbogen.de", icon: Heart }
+        ]
+    },
+    {
+        title: "Recht & Bestattung",
+        color: "stone",
+        items: [
+            { name: "Dein Sternenkind", desc: "Kostenlose Fotografen", url: "https://www.dein-sternenkind.eu", icon: Camera },
+            { name: "Bundesverband Verwaiste Eltern", desc: "Rechtliche Infos & Hilfe", url: "https://www.veid.de", icon: Scale }
+        ]
+    },
+    {
+        title: "Für Väter",
+        color: "blue",
+        items: [
+            { name: "Sternenpapas", desc: "Austausch für betroffene Väter", url: "https://sternenpapas.de", icon: User },
+            { name: "Männerberatungsnetz", desc: "Psychologische Unterstützung", url: "https://www.maennerberatungsnetz.de", icon: ShieldCheck }
+        ]
+    }
+];

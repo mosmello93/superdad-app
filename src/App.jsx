@@ -30,10 +30,15 @@ import PartnerPulse from './components/features/PartnerPulse';
 import ContractionTimer from './components/features/ContractionTimer';
 import DadLog from './components/features/DadLog';
 
+// Overlays
 import EmergencyOverlay from './components/overlays/EmergencyOverlay';
 import HospitalBagOverlay from './components/overlays/HospitalBagOverlay';
 import HabitActionOverlay from './components/overlays/HabitActionOverlay';
 import ProgressDetailOverlay from './components/overlays/ProgressDetailOverlay';
+import MilestoneOverlay from './components/overlays/MilestoneOverlay';
+import ShieldOverlay from './components/overlays/ShieldOverlay';
+import BureaucracySoft from './components/features/BureaucracySoft';
+import ResourceOverlay from './components/overlays/ResourceOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import NotificationSimulator from './components/shared/NotificationSimulator';
@@ -50,9 +55,9 @@ const App = () => {
     const [babyName, setBabyName] = useState('');
     const [gender, setGender] = useState('surprise');
     const [ssw, setSsw] = useState(null);
-    // REMOVED: local habits state
+
     const [vibeCheck, setVibeCheck] = useState('');
-    const [vibeHistory, setVibeHistory] = useState([]); // Added History
+    const [vibeHistory, setVibeHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contacts, setContacts] = useState({});
     const [bagItems, setBagItems] = useState([]);
@@ -60,12 +65,21 @@ const App = () => {
     const [contractions, setContractions] = useState([]);
     const [dadLogs, setDadLogs] = useState([]);
 
+    // New State for Features
+    const [showMilestones, setShowMilestones] = useState(false);
+    const [showShield, setShowShield] = useState(false);
+    const [showBureaucracy, setShowBureaucracy] = useState(false);
+    const [showResources, setShowResources] = useState(false);
+
+    const [unlockedMilestones, setUnlockedMilestones] = useState([]);
+    const [completedTasks, setCompletedTasks] = useState([]);
+
     // Navigation State
     const [activeTab, setActiveTab] = useState('home');
 
     // Overlay States
     const [showDetail, setShowDetail] = useState(false);
-    const [activeOverlayHabit, setActiveOverlayHabit] = useState(null); // Replaces showOasis, holds 'oasis', 'shield', 'hydration'
+    const [activeOverlayHabit, setActiveOverlayHabit] = useState(null);
     const [showBag, setShowBag] = useState(false);
     const [showEmergency, setShowEmergency] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
@@ -89,7 +103,6 @@ const App = () => {
                 setUserId(user.uid);
                 setIsAuthReady(true);
             } else {
-                // Fallback if no user is signed in automatically
                 signInAnonymously(auth).catch((err) => console.error("Auth Fail:", err));
             }
         });
@@ -126,6 +139,10 @@ const App = () => {
                 if (data.tasks) setTasks(data.tasks);
                 if (data.contractions) setContractions(data.contractions);
                 if (data.dadLogs) setDadLogs(data.dadLogs);
+
+                // Load New Features
+                if (data.unlockedMilestones) setUnlockedMilestones(data.unlockedMilestones);
+                if (data.completedTasks) setCompletedTasks(data.completedTasks);
             }
             setLoading(false);
         });
@@ -135,7 +152,6 @@ const App = () => {
     // Save Functions
     const saveMode = (m) => { setMode(m); saveProfile({ mode: m }); };
 
-    // Updated saveVibeCheck to handle history
     const saveVibeCheck = (v, history) => {
         setVibeCheck(v);
         if (history) setVibeHistory(history);
@@ -168,6 +184,23 @@ const App = () => {
         const newLogs = [newLogEntry, ...dadLogs];
         setDadLogs(newLogs);
         saveProfile({ dadLogs: newLogs });
+    };
+
+    // New Wrapper Functions
+    const toggleMilestone = (id) => {
+        const newSet = unlockedMilestones.includes(id)
+            ? unlockedMilestones.filter(m => m !== id)
+            : [...unlockedMilestones, id];
+        setUnlockedMilestones(newSet);
+        saveProfile({ unlockedMilestones: newSet });
+    };
+
+    const toggleBureaucracyTask = (id) => {
+        const newSet = completedTasks.includes(id)
+            ? completedTasks.filter(t => t !== id)
+            : [...completedTasks, id];
+        setCompletedTasks(newSet);
+        saveProfile({ completedTasks: newSet });
     };
 
     const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
@@ -246,7 +279,15 @@ const App = () => {
                                     {showTimer ? (
                                         <ContractionTimer contractions={contractions} saveContractions={saveContractions} closeTimer={() => setShowTimer(false)} />
                                     ) : (
-                                        <ToolGridSoft mode={mode} openBag={() => setShowBag(true)} openEmergency={() => setShowEmergency(true)} bagItems={bagItems} toggleTimer={() => setShowTimer(true)} />
+                                        <ToolGridSoft
+                                            mode={mode}
+                                            toggleTimer={() => setShowTimer(true)}
+                                            openBag={() => setShowBag(true)}
+                                            openMilestones={() => setShowMilestones(true)}
+                                            openShield={() => setShowShield(true)}
+                                            openBureaucracy={() => setShowBureaucracy(true)}
+                                            openResources={() => setShowResources(true)}
+                                        />
                                     )}
                                     <DadLog logs={dadLogs} saveLog={saveLog} />
                                     <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
@@ -292,6 +333,12 @@ const App = () => {
             )}
             {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
             {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
+
+            {/* NEW OVERLAYS */}
+            {showMilestones && <MilestoneOverlay unlockedMilestones={unlockedMilestones} toggleMilestone={toggleMilestone} close={() => setShowMilestones(false)} />}
+            {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
+            {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
+            {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}
         </div>
     );
 };

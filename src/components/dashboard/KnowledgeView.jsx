@@ -109,6 +109,35 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                         {info.tip}
                     </p>
                 </div>
+
+                {/* New: Weekly Checklist */}
+                <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-stone-400 uppercase tracking-widest pl-2 mt-6">Checkliste der Woche</h3>
+                    <div className="bg-white p-5 rounded-[24px] border border-stone-100 shadow-sm flex items-center justify-between group cursor-pointer transition hover:border-stone-200">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-stone-100 p-2 rounded-full text-stone-500"><AlertCircle size={18} /></div>
+                            <span className="font-medium text-stone-700">Wöchentliches Update lesen</span>
+                        </div>
+                        <div className="w-6 h-6 rounded-full border-2 border-stone-200 group-hover:border-stone-300"></div>
+                    </div>
+                </div>
+
+                {/* New: Articles Placeholder to fill space */}
+                <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-stone-400 uppercase tracking-widest pl-2 mt-6">Mehr Wissen</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-indigo-50 p-4 rounded-[24px] h-32 flex flex-col justify-end relative overflow-hidden">
+                            <h4 className="font-bold text-indigo-900 relative z-10">Vater werden</h4>
+                            <p className="text-[10px] text-indigo-700 relative z-10">Guide lesen →</p>
+                            <BookOpen className="absolute -top-2 -right-2 text-indigo-200" size={60} />
+                        </div>
+                        <div className="bg-emerald-50 p-4 rounded-[24px] h-32 flex flex-col justify-end relative overflow-hidden">
+                            <h4 className="font-bold text-emerald-900 relative z-10">Partnerschaft</h4>
+                            <p className="text-[10px] text-emerald-700 relative z-10">Tipps ansehen →</p>
+                            <Heart className="absolute -top-2 -right-2 text-emerald-200" size={60} />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

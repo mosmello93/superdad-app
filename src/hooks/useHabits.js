@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react';
 
 export const useHabits = (initialHabits, saveProfile) => {
     // Default structure to prevent crashes if data is missing
-    const defaultHabits = { hydration: false, oasis: false, shield: false, nightshift: false };
+    const defaultHabits = {
+        hydration: false, oasis: false, shield: false, nightshift: false,
+        reading: false, movement: false, patience: false, fresh_air: false,
+        silence: false, nature: false,
+        date_night: false, nesting: false, shower: false, sleep: false,
+        writing: false, music: false
+    };
     const [habits, setHabits] = useState({ ...defaultHabits, ...initialHabits });
 
     useEffect(() => {
