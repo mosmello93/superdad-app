@@ -285,3 +285,31 @@ export const LOSS_RESOURCES = [
         ]
     }
 ];
+
+export const POSTPARTUM_RESOURCES = [
+    {
+        title: "Baby & Gesundheit",
+        color: "emerald",
+        items: [
+            { name: "Kinderärzte im Netz", desc: "Arztsuche & Notfälle", url: "https://www.kinderaerzte-im-netz.de", icon: Heart },
+            { name: "Giftnotruf", desc: "Im Notfall sofort wählen", url: "https://www.bvl.bund.de/DE/Arbeitsbereiche/01_Lebensmittel/03_Verbraucher/09_Infothek/01_Notfallnummern/01_Giftnotruf/giftnotruf_node.html", icon: AlertTriangle },
+            { name: "Still-Lexikon", desc: "Fundiertes Wissen zum Stillen", url: "https://www.still-lexikon.de", icon: BookOpen }
+        ]
+    },
+    {
+        title: "Geld & Behörden",
+        color: "blue",
+        items: [
+            { name: "Kindergeld", desc: "Antrag bei der Familienkasse", url: "https://www.arbeitsagentur.de/familie-und-kinder/kindergeld-zugang", icon: Scale },
+            { name: "ElterngeldDigital", desc: "Antrag online ausfüllen", url: "https://elterngeld-digital.de", icon: Scale }
+        ]
+    },
+    {
+        title: "Papa & Alltag",
+        color: "amber",
+        items: [
+            { name: "Väter gGmbH", desc: "Infos & Austausch", url: "https://vaeter-ggmbh.de", icon: User },
+            { name: "Frühe Hilfen", desc: "Unterstützung vor Ort", url: "https://www.elternsein.info", icon: Home }
+        ]
+    }
+];

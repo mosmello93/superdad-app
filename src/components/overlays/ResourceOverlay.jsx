@@ -1,9 +1,11 @@
 import React from 'react';
 import { X, ExternalLink, Heart, AlertTriangle, Scale, Baby, Phone, Camera, User, ShieldCheck } from 'lucide-react';
-import { RESOURCES, LOSS_RESOURCES } from '../../data/content';
+import { RESOURCES, LOSS_RESOURCES, POSTPARTUM_RESOURCES } from '../../data/content';
 
 const ResourceOverlay = ({ close, mode }) => {
-    const data = mode === 'loss' ? LOSS_RESOURCES : RESOURCES;
+    let data = RESOURCES;
+    if (mode === 'loss') data = LOSS_RESOURCES;
+    if (mode === 'postpartum') data = POSTPARTUM_RESOURCES;
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F0] animate-in slide-in-from-bottom-full duration-500">

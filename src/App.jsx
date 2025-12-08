@@ -42,6 +42,7 @@ import ResourceOverlay from './components/overlays/ResourceOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
+import TabOnboarding from './components/setup/TabOnboarding';
 import NotificationSimulator from './components/shared/NotificationSimulator';
 
 // Global variables provided by the Canvas environment
@@ -80,6 +81,22 @@ const App = () => {
 
     // Navigation State
     const [activeTab, setActiveTab] = useState('home');
+    const [seenTabs, setSeenTabs] = useState(() => {
+        const saved = localStorage.getItem('seenTabs');
+        return saved ? JSON.parse(saved) : { home: false, tools: false, knowledge: false };
+    });
+
+    // Dismiss Tab Onboarding
+    const dismissTabOnboarding = () => {
+        const updated = { ...seenTabs, [activeTab]: true };
+        setSeenTabs(updated);
+        localStorage.setItem('seenTabs', JSON.stringify(updated));
+    };
+
+    // Scroll to top on tab change or mode switch
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [activeTab, mode, dueDate]);
 
     // Overlay States
     const [showDetail, setShowDetail] = useState(false);
@@ -311,7 +328,12 @@ const App = () => {
                         </div>
                         {activeTab === 'home' && (
                             <div className="py-6 text-center">
-                                <button onClick={() => saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' })} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
+                                <button onClick={() => {
+                                    saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' });
+                                    localStorage.removeItem('seenTabs');
+                                    setSeenTabs({ home: false, tools: false, knowledge: false });
+                                    setShowOnboarding(true);
+                                }} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
                             </div>
                         )}
                     </div>
@@ -350,6 +372,11 @@ const App = () => {
             {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
             {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
             {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}
+
+            {/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */}
+            {!showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
+                <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
+            )}
         </div>
     );
 };
