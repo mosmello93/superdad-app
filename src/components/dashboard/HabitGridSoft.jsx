@@ -4,7 +4,6 @@ import { HABITS_PREGNANCY, HABITS_POSTPARTUM, HABITS_LOSS } from '../../data/con
 
 const HabitGridSoft = ({ habits, toggleHabit, mode, openOverlay }) => {
     let habitConfig = mode === 'loss' ? HABITS_LOSS : (mode === 'postpartum' ? HABITS_POSTPARTUM : HABITS_PREGNANCY);
-    const [expandedId, setExpandedId] = useState(null);
 
     // Helper to calculate time ago
     const getTimeLabel = (timestamp) => {
@@ -23,56 +22,38 @@ const HabitGridSoft = ({ habits, toggleHabit, mode, openOverlay }) => {
         return maps[color] || maps.stone;
     };
 
-    const handleExpand = (key) => {
-        setExpandedId(expandedId === key ? null : key);
-    };
-
     return (
         <div className="grid grid-cols-2 gap-3 mb-4">
             {habitConfig.map((habit) => {
                 const isActive = habits[habit.key];
                 const timestamp = habits[`${habit.key}Time`];
                 const timeLabel = getTimeLabel(timestamp);
-                const isExpanded = expandedId === habit.key;
 
                 const handleAction = (e) => {
-                    e.stopPropagation();
+                    // Complex habits open overlay, simple ones toggle directly
                     if (habit.key === 'oasis') return openOverlay('oasis');
                     if (mode === 'loss' && (habit.key === 'shield' || habit.key === 'hydration')) return openOverlay(habit.key);
+
+                    // Simple Toggle
                     toggleHabit(habit.key);
                 };
 
                 return (
                     <div key={habit.key}
-                        onClick={() => handleExpand(habit.key)}
-                        className={`${getColorClasses(habit.color, isActive)} p-4 rounded-[24px] flex flex-col transition-all cursor-pointer border shadow-sm ${isExpanded ? 'row-span-2 h-auto' : 'h-24'}`}>
+                        onClick={handleAction}
+                        className={`${getColorClasses(habit.color, isActive)} p-4 rounded-[24px] flex flex-col justify-between h-32 transition-all cursor-pointer border shadow-sm active:scale-95`}>
 
                         <div className="flex justify-between items-start mb-2">
                             <habit.icon size={20} className={isActive ? 'text-current' : 'text-stone-300'} />
-                            {isActive ? <CheckCircle size={18} className="opacity-60" /> : (isExpanded ? <ChevronUp size={18} className="opacity-40" /> : <ChevronDown size={18} className="opacity-40" />)}
+                            {isActive && <CheckCircle size={18} className="opacity-60" />}
                         </div>
 
                         <div>
                             <h3 className="font-bold text-sm leading-tight mb-1">{habit.title}</h3>
-                            {/* Condensed view: Show status or time */}
-                            {!isExpanded && (
-                                <p className="text-[10px] opacity-70 font-medium">
-                                    {isActive ? (timeLabel || 'Erledigt') : 'Offen'}
-                                </p>
-                            )}
+                            <p className="text-[10px] opacity-70 font-medium">
+                                {isActive ? (timeLabel || 'Erledigt') : habit.text.substring(0, 20) + (habit.text.length > 20 ? '...' : '')}
+                            </p>
                         </div>
-
-                        {/* Expanded Content */}
-                        {isExpanded && (
-                            <div className="mt-3 pt-3 border-t border-black/5 animate-in fade-in slide-in-from-top-2">
-                                <p className="text-xs opacity-80 mb-3 leading-relaxed">{habit.text}</p>
-                                <button
-                                    onClick={handleAction}
-                                    className={`w-full py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors ${isActive ? 'bg-white/50 text-current' : 'bg-stone-800 text-white shadow-md'}`}>
-                                    {isActive ? 'Rückgängig' : 'Erledigen'}
-                                </button>
-                            </div>
-                        )}
                     </div>
                 );
             })}

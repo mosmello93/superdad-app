@@ -18,12 +18,12 @@ const HeaderSoft = ({ statusData, mode, babyName, xp }) => {
                 <div className="flex items-center">
                     <img
                         src="/images/superdad_logo.png"
-                        alt="SuperDad Logo"
+                        alt="DadReady Logo"
                         className="w-10 h-10 object-contain mr-2"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
                     <div className="flex flex-col">
-                        <span className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">SuperDad App</span>
+                        <span className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">DadReady App</span>
                         {babyName && <span className="text-stone-600 font-bold text-sm">für {babyName}</span>}
                     </div>
                 </div>

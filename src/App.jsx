@@ -41,6 +41,7 @@ import BureaucracySoft from './components/features/BureaucracySoft';
 import ResourceOverlay from './components/overlays/ResourceOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
+import OnboardingFlow from './components/setup/OnboardingFlow';
 import NotificationSimulator from './components/shared/NotificationSimulator';
 
 // Global variables provided by the Canvas environment
@@ -70,6 +71,9 @@ const App = () => {
     const [showShield, setShowShield] = useState(false);
     const [showBureaucracy, setShowBureaucracy] = useState(false);
     const [showResources, setShowResources] = useState(false);
+
+    // Onboarding State
+    const [showOnboarding, setShowOnboarding] = useState(true);
 
     const [unlockedMilestones, setUnlockedMilestones] = useState([]);
     const [completedTasks, setCompletedTasks] = useState([]);
@@ -251,7 +255,13 @@ const App = () => {
                 {/* PUSH NOTIFICATION SIMULATION */}
                 <NotificationSimulator habits={habits} mode={mode} dueDate={dueDate} />
 
-                {!mode && <ModeSelection setMode={saveMode} />}
+                {!mode && (
+                    showOnboarding ? (
+                        <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
+                    ) : (
+                        <ModeSelection setMode={saveMode} />
+                    )
+                )}
                 {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
 
                 {mode && dueDate && (
@@ -287,6 +297,7 @@ const App = () => {
                                             openShield={() => setShowShield(true)}
                                             openBureaucracy={() => setShowBureaucracy(true)}
                                             openResources={() => setShowResources(true)}
+                                            openEmergency={() => setShowEmergency(true)}
                                         />
                                     )}
                                     <DadLog logs={dadLogs} saveLog={saveLog} />
