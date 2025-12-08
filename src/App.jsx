@@ -227,6 +227,26 @@ const App = () => {
         saveProfile({ completedTasks: newSet });
     };
 
+    // Photos State
+    const [milestonePhotos, setMilestonePhotos] = useState({});
+
+    useEffect(() => {
+        // Load photos from localStorage (simple persistence for MVP)
+        const savedPhotos = localStorage.getItem(`milestone_photos_${userId}`);
+        if (savedPhotos) {
+            setMilestonePhotos(JSON.parse(savedPhotos));
+        }
+    }, [userId]);
+
+    const saveMilestonePhoto = (milestoneId, photoDataUrl) => {
+        const newPhotos = { ...milestonePhotos, [milestoneId]: photoDataUrl };
+        setMilestonePhotos(newPhotos);
+        // Persist to local storage for now to avoid Firestore size limits with base64
+        if (userId) {
+            localStorage.setItem(`milestone_photos_${userId}`, JSON.stringify(newPhotos));
+        }
+    };
+
     const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
 
     // --- OVERLAY DATA PREP ---
@@ -379,11 +399,22 @@ const App = () => {
                     onClose={() => setActiveOverlayHabit(null)}
                 />
             )}
+
             {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
             {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
 
             {/* NEW OVERLAYS */}
-            {showMilestones && <MilestoneOverlay unlockedMilestones={unlockedMilestones} toggleMilestone={toggleMilestone} close={() => setShowMilestones(false)} />}
+            {showMilestones && (
+                <MilestoneOverlay
+                    unlockedMilestones={unlockedMilestones}
+                    toggleMilestone={toggleMilestone}
+                    close={() => setShowMilestones(false)}
+                    mode={mode}
+                    milestonePhotos={milestonePhotos}
+                    onSavePhoto={saveMilestonePhoto}
+                />
+            )}
+
             {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
             {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
             {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}

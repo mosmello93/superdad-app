@@ -83,18 +83,45 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                 </div>
 
                 {/* Baby/Status Card - Varied by mode */}
-                <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm flex items-center gap-5">
-                    <div className={`w-16 h-16 ${isPostpartum ? 'bg-rose-100' : 'bg-emerald-100'} rounded-2xl flex items-center justify-center flex-shrink-0`}>
-                        {isPostpartum ? <Heart size={32} className="text-rose-500" /> : <Sprout size={32} className="text-emerald-600" />}
+                <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm flex flex-col gap-4">
+                    <div className="flex items-center gap-5">
+                        <div className={`w-16 h-16 ${isPostpartum ? 'bg-rose-100' : 'bg-emerald-100'} rounded-2xl flex items-center justify-center flex-shrink-0`}>
+                            {isPostpartum ? <Heart size={32} className="text-rose-500" /> : <Sprout size={32} className="text-emerald-600" />}
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">
+                                {isPostpartum ? 'Status' : 'Baby-Größe'}
+                            </h3>
+                            <p className="text-xl font-bold text-stone-800 leading-tight">
+                                {isPostpartum ? 'Du & Sie & Baby' : `Wie ${info.size}`}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">
-                            {isPostpartum ? 'Status' : 'Baby-Größe'}
-                        </h3>
-                        <p className="text-xl font-bold text-stone-800 leading-tight">
-                            {isPostpartum ? 'Du & Sie & Baby' : `Wie ${info.size}`}
-                        </p>
-                    </div>
+
+                    {!isPostpartum && (
+                        <>
+                            {/* Development Highlight */}
+                            {info.development && (
+                                <div className="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                                    <p className="text-emerald-800 text-sm font-medium leading-relaxed">
+                                        💡 {info.development}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Stats Row */}
+                            <div className="flex gap-3 mt-1">
+                                <div className="flex-1 bg-stone-50 p-2 rounded-xl border border-stone-100 flex items-center gap-2 justify-center">
+                                    <span className="text-stone-400 text-xs font-bold uppercase">Größe</span>
+                                    <span className="text-stone-700 font-bold">{info.cm} cm</span>
+                                </div>
+                                <div className="flex-1 bg-stone-50 p-2 rounded-xl border border-stone-100 flex items-center gap-2 justify-center">
+                                    <span className="text-stone-400 text-xs font-bold uppercase">Gewicht</span>
+                                    <span className="text-stone-700 font-bold">{info.g} g</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Pro Tip Card */}

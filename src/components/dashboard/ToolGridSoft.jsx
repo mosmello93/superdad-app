@@ -12,10 +12,10 @@ const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, 
                     <h3 className="font-bold text-indigo-900">Wehen-<br />Timer</h3>
                 </div>
             )}
-            {mode === 'postpartum' && (
-                <div onClick={openMilestones} className="bg-[#FFE4E6] p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-rose-100/50 group">
-                    <div className="mb-8 bg-white/60 w-10 h-10 flex items-center justify-center rounded-full text-rose-600"><Trophy size={20} /></div>
-                    <h3 className="font-bold text-rose-900">Meilen-<br />steine</h3>
+            {(mode === 'postpartum' || mode === 'pregnancy') && (
+                <div onClick={openMilestones} className={`p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border group ${mode === 'postpartum' ? 'bg-[#FFE4E6] border-rose-100/50' : 'bg-violet-50 border-violet-100/50'}`}>
+                    <div className={`mb-8 bg-white/60 w-10 h-10 flex items-center justify-center rounded-full ${mode === 'postpartum' ? 'text-rose-600' : 'text-violet-600'}`}><Trophy size={20} /></div>
+                    <h3 className={`font-bold ${mode === 'postpartum' ? 'text-rose-900' : 'text-violet-900'}`}>Meilen-<br />steine</h3>
                 </div>
             )}
             {mode === 'loss' && (
