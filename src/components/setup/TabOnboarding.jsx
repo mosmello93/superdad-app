@@ -3,35 +3,45 @@ import { Info, Check, ChevronRight, Circle } from 'lucide-react';
 
 const getOnboardingContent = (mode, babyName, gender) => {
     const name = babyName || (gender === 'boy' ? 'dein Kleiner' : gender === 'girl' ? 'deine Kleine' : 'dein Baby');
-    const nameGen = babyName ? `${babyName}s` : (gender === 'boy' ? 'seine' : gender === 'girl' ? 'ihre' : 'seine/ihre');
 
     return {
         pregnancy: {
             home: [
                 { title: "Dein Cockpit", text: `Hier siehst du sofort, in welcher Woche ihr seid, wie groß ${name} schon ist und deinen aktuellen XP-Level.` },
-                { title: "Daily Dads", text: "Tägliche kleine Aufgaben (Habits) halten dich auf Kurs. Klicke sie an, um sie zu erledigen. Manche (wie 'Oase') haben mehr Details." },
-                { title: "Beziehung pflegen", text: "Nutze den 'Partner Pulse' und den AI-Vibe-Check unten, um eure Stimmung zu tracken und im Gespräch zu bleiben." }
+                { title: "Daily Dads", text: "Tägliche Aufgaben (Habits) halten dich auf Kurs. Klicke sie an, um sie zu erledigen." },
+                { title: "Dein Dad Log", text: "Dein Tagebuch. Schreib direkt hier deine Gedanken auf. Es ist privat und nur für dich." },
+                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos)." }
+            ],
+            team: [
+                { title: "Euer Wir", text: "Beziehung ist Arbeit. Hier findest du alles, um mit deiner Partnerin in Verbindung zu bleiben." },
+                { title: "Partner Pulse", text: "Wie geht es ihr heute? Ein schneller Check, um Empathie zu zeigen." },
+                { title: "Vibe Check", text: "Wie ist die Stimmung zwischen euch? Nutze die AI-Analyse ganz unten." },
+                { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen." }
             ],
             tools: [
                 { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}: Den Wehen-Timer, die Packliste und Hilfe bei Bürokratie.` },
-                { title: "Dad Log", text: "Dein privates Tagebuch. Schreib deine Gedanken, Ängste oder Momente auf. Nur für dich." },
-                { title: "To-Dos", text: "Ganz unten findest du eine Checkliste für Aufgaben. Hake ab, was erledigt ist, um XP zu sammeln!" }
+                { title: "To-Dos", text: "Hast du alles erledigt? Hake deine Aufgaben in der Checkliste ab." }
             ],
             knowledge: [
-                { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Kein Blabla, sondern Fakten: Was passiert im Bauch? Was braucht sie?" },
-                { title: "Deep Dives", text: "Unten findest du vertiefende Artikel zu Themen wie Finanzen, Geburtshilfe oder Mental Load." }
+                { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Fakten statt Blabla." },
+                { title: "Deep Dives", text: "Hier gibt es vertiefende Artikel zu Themen wie Finanzen, Geburtshilfe oder Mental Load." }
             ]
         },
         postpartum: {
             home: [
-                { title: "Wochenbett-Modus", text: `Der Fokus liegt jetzt auf Fürsorge. Wie geht es der Mama? Wie geht es ${name}? Und dir?` },
-                { title: "Neue Habits", text: "Deine Daily Dads haben sich angepasst: 'Nachtschicht übernehmen', 'Still-Snacks bringen' sind jetzt deine Missionen." },
-                { title: "Check-In", text: "Vergiss dich selbst nicht. Nutze den Vibe-Check auch, um zu schauen, wie es DIR in der neuen Rolle geht." }
+                { title: "Wochenbett-Modus", text: `Der Fokus liegt auf Fürsorge. Wie geht es der Mama? Wie geht es ${name}?` },
+                { title: "Neue Habits", text: "Deine Daily Dads haben sich angepasst: 'Nachtschicht übernehmen', 'Essen machen' sind jetzt deine Missionen." },
+                { title: "Dad Log", text: "Schlafmangel macht vergesslich. Notiere hier besondere Momente oder einfach nur Frust." },
+                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos)." }
+            ],
+            team: [
+                { title: "Eltern-Team", text: "Ihr seid jetzt Eltern, aber bleibt ein Paar. Nutzt diesen Bereich, um euch nicht zu verlieren." },
+                { title: "Check-In", text: "Wie geht es euch wirklich? Macht regelmäßig den Vibe-Check." },
+                { title: "Deep Talk", text: "Fragen für Elternpaare. Damit ihr nicht nur über Windeln redet." }
             ],
             tools: [
-                { title: "Helfer im Chaos", text: `Tracke die Meilensteine (erstes Lächeln!) von ${name} und finde wichtige Adressen für Notfälle.` },
-                { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir, die Anträge schnell vom Tisch zu bekommen." },
-                { title: "Dad Log", text: "Schlafmangel macht vergesslich. Notiere hier besondere Momente oder einfach nur Frust. Es hilft." }
+                { title: "Helfer im Chaos", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.` },
+                { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir bei den Anträgen." }
             ],
             knowledge: [
                 { title: "Neue Realität", text: "Wissen über Rückbildung, Baby-Schlaf und das 'Vierte Trimester'. Alles, um die erste Zeit zu meistern." }
@@ -39,15 +49,19 @@ const getOnboardingContent = (mode, babyName, gender) => {
         },
         loss: {
             home: [
-                { title: "Euer Schutzraum", text: "Kein Leistungsdruck. Hier geht es nur um kleine Gesten der Achtsamkeit für dich und euch." },
-                { title: "Deep Talk", text: "Karten mit Fragen, die helfen, ins Gespräch zu kommen, wenn die Worte fehlen." }
+                { title: "Euer Schutzraum", text: "Kein Leistungsdruck. Hier geht es nur um kleine Gesten der Achtsamkeit." },
+                { title: "Dad Log", text: "Das Tagebuch ist hier besonders wichtig. Schreib auf, was dich bewegt. Es ist ein Ventil." },
+                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos)." }
+            ],
+            team: [
+                { title: "Verbunden bleiben", text: "Trauer kann einsam machen. Hier findet ihr Impulse, um im Gespräch zu bleiben." },
+                { title: "Deep Talk", text: "Fragen, die helfen, das Unaussprechliche auszusprechen." }
             ],
             tools: [
-                { title: "Der Schild", text: "Tools, um Besuch abzuwehren oder Kommunikation zu managen, wenn ihr Ruhe braucht." },
-                { title: "Erinnerungen", text: "Das Dad Log ist hier besonders wichtig. Schreib auf, was dich bewegt. Es ist ein Ventil." }
+                { title: "Der Schild", text: "Tools, um Besuch abzuwehren oder Kommunikation nach außen zu managen." }
             ],
             knowledge: [
-                { title: "Begleiter", text: "Du bist nicht allein. Hier findest du geprüfte Infos zu Trauerphasen und wo du professionelle Hilfe findest." }
+                { title: "Begleiter", text: "Du bist nicht allein. Geprüfte Infos zu Trauerphasen und Hilfsangeboten." }
             ]
         }
     };

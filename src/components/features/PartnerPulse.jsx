@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Heart, Coffee, Moon, Zap, MessageCircle, AlertCircle } from 'lucide-react';
+import { Heart, Coffee, Moon, Zap, AlertCircle, Activity, ExternalLink } from 'lucide-react';
 
 const MOODS = [
     { id: 'tired', label: 'Müde / Erschöpft', icon: Moon, color: 'bg-indigo-100 text-indigo-700', border: 'border-indigo-200' },
     { id: 'sad', label: 'Traurig / Sensibel', icon: Heart, color: 'bg-rose-100 text-rose-700', border: 'border-rose-200' },
     { id: 'angry', label: 'Gereizt / Wütend', icon: Zap, color: 'bg-amber-100 text-amber-700', border: 'border-amber-200' },
+    { id: 'pain', label: 'Schmerzen', icon: Activity, color: 'bg-red-100 text-red-700', border: 'border-red-200' },
     { id: 'overwhelmed', label: 'Überfordert', icon: AlertCircle, color: 'bg-orange-100 text-orange-700', border: 'border-orange-200' },
     { id: 'happy', label: 'Happy / Entspannt', icon: Coffee, color: 'bg-emerald-100 text-emerald-700', border: 'border-emerald-200' }
 ];
@@ -14,6 +15,7 @@ const TIPS = {
         tired: ["Massiere ihre Füße oder den unteren Rücken.", "Überneim den Einkauf/Haushalt komplett.", "Zieh ihr die Schuhe aus und mach Tee."],
         sad: ["Sag ihr, dass sie (und der Bauch) wunderschön ist.", "Hör einfach zu. Keine Ratschläge.", "Biete ihr an, zusammen baden zu gehen (nicht zu heiß!)."],
         angry: ["Lach es nicht weg. Hormone sind real.", "Bring ihr Snacks. Jetzt.", "Frag ruhig: 'Was kann ich Gutes tun?'"],
+        pain: ["Check Embryotox.de bevor sie Medikamente nimmt!", "Lieber einmal zu oft zum Arzt/Hebamme als zu wenig.", "Wärmflasche? (Vorsicht: Nicht zu heiß am Bauch!)"],
         overwhelmed: ["Organisiere den Papierkram/Termine für sie.", " Sag: 'Ich kümmere mich um X, ruh du dich aus.'", "Erinnere sie: 'Wir schaffen das.'"],
         happy: ["Genießt den Moment zu zweit.", "Mach ein Foto vom Bauch.", "Plant etwas Schönes für 'nach dem Baby'."]
     },
@@ -21,6 +23,7 @@ const TIPS = {
         tired: ["Nimm ihr das Baby für 1 Stunde ab (Spaziergang!).", "Mach ihr einen Kaffee/Tee (ungefragt!).", "Frag nicht 'Was soll ich tun?', sondern 'Leg dich hin'."],
         sad: ["Nimm sie einfach nur in den Arm. Klappe halten.", "Sag ihr: 'Du bist eine tolle Mama.'", "Bring ihr Schokolade oder ihr Soul-Food."],
         angry: ["Nimm es nicht persönlich. Es ist der Schlafmangel.", "Senke deine Stimme, bleib ruhig.", "Überneim das Wickeln/Tragen sofort."],
+        pain: ["Bei Still-Schmerzen sofort Hebamme kontaktieren.", "Damm/Narbe kühlen (Ice-Pads).", "Embryotox.de checken wegen Stillverträglichkeit."],
         overwhelmed: ["Priorisiere für sie: 'Ich mach X, du machst nur Y.'", "Schick sie kurz raus an die frische Luft.", "Sag: 'Das ist nur eine Phase.'"],
         happy: ["Freu dich mit ihr! Lob sie.", "Nutzt den Moment für ein kurzes Gespräch über euch.", "Kuschelt als Familie."]
     },
@@ -28,6 +31,7 @@ const TIPS = {
         tired: ["Schirm sie von der Außenwelt ab (Besuch absagen).", "Koch Essen, das man nur warm machen muss.", "Sorg für Stille in der Wohnung."],
         sad: ["Weine mit ihr, wenn dir danach ist. Zeig Gefühle.", "Zünde eine Kerze an.", "Sei einfach nur da. Physische Präsenz reicht."],
         angry: ["Sei ihr Blitzableiter. Halt es aus.", "Lass sie fluchen und schreien.", "Blocke dumme Sprüche von anderen ab."],
+        pain: ["Körperliche Schmerzen sind oft Ausdruck der Trauer.", "Kontaktiere den Hausarzt, wenn es nicht besser wird.", "Check Embryotox/Arzt bei Medikamenten."],
         overwhelmed: ["Entscheide kleine Dinge für sie (Essen, Einkauf).", "Sag Termine ab.", "Schaff ihr einen Rückzugsort."],
         happy: ["Darf sie sein! Hab kein schlechtes Gewissen.", "Lacht zusammen, wenn es geht.", "Erinnert euch an schöne Momente."]
     }
@@ -79,6 +83,21 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
                                 </li>
                             ))}
                         </ul>
+
+                        {/* Embryotox Link specific for pain */}
+                        {selectedMood === 'pain' && (
+                            <div className="mt-4 pt-3 border-t border-stone-200">
+                                <a
+                                    href="https://www.embryotox.de/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 text-blue-600 text-xs font-bold hover:underline bg-blue-50 p-2 rounded-lg justify-center transition"
+                                >
+                                    <ExternalLink size={12} />
+                                    Medikamentencheck auf Embryotox.de
+                                </a>
+                            </div>
+                        )}
                     </div>
                     <p className="text-[10px] text-center text-stone-300 mt-2">Du bist ihr Fels.</p>
                 </div>

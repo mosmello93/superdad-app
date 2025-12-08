@@ -2,7 +2,7 @@ import React from 'react';
 import { Trophy } from 'lucide-react';
 import { calculateLevel } from '../../utils/gamification';
 
-const HeaderSoft = ({ statusData, mode, babyName, xp }) => {
+const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification }) => {
     const isLoss = mode === 'loss';
     let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
     if (isLoss) title = 'Für euch';
@@ -29,7 +29,10 @@ const HeaderSoft = ({ statusData, mode, babyName, xp }) => {
                 </div>
 
                 {/* GAMIFICATION BADGE */}
-                <div className="bg-white pl-2 pr-3 py-1.5 rounded-full border border-stone-100 shadow-sm flex items-center gap-2">
+                <div
+                    onClick={onOpenGamification}
+                    className="bg-white pl-2 pr-3 py-1.5 rounded-full border border-stone-100 shadow-sm flex items-center gap-2 cursor-pointer hover:bg-stone-50 active:scale-95 transition-all"
+                >
                     <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
                         <Trophy size={14} />
                     </div>

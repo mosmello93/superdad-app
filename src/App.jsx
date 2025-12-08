@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Home, LayoutGrid, BookOpen } from 'lucide-react';
+import { Home, LayoutGrid, BookOpen, Users } from 'lucide-react';
 import { signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -13,6 +13,7 @@ import { calculateStatus, getDailyOasis } from './utils/calculations';
 // Hooks
 import { useHabits } from './hooks/useHabits';
 import { useGamification } from './hooks/useGamification';
+import { calculateLevel } from './utils/gamification';
 
 // Components
 import HeaderSoft from './components/layout/HeaderSoft';
@@ -39,6 +40,7 @@ import MilestoneOverlay from './components/overlays/MilestoneOverlay';
 import ShieldOverlay from './components/overlays/ShieldOverlay';
 import BureaucracySoft from './components/features/BureaucracySoft';
 import ResourceOverlay from './components/overlays/ResourceOverlay';
+import GamificationOverlay from './components/overlays/GamificationOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -72,6 +74,7 @@ const App = () => {
     const [showShield, setShowShield] = useState(false);
     const [showBureaucracy, setShowBureaucracy] = useState(false);
     const [showResources, setShowResources] = useState(false);
+    const [showGamification, setShowGamification] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -83,7 +86,7 @@ const App = () => {
     const [activeTab, setActiveTab] = useState('home');
     const [seenTabs, setSeenTabs] = useState(() => {
         const saved = localStorage.getItem('seenTabs');
-        return saved ? JSON.parse(saved) : { home: false, tools: false, knowledge: false };
+        return saved ? JSON.parse(saved) : { home: false, team: false, tools: false, knowledge: false };
     });
 
     // Dismiss Tab Onboarding
@@ -283,7 +286,13 @@ const App = () => {
 
                 {mode && dueDate && (
                     <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-                        <HeaderSoft statusData={statusData} mode={mode} babyName={babyName} xp={currentXP} />
+                        <HeaderSoft
+                            statusData={statusData}
+                            mode={mode}
+                            babyName={babyName}
+                            xp={currentXP}
+                            onOpenGamification={() => setShowGamification(true)}
+                        />
                         <div className="px-4">
                             {/* VIEW SWITCHER */}
                             {activeTab === 'home' && (
@@ -295,10 +304,16 @@ const App = () => {
                                         mode={mode}
                                         openOverlay={(key) => setActiveOverlayHabit(key)}
                                     />
+                                    <DadLog logs={dadLogs} saveLog={saveLog} />
+                                </>
+                            )}
+
+                            {activeTab === 'team' && (
+                                <div className="space-y-6 animate-in fade-in">
                                     <PartnerPulse mode={mode} />
                                     <DeepTalkSoft mode={mode} statusData={statusData} />
                                     <AIVibeCheck vibeCheck={vibeCheck} vibeHistory={vibeHistory} saveVibeCheck={saveVibeCheck} mode={mode} />
-                                </>
+                                </div>
                             )}
 
                             {activeTab === 'tools' && (
@@ -317,7 +332,6 @@ const App = () => {
                                             openEmergency={() => setShowEmergency(true)}
                                         />
                                     )}
-                                    <DadLog logs={dadLogs} saveLog={saveLog} />
                                     <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
                                 </div>
                             )}
@@ -331,7 +345,7 @@ const App = () => {
                                 <button onClick={() => {
                                     saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' });
                                     localStorage.removeItem('seenTabs');
-                                    setSeenTabs({ home: false, tools: false, knowledge: false });
+                                    setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
                                     setShowOnboarding(true);
                                 }} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
                             </div>
@@ -345,6 +359,7 @@ const App = () => {
                 <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
                     <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
                         <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
+                        <button onClick={() => setActiveTab('team')} className={`p-3 rounded-full transition ${activeTab === 'team' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Users size={20} /></button>
                         <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
                         <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
                     </div>
@@ -372,6 +387,14 @@ const App = () => {
             {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
             {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
             {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}
+
+            {showGamification && (
+                <GamificationOverlay
+                    xp={currentXP}
+                    levelInfo={calculateLevel(currentXP)}
+                    onClose={() => setShowGamification(false)}
+                />
+            )}
 
             {/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */}
             {!showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
