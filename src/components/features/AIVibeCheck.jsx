@@ -27,9 +27,9 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode }) => {
         setLoading(false);
     };
 
-    const bgClass = mode === 'loss' ? 'bg-[#E5E5E0]' : 'bg-[#E0E7FF]';
-    const textClass = mode === 'loss' ? 'text-stone-900' : 'text-indigo-900';
-    const iconColor = mode === 'loss' ? 'text-stone-500' : 'text-indigo-500';
+    const bgClass = mode === 'loss' ? 'bg-[#E5E5E0] dark:bg-stone-800' : 'bg-[#E0E7FF] dark:bg-indigo-900/40';
+    const textClass = mode === 'loss' ? 'text-stone-900 dark:text-stone-200' : 'text-indigo-900 dark:text-indigo-200';
+    const iconColor = mode === 'loss' ? 'text-stone-500 dark:text-stone-400' : 'text-indigo-500 dark:text-indigo-400';
 
     return (
         <div className={`${bgClass} p-6 rounded-[32px] mt-4 mb-24 transition-all duration-500`}>
@@ -53,23 +53,23 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode }) => {
                     value={vibeInput}
                     onChange={(e) => setVibeInput(e.target.value)}
                     placeholder="Wie geht's dir heute?"
-                    className={`w-full bg-white/60 border-0 rounded-2xl p-4 placeholder-opacity-50 focus:outline-none font-medium ${textClass}`}
+                    className={`w-full bg-white/60 dark:bg-stone-950/50 border-0 rounded-2xl p-4 placeholder-opacity-50 dark:placeholder-stone-500 focus:outline-none font-medium ${textClass}`}
                     onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                 />
                 <button
                     onClick={handleAnalyze}
                     disabled={loading || !vibeInput}
-                    className={`absolute right-2 top-2 p-2 rounded-xl transition text-white ${mode === 'loss' ? 'bg-stone-500 hover:bg-stone-600' : 'bg-indigo-500 hover:bg-indigo-600'}`}
+                    className={`absolute right-2 top-2 p-2 rounded-xl transition text-white ${mode === 'loss' ? 'bg-stone-500 hover:bg-stone-600 dark:bg-stone-600' : 'bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600'}`}
                 >
                     {loading ? <RefreshCw size={16} className="animate-spin" /> : <Wand2 size={16} />}
                 </button>
             </div>
 
             {aiAdvice && (
-                <div className="bg-white/80 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2 mb-4">
+                <div className="bg-white/80 dark:bg-stone-900/80 p-4 rounded-2xl animate-in fade-in slide-in-from-top-2 mb-4">
                     <div className="flex items-start space-x-3">
                         <div className="mt-1"><Sparkles size={16} className={mode === 'loss' ? 'text-stone-400' : 'text-indigo-400'} /></div>
-                        <div><p className={`text-sm font-medium ${mode === 'loss' ? 'text-stone-700' : 'text-indigo-800'}`}>{aiAdvice}</p></div>
+                        <div><p className={`text-sm font-medium ${mode === 'loss' ? 'text-stone-700 dark:text-stone-300' : 'text-indigo-800 dark:text-indigo-200'}`}>{aiAdvice}</p></div>
                     </div>
                 </div>
             )}

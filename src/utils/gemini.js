@@ -1,6 +1,5 @@
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-// Fallback for local dev without .env (User provided key)
-import { LOCAL_GEMINI_KEY } from '../config/local_keys';
+// Fallback key removed for security
 
 const FALLBACK_QUESTIONS = {
     loss: [
@@ -26,12 +25,12 @@ const FALLBACK_QUESTIONS = {
 
 export const callGemini = async (prompt) => {
     // 1. Determine Key
-    const effectiveKey = apiKey || LOCAL_GEMINI_KEY;
+    const effectiveKey = apiKey;
 
     // 2. Identify Mode for Context (Simple Match)
     let mode = 'pregnancy';
     if (prompt.includes('Verlust') || prompt.includes('Sternenkind')) mode = 'loss';
-    else if (prompt.includes('Neugeborenes') || prompt.includes('Wochenbett')) mode = 'postpartum';
+    else if (prompt.includes('Neugeborenes') || prompt.includes('Neugeborenen') || prompt.includes('Wochenbett')) mode = 'postpartum';
 
     // 3. Check Key Presence
     if (!effectiveKey || effectiveKey === "DEIN_EIGENER_GOOGLE_AI_KEY_HIER") {
@@ -45,34 +44,44 @@ export const callGemini = async (prompt) => {
     console.log(`Gemini Call: Key Present (Length: ${cleanKey.length}), Model: gemini-1.5-flash`);
 
     try {
+        // Try the standard alias first
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanKey}`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': cleanKey
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
             }
         );
 
         if (!response.ok) {
             console.warn(`API Error ${response.status}. Using fallback.`);
-            const errorBody = await response.json();
-            const errorMessage = errorBody.error?.message || response.statusText;
-            return `DEBUG ERROR: ${errorMessage} (Key: ${effectiveKey ? 'Present' : 'Missing'})`;
+            // If API fails (e.g. 404 Model Not Found), we return a smooth fallback
+            // so the user sees a result instead of an error message.
+            return getRandomFallback(mode);
         }
 
         const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || "DEBUG: Empty Response from AI";
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || getRandomFallback(mode);
     } catch (error) {
         console.error("Gemini API Exec Error:", error);
-        return `DEBUG EXCEPTION: ${error.message}`;
+        return getRandomFallback(mode);
     }
 };
 
 const getRandomFallback = (mode) => {
     const list = FALLBACK_QUESTIONS[mode] || FALLBACK_QUESTIONS.pregnancy;
     return list[Math.floor(Math.random() * list.length)];
+};
+
+export const generateDailyTip = async (mode, week, babyName) => {
+    const context = mode === 'loss'
+        ? "Ein Vater, der den Verlust seines Kindes verarbeitet."
+        : (mode === 'postpartum' ? `Ein Vater mit einem Neugeborenen (Woche ${week}).` : `Ein werdender Vater in der Schwangerschaftswoche ${week}.`);
+
+    const prompt = `Erstelle einen kurzen, motivierenden "Tipp des Tages" oder eine kleine "Challenge" für ${context}.
+    Maximal 2 Sätze. Duze den Nutzer. Sei empathisch, aber locker ("Kumpel-Ton", aber respektvoll).
+    Wenn Name "${babyName}" bekannt, nutze ihn gerne.`;
+
+    return await callGemini(prompt);
 };

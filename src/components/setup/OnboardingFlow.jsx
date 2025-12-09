@@ -39,27 +39,27 @@ const OnboardingFlow = ({ onComplete }) => {
     const currentSlide = slides[step];
 
     return (
-        <div className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-8 transition-colors duration-700 ${currentSlide.bg}`}>
+        <div className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-8 transition-colors duration-700 ${currentSlide.bg} dark:bg-stone-900`}>
             {/* PROGRESS INDICATOR */}
             <div className="flex gap-2 mt-8">
                 {slides.map((_, i) => (
-                    <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === step ? 'w-8 bg-stone-800' : 'w-2 bg-stone-300'}`} />
+                    <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === step ? 'w-8 bg-stone-800 dark:bg-stone-100' : 'w-2 bg-stone-300 dark:bg-stone-700'}`} />
                 ))}
             </div>
 
             {/* CONTENT */}
             <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500 key={step}">
-                <div className={`w-32 h-32 rounded-[40px] ${currentSlide.color} flex items-center justify-center mb-8 shadow-sm transition-transform duration-500 hover:scale-105`}>
+                <div className={`w-32 h-32 rounded-[40px] ${currentSlide.color} dark:bg-opacity-20 flex items-center justify-center mb-8 shadow-sm transition-transform duration-500 hover:scale-105`}>
                     <currentSlide.icon size={48} strokeWidth={1.5} />
                 </div>
-                <h1 className="text-3xl font-bold text-stone-800 mb-4 font-serif">{currentSlide.title}</h1>
-                <p className="text-stone-600 text-lg leading-relaxed max-w-xs">{currentSlide.text}</p>
+                <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100 mb-4 font-serif">{currentSlide.title}</h1>
+                <p className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed max-w-xs">{currentSlide.text}</p>
             </div>
 
             {/* ACTION BUTTON */}
             <button
                 onClick={nextStep}
-                className="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-stone-900 dark:bg-white text-white dark:text-stone-900 py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
             >
                 {step === slides.length - 1 ? "Los geht's" : "Weiter"}
                 <ChevronRight size={20} />

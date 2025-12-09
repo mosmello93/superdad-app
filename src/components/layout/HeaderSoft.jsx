@@ -1,8 +1,8 @@
 import React from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, Moon, Sun } from 'lucide-react';
 import { calculateLevel } from '../../utils/gamification';
 
-const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification }) => {
+const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification, darkMode, toggleDarkMode }) => {
     const isLoss = mode === 'loss';
     let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
     if (isLoss) title = 'Für euch';
@@ -14,7 +14,7 @@ const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification }) => {
     return (
         <div className="pt-10 pb-6 px-4">
             {/* Top Row: Logo & Level Badge */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center">
                     <img
                         src="/images/papa_logo.png"
@@ -22,29 +22,35 @@ const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification }) => {
                         className="w-20 h-20 object-contain mr-2"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
-                    <div className="flex flex-col">
-
-                        {babyName && <span className="text-stone-600 font-bold text-sm">für {babyName}</span>}
+                    <div className="flex flex-col justify-center">
+                        {babyName && <span className="text-stone-500 dark:text-stone-400 font-medium text-sm">für {babyName}</span>}
                     </div>
                 </div>
 
-                {/* GAMIFICATION BADGE */}
-                <div
-                    onClick={onOpenGamification}
-                    className="bg-white pl-2 pr-3 py-1.5 rounded-full border border-stone-100 shadow-sm flex items-center gap-2 cursor-pointer hover:bg-stone-50 active:scale-95 transition-all"
-                >
-                    <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
-                        <Trophy size={14} />
-                    </div>
-                    <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-bold text-stone-400 uppercase">Lvl {levelInfo.level}</span>
-                        <span className="text-xs font-bold text-stone-700 leading-none">{levelInfo.title}</span>
+                <div className="flex items-center gap-3">
+                    {/* DARK MODE TOGGLE */}
+                    <button
+                        onClick={toggleDarkMode}
+                        className="bg-white dark:bg-stone-800 p-2 rounded-full border border-stone-100 dark:border-stone-700 shadow-sm text-stone-400 dark:text-stone-300 hover:text-stone-600 dark:hover:text-amber-300 transition-colors"
+                    >
+                        {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
+
+                    {/* GAMIFICATION BADGE */}
+                    <div
+                        onClick={onOpenGamification}
+                        className="bg-white dark:bg-stone-800 pl-2 pr-3 py-1.5 rounded-full border border-stone-100 dark:border-stone-700 shadow-sm flex items-center gap-2 cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-95 transition-all"
+                    >
+                        <div className="bg-amber-100 dark:bg-amber-900/40 p-1.5 rounded-full text-amber-600 dark:text-amber-400">
+                            <Trophy size={14} />
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase">Lvl {levelInfo.level}</span>
+                            <span className="text-xs font-bold text-stone-700 dark:text-stone-200 leading-none">{levelInfo.title}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Main Title */}
-            <h1 className="text-4xl font-bold text-stone-800 leading-tight mb-4">{title}</h1>
 
             {/* Level Progress Bar */}
             <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-1">

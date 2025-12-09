@@ -54,27 +54,27 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-stone-100 mb-4 animate-in slide-in-from-bottom duration-500">
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-[32px] shadow-sm border border-stone-100 dark:border-stone-800 mb-4 animate-in slide-in-from-bottom duration-500">
             <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2 text-rose-500 font-bold">
+                <div className="flex items-center gap-2 text-rose-500 dark:text-rose-400 font-bold">
                     <Timer size={20} />
                     <h3>Wehen-Timer</h3>
                 </div>
-                {closeTimer && <button onClick={closeTimer}><X size={20} className="text-stone-400" /></button>}
+                {closeTimer && <button onClick={closeTimer}><X size={20} className="text-stone-400 dark:text-stone-500" /></button>}
             </div>
 
             <div className="text-center mb-8">
-                <div className="text-6xl font-bold text-stone-800 tabular-nums mb-2">
+                <div className="text-6xl font-bold text-stone-800 dark:text-stone-100 tabular-nums mb-2">
                     {formatTime(elapsed)}
                 </div>
-                <p className="text-stone-400 text-sm">{isTiming ? "Wehe läuft..." : "Bereit"}</p>
+                <p className="text-stone-400 dark:text-stone-500 text-sm">{isTiming ? "Wehe läuft..." : "Bereit"}</p>
             </div>
 
             <button
                 onClick={isTiming ? handleStop : handleStart}
                 className={`w-full py-6 rounded-3xl font-bold text-xl transition-all flex items-center justify-center gap-3 shadow-lg ${isTiming
-                        ? 'bg-rose-500 text-white shadow-rose-200'
-                        : 'bg-emerald-500 text-white shadow-emerald-200'
+                    ? 'bg-rose-500 text-white shadow-rose-200'
+                    : 'bg-emerald-500 text-white shadow-emerald-200'
                     }`}
             >
                 {isTiming ? <Square fill="currentColor" /> : <Play fill="currentColor" />}
@@ -83,18 +83,18 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
 
             {contractions.length > 0 && (
                 <div className="mt-8">
-                    <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Letzte Wehen</h4>
+                    <h4 className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-3">Letzte Wehen</h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                         {contractions.map((c, i) => (
-                            <div key={c.id} className="flex justify-between items-center p-3 bg-stone-50 rounded-2xl text-sm">
+                            <div key={c.id} className="flex justify-between items-center p-3 bg-stone-50 dark:bg-stone-950 rounded-2xl text-sm border border-transparent dark:border-stone-800">
                                 <div className="flex items-center gap-3">
-                                    <span className="font-bold text-stone-600">{new Date(c.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                    <span className="bg-white px-2 py-1 rounded-lg border border-stone-100 text-stone-500 text-xs">
+                                    <span className="font-bold text-stone-600 dark:text-stone-300">{new Date(c.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    <span className="bg-white dark:bg-stone-800 px-2 py-1 rounded-lg border border-stone-100 dark:border-stone-700 text-stone-500 dark:text-stone-400 text-xs">
                                         {Math.floor(c.duration / 60)}m {c.duration % 60}s
                                     </span>
                                 </div>
                                 {c.distance && (
-                                    <div className="flex items-center gap-1 text-stone-400 text-xs">
+                                    <div className="flex items-center gap-1 text-stone-400 dark:text-stone-500 text-xs">
                                         <History size={12} />
                                         <span>{c.distance} min</span>
                                     </div>

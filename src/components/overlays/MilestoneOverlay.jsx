@@ -32,7 +32,7 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F0] animate-in slide-in-from-bottom-full duration-500">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F0] dark:bg-stone-950 animate-in slide-in-from-bottom-full duration-500">
             {/* Hidden File Input */}
             <input
                 type="file"
@@ -43,23 +43,23 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
             />
 
             {/* Header */}
-            <div className="bg-white px-6 pt-12 pb-6 shadow-sm flex items-center justify-between z-10 shrink-0">
+            <div className="bg-white dark:bg-stone-900 px-6 pt-12 pb-6 shadow-sm flex items-center justify-between z-10 shrink-0 border-b border-stone-100 dark:border-stone-800">
                 <div>
-                    <h2 className="text-2xl font-bold text-stone-800 font-serif">Meilensteine</h2>
-                    <p className="text-stone-500 text-sm">{mode === 'pregnancy' ? 'Eure Reise zum Baby' : 'Eure ersten Momente'}</p>
+                    <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100 font-serif">Meilensteine</h2>
+                    <p className="text-stone-500 dark:text-stone-400 text-sm">{mode === 'pregnancy' ? 'Eure Reise zum Baby' : 'Eure ersten Momente'}</p>
                 </div>
-                <button onClick={close} className="bg-stone-100 p-2 rounded-full text-stone-500 hover:bg-stone-200 transition">
+                <button onClick={close} className="bg-stone-100 dark:bg-stone-800 p-2 rounded-full text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
                     <X size={24} />
                 </button>
             </div>
 
             {/* Progress Bar */}
-            <div className="px-6 py-4 bg-white border-b border-stone-100 shrink-0">
+            <div className="px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800 shrink-0">
                 <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">{unlocked} von {total} erreicht</span>
-                    <span className={`text-xl font-bold ${mode === 'pregnancy' ? 'text-violet-500' : 'text-rose-500'}`}>{progress}%</span>
+                    <span className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">{unlocked} von {total} erreicht</span>
+                    <span className={`text-xl font-bold ${mode === 'pregnancy' ? 'text-violet-500 dark:text-violet-400' : 'text-rose-500 dark:text-rose-400'}`}>{progress}%</span>
                 </div>
-                <div className="h-3 bg-stone-100 rounded-full overflow-hidden">
+                <div className="h-3 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
                     <div
                         className={`h-full transition-all duration-500 ${mode === 'pregnancy' ? 'bg-gradient-to-r from-violet-400 to-violet-600' : 'bg-gradient-to-r from-rose-400 to-rose-600'}`}
                         style={{ width: `${progress}%` }}
@@ -79,13 +79,13 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
                             <div
                                 key={milestone.id}
                                 className={`rounded-[24px] p-4 flex flex-col justify-between relative transition-all ${isUnlocked
-                                    ? 'bg-white shadow-md border border-stone-100'
-                                    : 'bg-stone-100 opacity-80 shadow-inner'
+                                    ? 'bg-white dark:bg-stone-900 shadow-md border border-stone-100 dark:border-stone-800'
+                                    : 'bg-stone-100 dark:bg-stone-800/50 opacity-80 shadow-inner'
                                     }`}
                             >
                                 {/* Header Row */}
                                 <div className="flex justify-between items-start mb-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isUnlocked ? `bg-${milestone.color}-100 text-${milestone.color}-600` : 'bg-stone-200 text-stone-400'
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isUnlocked ? `bg-${milestone.color}-100 dark:bg-${milestone.color}-900/30 text-${milestone.color}-600 dark:text-${milestone.color}-400` : 'bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-600'
                                         }`}>
                                         <Icon size={20} />
                                     </div>
@@ -94,26 +94,26 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
                                         className="focus:outline-none"
                                     >
                                         {isUnlocked ? (
-                                            <CheckCircle size={24} className="text-emerald-500" />
+                                            <CheckCircle size={24} className="text-emerald-500 dark:text-emerald-400" />
                                         ) : (
-                                            <Lock size={20} className="text-stone-300" />
+                                            <Lock size={20} className="text-stone-300 dark:text-stone-600" />
                                         )}
                                     </button>
                                 </div>
 
                                 {/* Text Content */}
                                 <div className="mb-3">
-                                    <h3 className={`font-bold leading-tight mb-1 cursor-pointer ${isUnlocked ? 'text-stone-800' : 'text-stone-400'}`} onClick={() => toggleMilestone(milestone.id)}>
+                                    <h3 className={`font-bold leading-tight mb-1 cursor-pointer ${isUnlocked ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`} onClick={() => toggleMilestone(milestone.id)}>
                                         {milestone.title}
                                     </h3>
                                     {isUnlocked && (
-                                        <p className="text-[10px] text-stone-400 font-medium">{milestone.timing}</p>
+                                        <p className="text-[10px] text-stone-400 dark:text-stone-500 font-medium">{milestone.timing}</p>
                                     )}
                                 </div>
 
                                 {/* Photo Area (Only if unlocked) */}
                                 {isUnlocked && (
-                                    <div className="mt-auto pt-2 border-t border-stone-50">
+                                    <div className="mt-auto pt-2 border-t border-stone-50 dark:border-stone-800">
                                         {hasPhoto ? (
                                             <div
                                                 className="relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer group"
@@ -127,7 +127,7 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
                                         ) : (
                                             <button
                                                 onClick={() => handlePhotoClick(milestone.id)}
-                                                className="w-full py-2 flex items-center justify-center gap-2 bg-stone-50 hover:bg-stone-100 rounded-xl text-stone-400 text-xs font-bold transition dashed border border-stone-200"
+                                                className="w-full py-2 flex items-center justify-center gap-2 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-xl text-stone-400 dark:text-stone-500 text-xs font-bold transition dashed border border-stone-200 dark:border-stone-700"
                                             >
                                                 <Camera size={14} />
                                                 Foto

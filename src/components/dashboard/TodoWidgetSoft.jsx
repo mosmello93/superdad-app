@@ -12,9 +12,9 @@ const TodoWidgetSoft = ({ statusData, tasks, toggleTask, mode }) => {
     });
     const done = currentTasks.filter(t => t.completed).length;
     return (
-        <div className="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm mb-4">
-            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-stone-800 text-lg">Checkliste</h3><span className="text-xs bg-stone-100 text-stone-500 px-2 py-1 rounded-full font-medium">{done}/{currentTasks.length}</span></div>
-            <div className="space-y-2">{currentTasks.map(task => (<div key={task.id} onClick={() => toggleTask(task.id, task.completed)} className={`flex items-center p-3 rounded-2xl cursor-pointer transition-all ${task.completed ? 'bg-stone-50 text-stone-400' : 'hover:bg-stone-50 text-stone-700'}`}><div className={`mr-3 ${task.completed ? 'text-emerald-500' : 'text-stone-300'}`}>{task.completed ? <CheckCircle size={22} /> : <Circle size={22} />}</div><span className={`text-sm font-medium ${task.completed ? 'line-through' : ''}`}>{task.text}</span></div>))}</div>
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-[32px] border border-stone-100 dark:border-stone-800 shadow-sm mb-4">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Checkliste</h3><span className="text-xs bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded-full font-medium">{done}/{currentTasks.length}</span></div>
+            <div className="space-y-2">{currentTasks.map(task => (<div key={task.id} onClick={() => toggleTask(task.id, task.completed)} className={`flex items-center p-3 rounded-2xl cursor-pointer transition-all ${task.completed ? 'bg-stone-50 dark:bg-stone-950 text-stone-400 dark:text-stone-600' : 'hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200'}`}><div className={`mr-3 ${task.completed ? 'text-emerald-500 dark:text-emerald-600' : 'text-stone-300 dark:text-stone-600'}`}>{task.completed ? <CheckCircle size={22} /> : <Circle size={22} />}</div><span className={`text-sm font-medium ${task.completed ? 'line-through' : ''}`}>{task.text}</span></div>))}</div>
         </div>
     );
 };

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Heart, Coffee, Moon, Zap, AlertCircle, Activity, ExternalLink } from 'lucide-react';
 
 const MOODS = [
-    { id: 'tired', label: 'Müde / Erschöpft', icon: Moon, color: 'bg-indigo-100 text-indigo-700', border: 'border-indigo-200' },
-    { id: 'sad', label: 'Traurig / Sensibel', icon: Heart, color: 'bg-rose-100 text-rose-700', border: 'border-rose-200' },
-    { id: 'angry', label: 'Gereizt / Wütend', icon: Zap, color: 'bg-amber-100 text-amber-700', border: 'border-amber-200' },
-    { id: 'pain', label: 'Schmerzen', icon: Activity, color: 'bg-red-100 text-red-700', border: 'border-red-200' },
-    { id: 'overwhelmed', label: 'Überfordert', icon: AlertCircle, color: 'bg-orange-100 text-orange-700', border: 'border-orange-200' },
-    { id: 'happy', label: 'Happy / Entspannt', icon: Coffee, color: 'bg-emerald-100 text-emerald-700', border: 'border-emerald-200' }
+    { id: 'tired', label: 'Müde / Erschöpft', icon: Moon, color: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-800' },
+    { id: 'sad', label: 'Traurig / Sensibel', icon: Heart, color: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-800' },
+    { id: 'angry', label: 'Gereizt / Wütend', icon: Zap, color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
+    { id: 'pain', label: 'Schmerzen', icon: Activity, color: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
+    { id: 'overwhelmed', label: 'Überfordert', icon: AlertCircle, color: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300', border: 'border-orange-200 dark:border-orange-800' },
+    { id: 'happy', label: 'Happy / Entspannt', icon: Coffee, color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' }
 ];
 
 const TIPS = {
@@ -44,17 +44,17 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
     const currentTips = TIPS[mode] || TIPS.pregnancy;
 
     return (
-        <div className="bg-white p-6 rounded-[32px] shadow-sm mb-4 border border-stone-100">
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-[32px] shadow-sm mb-4 border border-stone-100 dark:border-stone-800">
             <div className="flex items-center gap-2 mb-4">
-                <div className="bg-rose-50 p-2 rounded-full text-rose-500">
+                <div className="bg-rose-50 dark:bg-rose-900/10 p-2 rounded-full text-rose-500 dark:text-rose-400">
                     <Heart size={20} />
                 </div>
-                <h3 className="font-bold text-stone-800">Partner Pulse</h3>
+                <h3 className="font-bold text-stone-800 dark:text-stone-100">Partner Pulse</h3>
             </div>
 
             {!selectedMood ? (
                 <div>
-                    <p className="text-sm text-stone-500 mb-3 font-medium">Wie geht es ihr gerade?</p>
+                    <p className="text-sm text-stone-500 dark:text-stone-400 mb-3 font-medium">Wie geht es ihr gerade?</p>
                     <div className="grid grid-cols-2 gap-2">
                         {MOODS.map(mood => (
                             <button
@@ -71,13 +71,13 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
             ) : (
                 <div className="animate-in fade-in zoom-in-95 duration-300">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-bold uppercase text-stone-400 tracking-wider">Sofort-Hilfe</span>
-                        <button onClick={() => setSelectedMood(null)} className="text-xs text-stone-400 underline">Zurück</button>
+                        <span className="text-xs font-bold uppercase text-stone-400 dark:text-stone-500 tracking-wider">Sofort-Hilfe</span>
+                        <button onClick={() => setSelectedMood(null)} className="text-xs text-stone-400 dark:text-stone-500 underline">Zurück</button>
                     </div>
-                    <div className="bg-stone-50 rounded-2xl p-4 border border-stone-100">
+                    <div className="bg-stone-50 dark:bg-stone-950 rounded-2xl p-4 border border-stone-100 dark:border-stone-800">
                         <ul className="space-y-3">
                             {currentTips[selectedMood] && currentTips[selectedMood].map((tip, i) => (
-                                <li key={i} className="flex gap-3 text-stone-700 text-sm font-medium">
+                                <li key={i} className="flex gap-3 text-stone-700 dark:text-stone-300 text-sm font-medium">
                                     <span className="text-emerald-500 font-bold">✓</span>
                                     {tip}
                                 </li>
@@ -86,12 +86,12 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
 
                         {/* Embryotox Link specific for pain */}
                         {selectedMood === 'pain' && (
-                            <div className="mt-4 pt-3 border-t border-stone-200">
+                            <div className="mt-4 pt-3 border-t border-stone-200 dark:border-stone-800">
                                 <a
                                     href="https://www.embryotox.de/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 text-blue-600 text-xs font-bold hover:underline bg-blue-50 p-2 rounded-lg justify-center transition"
+                                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold hover:underline bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg justify-center transition"
                                 >
                                     <ExternalLink size={12} />
                                     Medikamentencheck auf Embryotox.de
@@ -99,7 +99,7 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
                             </div>
                         )}
                     </div>
-                    <p className="text-[10px] text-center text-stone-300 mt-2">Du bist ihr Fels.</p>
+                    <p className="text-[10px] text-center text-stone-300 dark:text-stone-600 mt-2">Du bist ihr Fels.</p>
                 </div>
             )}
         </div>

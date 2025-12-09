@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Home, LayoutGrid, BookOpen, Users } from 'lucide-react';
+import { Home, LayoutGrid, BookOpen, Users, MessageCircle } from 'lucide-react';
 import { signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -30,6 +30,7 @@ import AIVibeCheck from './components/features/AIVibeCheck';
 import PartnerPulse from './components/features/PartnerPulse';
 import ContractionTimer from './components/features/ContractionTimer';
 import DadLog from './components/features/DadLog';
+import DailyTipWidget from './components/features/DailyTipWidget';
 
 // Overlays
 import EmergencyOverlay from './components/overlays/EmergencyOverlay';
@@ -41,6 +42,7 @@ import ShieldOverlay from './components/overlays/ShieldOverlay';
 import BureaucracySoft from './components/features/BureaucracySoft';
 import ResourceOverlay from './components/overlays/ResourceOverlay';
 import GamificationOverlay from './components/overlays/GamificationOverlay';
+import AIChatOverlay from './components/overlays/AIChatOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -55,6 +57,7 @@ const App = () => {
     const [userId, setUserId] = useState(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [mode, setMode] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
     const [dueDate, setDueDate] = useState(null);
     const [babyName, setBabyName] = useState('');
     const [gender, setGender] = useState('surprise');
@@ -75,6 +78,7 @@ const App = () => {
     const [showBureaucracy, setShowBureaucracy] = useState(false);
     const [showResources, setShowResources] = useState(false);
     const [showGamification, setShowGamification] = useState(false);
+    const [showAIChat, setShowAIChat] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -95,6 +99,17 @@ const App = () => {
         setSeenTabs(updated);
         localStorage.setItem('seenTabs', JSON.stringify(updated));
     };
+
+    // Helper for Dark Mode
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [darkMode]);
 
     // Scroll to top on tab change or mode switch
     useEffect(() => {
@@ -290,7 +305,7 @@ const App = () => {
     if (loading && !isAuthReady) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
 
     return (
-        <div className="min-h-screen bg-[#F5F5F0] font-sans text-stone-800 pb-safe selection:bg-stone-200 flex flex-col">
+        <div className="min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-sans text-stone-800 dark:text-stone-100 pb-safe selection:bg-stone-200 dark:selection:bg-stone-800 flex flex-col transition-colors duration-300">
             <div className="max-w-md mx-auto w-full relative flex-grow pb-24">
                 {/* PUSH NOTIFICATION SIMULATION */}
                 <NotificationSimulator habits={habits} mode={mode} dueDate={dueDate} />
@@ -312,11 +327,14 @@ const App = () => {
                             babyName={babyName}
                             xp={currentXP}
                             onOpenGamification={() => setShowGamification(true)}
+                            darkMode={darkMode}
+                            toggleDarkMode={() => setDarkMode(!darkMode)}
                         />
                         <div className="px-4">
                             {/* VIEW SWITCHER */}
                             {activeTab === 'home' && (
-                                <>
+                                <div className="space-y-6">
+                                    <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} />
                                     <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
                                     <HabitGridSoft
                                         habits={habits}
@@ -325,7 +343,7 @@ const App = () => {
                                         openOverlay={(key) => setActiveOverlayHabit(key)}
                                     />
                                     <DadLog logs={dadLogs} saveLog={saveLog} />
-                                </>
+                                </div>
                             )}
 
                             {activeTab === 'team' && (
@@ -376,14 +394,26 @@ const App = () => {
 
             {/* BOTTOM NAVIGATION */}
             {mode && dueDate && (
-                <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
-                    <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
-                        <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
-                        <button onClick={() => setActiveTab('team')} className={`p-3 rounded-full transition ${activeTab === 'team' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Users size={20} /></button>
-                        <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
-                        <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
+                <>
+                    {/* AI CHAT FAB */}
+                    <div className="fixed bottom-24 right-4 z-30">
+                        <button
+                            onClick={() => setShowAIChat(true)}
+                            className="bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-transform hover:scale-105 flex items-center justify-center"
+                        >
+                            <MessageCircle size={24} />
+                        </button>
                     </div>
-                </div>
+
+                    <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
+                        <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
+                            <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
+                            <button onClick={() => setActiveTab('team')} className={`p-3 rounded-full transition ${activeTab === 'team' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Users size={20} /></button>
+                            <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
+                            <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
+                        </div>
+                    </div>
+                </>
             )}
 
             {/* OVERLAYS */}
@@ -424,6 +454,14 @@ const App = () => {
                     xp={currentXP}
                     levelInfo={calculateLevel(currentXP)}
                     onClose={() => setShowGamification(false)}
+                />
+            )}
+
+            {showAIChat && (
+                <AIChatOverlay
+                    mode={mode}
+                    babyName={babyName}
+                    onClose={() => setShowAIChat(false)}
                 />
             )}
 

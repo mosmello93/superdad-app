@@ -13,10 +13,10 @@ const GamificationOverlay = ({ xp, levelInfo, onClose }) => {
                2. flex flex-col: enables vertical stacking
                3. overflow-hidden: ensures rounded corners clip children
             */}
-            <div className="bg-white w-full max-w-md max-h-[90vh] flex flex-col rounded-[32px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-stone-900 w-full max-w-md max-h-[90vh] flex flex-col rounded-[32px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
 
                 {/* Header: shrink-0 prevents it from squishing */}
-                <div className="bg-stone-900 text-white p-6 relative shrink-0 z-10">
+                <div className="bg-stone-900 dark:bg-black text-white p-6 relative shrink-0 z-10">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
@@ -38,10 +38,10 @@ const GamificationOverlay = ({ xp, levelInfo, onClose }) => {
                     {/* Progress Section */}
                     <div className="mb-8">
                         <div className="flex justify-between items-end mb-2">
-                            <span className="text-stone-500 font-bold text-sm">Dein Fortschritt</span>
-                            <span className="text-indigo-600 font-bold text-sm">{xp} / {levelInfo.next} XP</span>
+                            <span className="text-stone-500 dark:text-stone-400 font-bold text-sm">Dein Fortschritt</span>
+                            <span className="text-indigo-600 dark:text-indigo-400 font-bold text-sm">{xp} / {levelInfo.next} XP</span>
                         </div>
-                        <div className="w-full bg-stone-100 h-4 rounded-full overflow-hidden shadow-inner">
+                        <div className="w-full bg-stone-100 dark:bg-stone-800 h-4 rounded-full overflow-hidden shadow-inner">
                             <div
                                 className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full rounded-full transition-all duration-1000 relative"
                                 style={{ width: `${progressPercent}%` }}
@@ -49,56 +49,56 @@ const GamificationOverlay = ({ xp, levelInfo, onClose }) => {
                                 <div className="absolute inset-0 bg-white/30 animate-[shimmer_2s_infinite]" />
                             </div>
                         </div>
-                        <p className="text-center text-stone-400 text-xs font-medium mt-3">
-                            Noch <span className="text-stone-800 font-bold">{xpNeeded} XP</span> bis zum nächsten Level!
+                        <p className="text-center text-stone-400 dark:text-stone-500 text-xs font-medium mt-3">
+                            Noch <span className="text-stone-800 dark:text-stone-200 font-bold">{xpNeeded} XP</span> bis zum nächsten Level!
                         </p>
                     </div>
 
                     {/* How to earn XP */}
                     <div className="space-y-3">
-                        <h3 className="text-stone-800 font-bold text-sm mb-2 opacity-80 uppercase tracking-wide">So sammelst du XP</h3>
+                        <h3 className="text-stone-800 dark:text-stone-200 font-bold text-sm mb-2 opacity-80 uppercase tracking-wide">So sammelst du XP</h3>
 
-                        <div className="flex items-center gap-4 p-3 bg-stone-50 rounded-xl border border-stone-100">
-                            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600">
+                        <div className="flex items-center gap-4 p-3 bg-stone-50 dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700">
+                            <div className="bg-emerald-100 dark:bg-emerald-900/40 p-2 rounded-lg text-emerald-600 dark:text-emerald-400">
                                 <Target size={20} />
                             </div>
                             <div className="flex-1">
-                                <span className="block font-bold text-stone-700 text-sm">Daily Dads (Habits)</span>
+                                <span className="block font-bold text-stone-700 dark:text-stone-200 text-sm">Daily Dads (Habits)</span>
                                 <span className="text-xs text-stone-400">Tägliche Routine pflegen</span>
                             </div>
-                            <span className="font-bold text-stone-900 bg-white px-2 py-1 rounded shadow-sm text-xs">+10 XP</span>
+                            <span className="font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-700 px-2 py-1 rounded shadow-sm text-xs">+10 XP</span>
                         </div>
 
-                        <div className="flex items-center gap-4 p-3 bg-stone-50 rounded-xl border border-stone-100">
-                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
+                        <div className="flex items-center gap-4 p-3 bg-stone-50 dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700">
+                            <div className="bg-blue-100 dark:bg-blue-900/40 p-2 rounded-lg text-blue-600 dark:text-blue-400">
                                 <CheckCircleIcon size={20} />
                             </div>
                             <div className="flex-1">
-                                <span className="block font-bold text-stone-700 text-sm">To-Dos erledigen</span>
+                                <span className="block font-bold text-stone-700 dark:text-stone-200 text-sm">To-Dos erledigen</span>
                                 <span className="text-xs text-stone-400">Checklisten abarbeiten</span>
                             </div>
-                            <span className="font-bold text-stone-900 bg-white px-2 py-1 rounded shadow-sm text-xs">+50 XP</span>
+                            <span className="font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-700 px-2 py-1 rounded shadow-sm text-xs">+50 XP</span>
                         </div>
 
-                        <div className="flex items-center gap-4 p-3 bg-stone-50 rounded-xl border border-stone-100">
-                            <div className="bg-purple-100 p-2 rounded-lg text-purple-600">
+                        <div className="flex items-center gap-4 p-3 bg-stone-50 dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700">
+                            <div className="bg-purple-100 dark:bg-purple-900/40 p-2 rounded-lg text-purple-600 dark:text-purple-400">
                                 <BookOpen size={20} />
                             </div>
                             <div className="flex-1">
-                                <span className="block font-bold text-stone-700 text-sm">Wissen tanken</span>
+                                <span className="block font-bold text-stone-700 dark:text-stone-200 text-sm">Wissen tanken</span>
                                 <span className="text-xs text-stone-400">Artikel lesen</span>
                             </div>
-                            <span className="font-bold text-stone-900 bg-white px-2 py-1 rounded shadow-sm text-xs">+20 XP</span>
+                            <span className="font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-700 px-2 py-1 rounded shadow-sm text-xs">+20 XP</span>
                         </div>
                     </div>
 
                     {/* Motivational Footer */}
-                    <div className="mt-8 text-center bg-indigo-50 p-4 rounded-2xl">
-                        <div className="flex justify-center mb-2 text-indigo-500">
+                    <div className="mt-8 text-center bg-indigo-50 dark:bg-indigo-900/40 p-4 rounded-2xl">
+                        <div className="flex justify-center mb-2 text-indigo-500 dark:text-indigo-400">
                             <Zap size={24} className="fill-current" />
                         </div>
-                        <p className="text-indigo-900 font-bold text-sm">Du machst das großartig!</p>
-                        <p className="text-indigo-600 text-xs mt-1">Jeder kleine Schritt zählt für deine Familie.</p>
+                        <p className="text-indigo-900 dark:text-indigo-200 font-bold text-sm">Du machst das großartig!</p>
+                        <p className="text-indigo-600 dark:text-indigo-300 text-xs mt-1">Jeder kleine Schritt zählt für deine Familie.</p>
                     </div>
 
                 </div>

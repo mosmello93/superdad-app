@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAL2t8wMFxzEco3Z1JIu73aSzroJBeBw0M",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "superdad-app.firebaseapp.com",
   projectId: "superdad-app",
   storageBucket: "superdad-app.firebasestorage.app",

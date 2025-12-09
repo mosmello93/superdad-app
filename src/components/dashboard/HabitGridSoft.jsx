@@ -17,8 +17,15 @@ const HabitGridSoft = ({ habits, toggleHabit, mode, openOverlay }) => {
     };
 
     const getColorClasses = (color, isActive) => {
-        if (!isActive) return "bg-white border-stone-100 text-stone-400";
-        const maps = { blue: "bg-[#E0F2FE] border-sky-100 text-sky-800", amber: "bg-[#FEF3C7] border-amber-100 text-amber-800", orange: "bg-[#FFEDD5] border-orange-100 text-orange-800", indigo: "bg-[#E0E7FF] border-indigo-100 text-indigo-800", stone: "bg-[#E7E5E4] border-stone-200 text-stone-800", zinc: "bg-[#E4E4E7] border-zinc-200 text-zinc-800" };
+        if (!isActive) return "bg-white dark:bg-stone-800 border-stone-100 dark:border-stone-700 text-stone-400 dark:text-stone-500";
+        const maps = {
+            blue: "bg-[#E0F2FE] dark:bg-sky-900/40 border-sky-100 dark:border-sky-800/50 text-sky-800 dark:text-sky-200",
+            amber: "bg-[#FEF3C7] dark:bg-amber-900/40 border-amber-100 dark:border-amber-800/50 text-amber-800 dark:text-amber-200",
+            orange: "bg-[#FFEDD5] dark:bg-orange-900/40 border-orange-100 dark:border-orange-800/50 text-orange-800 dark:text-orange-200",
+            indigo: "bg-[#E0E7FF] dark:bg-indigo-900/40 border-indigo-100 dark:border-indigo-800/50 text-indigo-800 dark:text-indigo-200",
+            stone: "bg-[#E7E5E4] dark:bg-stone-700/50 border-stone-200 dark:border-stone-600/50 text-stone-800 dark:text-stone-200",
+            zinc: "bg-[#E4E4E7] dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
+        };
         return maps[color] || maps.stone;
     };
 
