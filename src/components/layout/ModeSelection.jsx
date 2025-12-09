@@ -6,15 +6,15 @@ const ModeSelection = ({ setMode }) => (
         <div className="w-full max-w-sm">
             {/* Logo Section */}
             <div className="flex flex-col items-center mb-10">
-                <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-lg mb-6 p-4">
+                <div className="flex items-center justify-center mb-6">
                     <img
-                        src="/images/superdad_logo.png"
-                        alt="SuperDad Logo"
-                        className="w-full h-full object-contain"
+                        src="/images/papa_logo.png"
+                        alt="papa Logo"
+                        className="w-48 object-contain"
                     />
                 </div>
                 <h1 className="text-4xl font-extrabold text-stone-800 tracking-tight text-center">
-                    Willkommen, <br /><span className="text-indigo-600">SuperDad.</span>
+                    Willkommen, <br /><span className="text-indigo-600">papa.</span>
                 </h1>
                 <p className="text-stone-500 mt-3 text-center text-lg">
                     Dein Begleiter für das größte Abenteuer.

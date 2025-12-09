@@ -1,6 +1,6 @@
 {
-    "name": "DadReady - Dein Begleiter",
-    "short_name": "DadReady",
+    "name": "papa - Dein Begleiter",
+    "short_name": "papa",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7F7F5",
@@ -8,9 +8,9 @@
     "description": "Dein Begleiter durch Schwangerschaft, Wochenbett und Verlust.",
     "icons": [
         {
-            "src": "/vite.svg",
+            "src": "/images/papa_icon.png",
             "sizes": "any",
-            "type": "image/svg+xml",
+            "type": "image/png",
             "purpose": "any maskable"
         }
     ]

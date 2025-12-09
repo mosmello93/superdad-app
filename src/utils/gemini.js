@@ -1,4 +1,6 @@
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+// Fallback for local dev without .env (User provided key)
+import { LOCAL_GEMINI_KEY } from '../config/local_keys';
 
 const FALLBACK_QUESTIONS = {
     loss: [
@@ -23,41 +25,50 @@ const FALLBACK_QUESTIONS = {
 };
 
 export const callGemini = async (prompt) => {
-    // Determine mode from prompt (simple heuristic since prompt is text)
-    // Actually, deepTalk passes a prompt string. We can try to guess or just pick random generic if exact match fails.
-    // Better: Helper to clean prompt or just random pick.
-    // Since we don't pass 'mode' to this function explicitly often, we rely on try/catch.
+    // 1. Determine Key
+    const effectiveKey = apiKey || LOCAL_GEMINI_KEY;
 
-    // We will infer mode from prompt content or fallback to generic mix.
+    // 2. Identify Mode for Context (Simple Match)
     let mode = 'pregnancy';
-    if (prompt.includes('trauern') || prompt.includes('stiller Geburt')) mode = 'loss';
-    else if (prompt.includes('Neugeborenem') || prompt.includes('Baby')) mode = 'postpartum';
+    if (prompt.includes('Verlust') || prompt.includes('Sternenkind')) mode = 'loss';
+    else if (prompt.includes('Neugeborenes') || prompt.includes('Wochenbett')) mode = 'postpartum';
 
-    if (!apiKey || apiKey === "DEIN_EIGENER_GOOGLE_AI_KEY_HIER") {
-        console.warn("Kein API Key. Nutze Fallback.");
+    // 3. Check Key Presence
+    if (!effectiveKey || effectiveKey === "DEIN_EIGENER_GOOGLE_AI_KEY_HIER") {
+        console.warn("Kein API Key gefunden. Nutze Fallback.");
         return getRandomFallback(mode);
     }
 
+    const cleanKey = effectiveKey.trim();
+
+    // DEBUG: Key status
+    console.log(`Gemini Call: Key Present (Length: ${cleanKey.length}), Model: gemini-1.5-flash`);
+
     try {
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`,
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': cleanKey
+                },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
             }
         );
 
         if (!response.ok) {
             console.warn(`API Error ${response.status}. Using fallback.`);
-            return getRandomFallback(mode);
+            const errorBody = await response.json();
+            const errorMessage = errorBody.error?.message || response.statusText;
+            return `DEBUG ERROR: ${errorMessage} (Key: ${effectiveKey ? 'Present' : 'Missing'})`;
         }
 
         const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || getRandomFallback(mode);
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "DEBUG: Empty Response from AI";
     } catch (error) {
         console.error("Gemini API Exec Error:", error);
-        return getRandomFallback(mode);
+        return `DEBUG EXCEPTION: ${error.message}`;
     }
 };
 

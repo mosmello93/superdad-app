@@ -14,16 +14,16 @@ const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification }) => {
     return (
         <div className="pt-10 pb-6 px-4">
             {/* Top Row: Logo & Level Badge */}
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
                     <img
-                        src="/images/superdad_logo.png"
-                        alt="DadReady Logo"
-                        className="w-10 h-10 object-contain mr-2"
+                        src="/images/papa_logo.png"
+                        alt="papa Logo"
+                        className="w-20 h-20 object-contain mr-2"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
                     <div className="flex flex-col">
-                        <span className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">DadReady App</span>
+
                         {babyName && <span className="text-stone-600 font-bold text-sm">für {babyName}</span>}
                     </div>
                 </div>

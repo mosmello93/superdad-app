@@ -1,4 +1,4 @@
-SuperDad - Der Support Coach für werdende Väter
+papa - Der Support Coach für werdende Väter
 
 Eine Web-App, die werdende Väter und Partner durch die Schwangerschaft, das Wochenbett und schwierige Zeiten begleitet.
 
@@ -32,7 +32,7 @@ Icons: Lucide React
 
 Repository klonen:
 
-git clone [https://github.com/DEIN-USERNAME/superdad-app.git](https://github.com/DEIN-USERNAME/superdad-app.git)
+git clone [https://github.com/DEIN-USERNAME/papa-app.git](https://github.com/DEIN-USERNAME/papa-app.git)
 
 
 Abhängigkeiten installieren:
