@@ -1,8 +1,8 @@
 import React from 'react';
-import { Trophy, Moon, Sun } from 'lucide-react';
+import { Trophy, Moon, Sun, Settings } from 'lucide-react';
 import { calculateLevel } from '../../utils/gamification';
 
-const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification, darkMode, toggleDarkMode }) => {
+const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification, onOpenSettings, darkMode, toggleDarkMode }) => {
     const isLoss = mode === 'loss';
     let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
     if (isLoss) title = 'Für euch';
@@ -17,9 +17,9 @@ const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification, darkMo
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center">
                     <img
-                        src="/images/papa_logo.png"
+                        src="/mascot/papa_neutral.png"
                         alt="papa Logo"
-                        className="w-20 h-20 object-contain mr-2"
+                        className="w-16 h-16 object-contain mr-2 rounded-full border-2 border-stone-100 dark:border-stone-700 bg-amber-50 dark:bg-amber-900/20"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
                     <div className="flex flex-col justify-center">
@@ -28,6 +28,14 @@ const HeaderSoft = ({ statusData, mode, babyName, xp, onOpenGamification, darkMo
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {/* SETTINGS */}
+                    <button
+                        onClick={onOpenSettings}
+                        className="bg-white dark:bg-stone-800 p-2 rounded-full border border-stone-100 dark:border-stone-700 shadow-sm text-stone-400 dark:text-stone-300 hover:text-stone-600 dark:hover:text-amber-300 transition-colors"
+                    >
+                        <Settings size={16} />
+                    </button>
+
                     {/* DARK MODE TOGGLE */}
                     <button
                         onClick={toggleDarkMode}

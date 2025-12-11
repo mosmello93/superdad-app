@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { ChevronRight, Shield, Zap, Heart } from 'lucide-react';
+import { ChevronRight, Trophy, Zap, HeartHandshake } from 'lucide-react';
 
 const OnboardingFlow = ({ onComplete }) => {
     const [step, setStep] = useState(0);
 
     const slides = [
         {
-            title: "Dein Begleiter",
-            text: "Egal ob Schwangerschaft, Wochenbett oder Verlust – wir sind da.",
-            icon: Shield,
-            color: "bg-indigo-100 text-indigo-600",
-            bg: "bg-indigo-50"
+            title: "Mehr als nur dabei.",
+            text: "Werde der Fels für deine Partnerin und der Held für dein Kind.",
+            icon: Trophy,
+            color: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400",
+            bg: "bg-stone-50"
         },
         {
-            title: "Alles im Blick",
-            text: "Kein Blabla. Nur die wichtigsten Infos, Termine & To-Dos für dich.",
+            title: "Dein zweites Gehirn.",
+            text: "Termine, Wissen, Mental Load – wir halten dir den Rücken frei.",
             icon: Zap,
-            color: "bg-amber-100 text-amber-600",
-            bg: "bg-amber-50"
+            color: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400",
+            bg: "bg-stone-50" // Keeping generic BG to avoid color flicker, focus on Icon
         },
         {
-            title: "Starker Partner",
-            text: "Wissen, mentale Stütze & Beziehungstipps. Du schaffst das.",
-            icon: Heart,
-            color: "bg-rose-100 text-rose-600",
-            bg: "bg-rose-50"
+            title: "Starkes Team.",
+            text: "Verstehe ihre Signale und bleibe Partner, nicht nur Vater.",
+            icon: HeartHandshake,
+            color: "bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400",
+            bg: "bg-stone-50"
         }
     ];
 
@@ -39,29 +39,29 @@ const OnboardingFlow = ({ onComplete }) => {
     const currentSlide = slides[step];
 
     return (
-        <div className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-8 transition-colors duration-700 ${currentSlide.bg} dark:bg-stone-900`}>
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-between p-8 bg-[#FAFAF8] dark:bg-stone-950 transition-colors duration-500">
             {/* PROGRESS INDICATOR */}
             <div className="flex gap-2 mt-8">
                 {slides.map((_, i) => (
-                    <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === step ? 'w-8 bg-stone-800 dark:bg-stone-100' : 'w-2 bg-stone-300 dark:bg-stone-700'}`} />
+                    <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === step ? 'w-8 bg-stone-800 dark:bg-stone-100' : 'w-2 bg-stone-200 dark:bg-stone-800'}`} />
                 ))}
             </div>
 
             {/* CONTENT */}
-            <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500 key={step}">
-                <div className={`w-32 h-32 rounded-[40px] ${currentSlide.color} dark:bg-opacity-20 flex items-center justify-center mb-8 shadow-sm transition-transform duration-500 hover:scale-105`}>
-                    <currentSlide.icon size={48} strokeWidth={1.5} />
+            <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500" key={step}>
+                <div className={`w-40 h-40 rounded-[48px] ${currentSlide.color} flex items-center justify-center mb-10 shadow-sm transition-transform duration-500 hover:scale-105`}>
+                    <currentSlide.icon size={64} strokeWidth={1.5} />
                 </div>
-                <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100 mb-4 font-serif">{currentSlide.title}</h1>
-                <p className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed max-w-xs">{currentSlide.text}</p>
+                <h1 className="text-4xl font-bold text-stone-800 dark:text-stone-100 mb-6 font-serif tracking-tight leading-tight">{currentSlide.title}</h1>
+                <p className="text-stone-500 dark:text-stone-400 text-xl leading-relaxed max-w-xs font-medium">{currentSlide.text}</p>
             </div>
 
             {/* ACTION BUTTON */}
             <button
                 onClick={nextStep}
-                className="w-full bg-stone-900 dark:bg-white text-white dark:text-stone-900 py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 py-5 rounded-[24px] font-bold text-lg shadow-xl shadow-stone-200 dark:shadow-none hover:translate-y-[-2px] active:scale-95 transition-all flex items-center justify-center gap-2"
             >
-                {step === slides.length - 1 ? "Los geht's" : "Weiter"}
+                {step === slides.length - 1 ? "Ich bin bereit" : "Weiter"}
                 <ChevronRight size={20} />
             </button>
         </div>

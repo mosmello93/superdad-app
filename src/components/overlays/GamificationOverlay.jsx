@@ -19,14 +19,19 @@ const GamificationOverlay = ({ xp, levelInfo, onClose }) => {
                 <div className="bg-stone-900 dark:bg-black text-white p-6 relative shrink-0 z-10">
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                        className="absolute top-4 right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-white"
                     >
                         <X size={20} />
                     </button>
 
                     <div className="flex flex-col items-center mt-2">
-                        <div className="bg-amber-400 p-4 rounded-full text-stone-900 shadow-lg mb-4 ring-4 ring-white/10">
-                            <Trophy size={40} />
+                        <div className="bg-white p-2 rounded-full text-stone-900 shadow-lg mb-4 ring-4 ring-white/10 dark:ring-stone-800">
+                            <img
+                                src={`/mascot/papa_level${Math.min(5, levelInfo.level)}.png`}
+                                onError={(e) => { e.target.src = '/mascot/papa_happy.png'; }}
+                                alt={`Papa Level ${levelInfo.level}`}
+                                className="w-24 h-24 object-contain"
+                            />
                         </div>
                         <h2 className="text-2xl font-bold">{levelInfo.title}</h2>
                         <span className="text-stone-400 text-xs font-bold uppercase tracking-widest mt-1">Level {levelInfo.level}</span>

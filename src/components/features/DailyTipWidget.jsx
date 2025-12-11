@@ -40,8 +40,8 @@ const DailyTipWidget = ({ mode, week, babyName }) => {
 
     return (
         <div className="bg-amber-50 dark:bg-amber-900/20 p-6 rounded-3xl relative overflow-hidden border border-amber-100 dark:border-amber-800 transition-all hover:shadow-md group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Lightbulb size={80} className="text-amber-500 fill-current" />
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity duration-500">
+                <img src="/mascot/papa_smart.png" alt="Papa Smart" className="w-24 h-24 object-contain filter grayscale group-hover:grayscale-0 transition-all" />
             </div>
 
             <div className="relative z-10">

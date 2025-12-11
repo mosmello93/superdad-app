@@ -43,6 +43,8 @@ import BureaucracySoft from './components/features/BureaucracySoft';
 import ResourceOverlay from './components/overlays/ResourceOverlay';
 import GamificationOverlay from './components/overlays/GamificationOverlay';
 import AIChatOverlay from './components/overlays/AIChatOverlay';
+import SettingsOverlay from './components/overlays/SettingsOverlay';
+import LevelUpOverlay from './components/overlays/LevelUpOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -79,6 +81,7 @@ const App = () => {
     const [showResources, setShowResources] = useState(false);
     const [showGamification, setShowGamification] = useState(false);
     const [showAIChat, setShowAIChat] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -133,7 +136,7 @@ const App = () => {
 
     // --- HOOKS INTEGRATION ---
     const { habits, toggleHabit } = useHabits(initialHabits, saveProfile);
-    const { currentXP } = useGamification(tasks, habits);
+    const { currentXP, newLevelUnlocked, dismissLevelUp } = useGamification(tasks, habits);
 
     useEffect(() => {
         // Auth Listener setup
@@ -182,6 +185,7 @@ const App = () => {
                 // Load New Features
                 if (data.unlockedMilestones) setUnlockedMilestones(data.unlockedMilestones);
                 if (data.completedTasks) setCompletedTasks(data.completedTasks);
+                if (data.partnerHistory) setPartnerHistory(data.partnerHistory);
             }
             setLoading(false);
         });
@@ -240,6 +244,16 @@ const App = () => {
             : [...completedTasks, id];
         setCompletedTasks(newSet);
         saveProfile({ completedTasks: newSet });
+    };
+
+    // Partner Pulse Logic
+    const [partnerHistory, setPartnerHistory] = useState([]);
+
+    const savePartnerMood = (moodId) => {
+        const entry = { date: Date.now(), moodId };
+        const newHistory = [entry, ...partnerHistory]; // Newest first
+        setPartnerHistory(newHistory);
+        saveProfile({ partnerHistory: newHistory });
     };
 
     // Photos State
@@ -327,6 +341,7 @@ const App = () => {
                             babyName={babyName}
                             xp={currentXP}
                             onOpenGamification={() => setShowGamification(true)}
+                            onOpenSettings={() => setShowSettings(true)}
                             darkMode={darkMode}
                             toggleDarkMode={() => setDarkMode(!darkMode)}
                         />
@@ -334,21 +349,29 @@ const App = () => {
                             {/* VIEW SWITCHER */}
                             {activeTab === 'home' && (
                                 <div className="space-y-6">
-                                    <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} />
-                                    <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
-                                    <HabitGridSoft
-                                        habits={habits}
-                                        toggleHabit={toggleHabit}
-                                        mode={mode}
-                                        openOverlay={(key) => setActiveOverlayHabit(key)}
-                                    />
-                                    <DadLog logs={dadLogs} saveLog={saveLog} />
+                                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-100 fill-mode-backwards">
+                                        <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} />
+                                    </div>
+                                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200 fill-mode-backwards">
+                                        <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
+                                    </div>
+                                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300 fill-mode-backwards">
+                                        <HabitGridSoft
+                                            habits={habits}
+                                            toggleHabit={toggleHabit}
+                                            mode={mode}
+                                            openOverlay={(key) => setActiveOverlayHabit(key)}
+                                        />
+                                    </div>
+                                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-500 fill-mode-backwards">
+                                        <DadLog logs={dadLogs} saveLog={saveLog} />
+                                    </div>
                                 </div>
                             )}
 
                             {activeTab === 'team' && (
                                 <div className="space-y-6 animate-in fade-in">
-                                    <PartnerPulse mode={mode} />
+                                    <PartnerPulse mode={mode} history={partnerHistory} onSave={savePartnerMood} />
                                     <DeepTalkSoft mode={mode} statusData={statusData} />
                                     <AIVibeCheck vibeCheck={vibeCheck} vibeHistory={vibeHistory} saveVibeCheck={saveVibeCheck} mode={mode} />
                                 </div>
@@ -378,16 +401,6 @@ const App = () => {
                                 <KnowledgeView week={statusData.week} mode={mode} ssw={ssw} />
                             )}
                         </div>
-                        {activeTab === 'home' && (
-                            <div className="py-6 text-center">
-                                <button onClick={() => {
-                                    saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' });
-                                    localStorage.removeItem('seenTabs');
-                                    setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
-                                    setShowOnboarding(true);
-                                }} className="text-[10px] text-red-300 uppercase tracking-widest font-semibold">Reset App</button>
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
@@ -462,6 +475,27 @@ const App = () => {
                     mode={mode}
                     babyName={babyName}
                     onClose={() => setShowAIChat(false)}
+                />
+            )}
+
+            {showSettings && (
+                <SettingsOverlay
+                    onClose={() => setShowSettings(false)}
+                    onResetApp={() => {
+                        saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' });
+                        localStorage.removeItem('seenTabs');
+                        setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
+                        setShowSettings(false);
+                        setShowOnboarding(true);
+                    }}
+                />
+            )}
+
+            {/* LEVEL UP CELEBRATION */}
+            {newLevelUnlocked && (
+                <LevelUpOverlay
+                    levelInfo={newLevelUnlocked}
+                    onClose={dismissLevelUp}
                 />
             )}
 

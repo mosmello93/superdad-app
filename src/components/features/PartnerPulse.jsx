@@ -37,29 +37,37 @@ const TIPS = {
     }
 };
 
-const PartnerPulse = ({ mode = 'pregnancy' }) => {
+const PartnerPulse = ({ mode = 'pregnancy', history = [], onSave }) => {
     const [selectedMood, setSelectedMood] = useState(null);
 
     // Ensure we have valid tips for the current mode, fallback to pregnancy if not found
     const currentTips = TIPS[mode] || TIPS.pregnancy;
 
+    const handleMoodSelect = (moodId) => {
+        setSelectedMood(moodId);
+        if (onSave) onSave(moodId);
+    };
+
     return (
         <div className="bg-white dark:bg-stone-900 p-6 rounded-[32px] shadow-sm mb-4 border border-stone-100 dark:border-stone-800">
-            <div className="flex items-center gap-2 mb-4">
-                <div className="bg-rose-50 dark:bg-rose-900/10 p-2 rounded-full text-rose-500 dark:text-rose-400">
-                    <Heart size={20} />
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                    <div className="bg-rose-50 dark:bg-rose-900/10 p-2 rounded-full text-rose-500 dark:text-rose-400">
+                        <Heart size={20} />
+                    </div>
+                    <h3 className="font-bold text-stone-800 dark:text-stone-100">Partner Pulse</h3>
                 </div>
-                <h3 className="font-bold text-stone-800 dark:text-stone-100">Partner Pulse</h3>
+                <img src="/mascot/papa_caring.png" alt="Papa Caring" className="w-28 h-28 object-contain -my-6 -mr-2" />
             </div>
 
             {!selectedMood ? (
                 <div>
                     <p className="text-sm text-stone-500 dark:text-stone-400 mb-3 font-medium">Wie geht es ihr gerade?</p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2 mb-6">
                         {MOODS.map(mood => (
                             <button
                                 key={mood.id}
-                                onClick={() => setSelectedMood(mood.id)}
+                                onClick={() => handleMoodSelect(mood.id)}
                                 className={`${mood.color} ${mood.border} border p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-transform active:scale-95`}
                             >
                                 <mood.icon size={16} />
@@ -67,6 +75,33 @@ const PartnerPulse = ({ mode = 'pregnancy' }) => {
                             </button>
                         ))}
                     </div>
+
+                    {/* HISTORY VISUALIZATION */}
+                    {history.length > 0 && (
+                        <div className="pt-4 border-t border-stone-100 dark:border-stone-800">
+                            <p className="text-[10px] text-stone-400 uppercase tracking-wider font-bold mb-3">Verlauf (Letzte 7 Einträge)</p>
+                            <div className="flex gap-2">
+                                {history.slice(0, 7).map((entry, i) => {
+                                    const moodConfig = MOODS.find(m => m.id === entry.moodId);
+                                    if (!moodConfig) return null;
+                                    const date = new Date(entry.date);
+                                    const isToday = new Date().toDateString() === date.toDateString();
+
+                                    return (
+                                        <div key={i} className="group relative">
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${moodConfig.color} ${isToday ? 'ring-2 ring-stone-900 dark:ring-white ring-offset-2 dark:ring-offset-stone-900' : 'opacity-70 grayscale hover:grayscale-0'} transition-all`}>
+                                                <moodConfig.icon size={14} />
+                                            </div>
+                                            {/* Tooltip */}
+                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block whitespace-nowrap bg-stone-800 text-white text-[10px] py-1 px-2 rounded-md z-10">
+                                                {date.toLocaleDateString(undefined, { weekday: 'short' })}: {moodConfig.label.split(' / ')[0]}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="animate-in fade-in zoom-in-95 duration-300">
