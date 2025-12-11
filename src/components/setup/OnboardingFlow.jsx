@@ -8,22 +8,22 @@ const OnboardingFlow = ({ onComplete }) => {
         {
             title: "Mehr als nur dabei.",
             text: "Werde der Fels für deine Partnerin und der Held für dein Kind.",
-            icon: Trophy,
-            color: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400",
+            image: "/mascot/papa_neutral.png", // Changed from icon
+            color: "bg-amber-100 dark:bg-amber-900/40",
             bg: "bg-stone-50"
         },
         {
             title: "Dein zweites Gehirn.",
             text: "Termine, Wissen, Mental Load – wir halten dir den Rücken frei.",
-            icon: Zap,
-            color: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400",
-            bg: "bg-stone-50" // Keeping generic BG to avoid color flicker, focus on Icon
+            image: "/mascot/papa_smart.png",
+            color: "bg-indigo-100 dark:bg-indigo-900/40",
+            bg: "bg-stone-50"
         },
         {
             title: "Starkes Team.",
             text: "Verstehe ihre Signale und bleibe Partner, nicht nur Vater.",
-            icon: HeartHandshake,
-            color: "bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400",
+            image: "/mascot/papa_caring.png",
+            color: "bg-rose-100 dark:bg-rose-900/40",
             bg: "bg-stone-50"
         }
     ];
@@ -49,8 +49,8 @@ const OnboardingFlow = ({ onComplete }) => {
 
             {/* CONTENT */}
             <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500" key={step}>
-                <div className={`w-40 h-40 rounded-[48px] ${currentSlide.color} flex items-center justify-center mb-10 shadow-sm transition-transform duration-500 hover:scale-105`}>
-                    <currentSlide.icon size={64} strokeWidth={1.5} />
+                <div className={`w-64 h-64 rounded-[48px] ${currentSlide.color} flex items-center justify-center mb-10 shadow-sm transition-transform duration-500 hover:scale-105 p-6`}>
+                    <img src={currentSlide.image} alt={currentSlide.title} className="w-full h-full object-contain drop-shadow-lg" />
                 </div>
                 <h1 className="text-4xl font-bold text-stone-800 dark:text-stone-100 mb-6 font-serif tracking-tight leading-tight">{currentSlide.title}</h1>
                 <p className="text-stone-500 dark:text-stone-400 text-xl leading-relaxed max-w-xs font-medium">{currentSlide.text}</p>

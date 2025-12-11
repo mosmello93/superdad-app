@@ -40,19 +40,23 @@ const DailyTipWidget = ({ mode, week, babyName }) => {
 
     return (
         <div className="bg-amber-50 dark:bg-amber-900/20 p-6 rounded-3xl relative overflow-hidden border border-amber-100 dark:border-amber-800 transition-all hover:shadow-md group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity duration-500">
-                <img src="/mascot/papa_smart.png" alt="Papa Smart" className="w-24 h-24 object-contain filter grayscale group-hover:grayscale-0 transition-all" />
-            </div>
+            {/* Mascot - Always Visible (except in Loss mode) */}
+            {mode !== 'loss' && (
+                <div className="absolute -top-2 -right-2 p-4 opacity-100">
+                    <img src="/mascot/papa_smart.png" alt="Papa Smart" className="w-28 h-28 object-contain" />
+                </div>
+            )}
 
             <div className="relative z-10">
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex items-start gap-3 mb-4">
                     <div className="bg-white dark:bg-stone-900 p-2.5 rounded-full shadow-sm text-amber-600 dark:text-amber-400">
                         <Lightbulb size={24} className="fill-amber-100 dark:fill-amber-900" />
                     </div>
                     <button
                         onClick={() => loadTip(true)}
                         disabled={loading}
-                        className={`p-2 rounded-full hover:bg-amber-100 dark:hover:bg-amber-800 text-amber-600 dark:text-amber-400 transition-all ${loading ? 'animate-spin' : ''}`}
+                        className={`p-2 rounded-full bg-white/50 dark:bg-black/20 hover:bg-amber-100 dark:hover:bg-amber-800 text-amber-600 dark:text-amber-400 transition-all ${loading ? 'animate-spin' : ''}`}
+                        title="Neuer Tipp"
                     >
                         <RefreshCw size={18} />
                     </button>

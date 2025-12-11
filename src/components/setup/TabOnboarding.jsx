@@ -7,44 +7,45 @@ const getOnboardingContent = (mode, babyName, gender) => {
     return {
         pregnancy: {
             home: [
-                { title: "Dein Cockpit", text: `Hier siehst du sofort, in welcher Woche ihr seid, wie groß ${name} schon ist und deinen aktuellen XP-Level.` },
-                { title: "Daily Dads", text: "Tägliche Aufgaben (Habits) halten dich auf Kurs. Klicke sie an, um sie zu erledigen." },
-                { title: "Dein Dad Log", text: "Dein Tagebuch. Schreib direkt hier deine Gedanken auf. Es ist privat und nur für dich." },
-                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos)." }
+                { title: "Dein Cockpit", text: `Hier siehst du sofort, in welcher Woche ihr seid, wie groß ${name} schon ist und deinen aktuellen XP-Level.`, image: "/mascot/papa_neutral.png" },
+                { title: "Daily Dads", text: "Tägliche Aufgaben (Habits) halten dich auf Kurs. Klicke sie an, um sie zu erledigen.", image: "/mascot/papa_checklist.png" },
+                { title: "Dein Dad Log", text: "Dein Tagebuch. Schreib direkt hier deine Gedanken auf. Es ist privat und nur für dich.", image: "/mascot/papa_writing.png" },
+                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos).", image: "/mascot/papa_smart.png" }
             ],
             team: [
-                { title: "Euer Wir", text: "Beziehung ist Arbeit. Hier findest du alles, um mit deiner Partnerin in Verbindung zu bleiben." },
-                { title: "Partner Pulse", text: "Wie geht es ihr heute? Ein schneller Check, um Empathie zu zeigen." },
-                { title: "Vibe Check", text: "Wie ist die Stimmung zwischen euch? Nutze die AI-Analyse ganz unten." },
-                { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen." }
+                { title: "Euer Wir", text: "Beziehung ist Arbeit. Hier findest du alles, um mit deiner Partnerin in Verbindung zu bleiben.", image: "/mascot/papa_caring.png" },
+                { title: "Partner Pulse", text: "Wie geht es ihr heute? Ein schneller Check, um Empathie zu zeigen.", image: "/mascot/papa_caring.png" },
+                { title: "Vibe Check", text: "Wie ist die Stimmung zwischen euch? Nutze die AI-Analyse ganz unten.", image: "/mascot/papa_smart.png" }, // Or new icon? Smart fits AI.
+                { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen.", image: "/mascot/papa_talking.png", fallback: "/mascot/papa_neutral.png" } // papa_talking doesn't exist? Use fallback or neutral. Let's use neutral or happy.
             ],
             tools: [
-                { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}: Den Wehen-Timer, die Packliste und Hilfe bei Bürokratie.` },
-                { title: "To-Dos", text: "Hast du alles erledigt? Hake deine Aufgaben in der Checkliste ab." }
+                { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}: Den Wehen-Timer, die Packliste und Hilfe bei Bürokratie.`, image: "/mascot/papa_builder.png" },
+                { title: "To-Dos", text: "Hast du alles erledigt? Hake deine Aufgaben in der Checkliste ab.", image: "/mascot/papa_checklist.png" }
             ],
             knowledge: [
-                { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Fakten statt Blabla." },
-                { title: "Deep Dives", text: "Hier gibt es vertiefende Artikel zu Themen wie Finanzen, Geburtshilfe oder Mental Load." }
+                { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Fakten statt Blabla.", image: "/mascot/papa_smart.png" },
+                { title: "Deep Dives", text: "Hier gibt es vertiefende Artikel zu Themen wie Finanzen, Geburtshilfe oder Mental Load.", image: "/mascot/papa_research.png" }
             ]
         },
         postpartum: {
             home: [
-                { title: "Wochenbett-Modus", text: `Der Fokus liegt auf Fürsorge. Wie geht es der Mama? Wie geht es ${name}?` },
-                { title: "Neue Habits", text: "Deine Daily Dads haben sich angepasst: 'Nachtschicht übernehmen', 'Essen machen' sind jetzt deine Missionen." },
-                { title: "Dad Log", text: "Schlafmangel macht vergesslich. Notiere hier besondere Momente oder einfach nur Frust." },
-                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos)." }
+                { title: "Wochenbett-Modus", text: `Der Fokus liegt auf Fürsorge. Wie geht es der Mama? Wie geht es ${name}?`, image: "/mascot/papa_holding_baby.png" },
+                { title: "Neue Habits", text: "Deine Daily Dads haben sich angepasst: 'Nachtschicht übernehmen', 'Essen machen' sind jetzt deine Missionen.", image: "/mascot/papa_tired.png" },
+                { title: "Dad Log", text: "Schlafmangel macht vergesslich. Notiere hier besondere Momente oder einfach nur Frust.", image: "/mascot/papa_writing.png" },
+                { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos).", image: "/mascot/papa_smart.png" }
             ],
             team: [
-                { title: "Eltern-Team", text: "Ihr seid jetzt Eltern, aber bleibt ein Paar. Nutzt diesen Bereich, um euch nicht zu verlieren." },
-                { title: "Check-In", text: "Wie geht es euch wirklich? Macht regelmäßig den Vibe-Check." },
-                { title: "Deep Talk", text: "Fragen für Elternpaare. Damit ihr nicht nur über Windeln redet." }
+                { title: "Eltern-Team", text: "Ihr seid jetzt Eltern, aber bleibt ein Paar. Nutzt diesen Bereich, um euch nicht zu verlieren.", image: "/mascot/papa_caring.png" },
+                { title: "Check-In", text: "Wie geht es euch wirklich? Macht regelmäßig den Vibe-Check.", image: "/mascot/papa_smart.png" },
+                { title: "Deep Talk", text: "Fragen für Elternpaare. Damit ihr nicht nur über Windeln redet.", image: "/mascot/papa_neutral.png" }
             ],
             tools: [
-                { title: "Helfer im Chaos", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.` },
-                { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir bei den Anträgen." }
+                { title: "Helfer im Chaos", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.` }, // Missing image here
+                { title: "Meilensteine", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.`, image: "/mascot/papa_happy.png" },
+                { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir bei den Anträgen.", image: "/mascot/papa_paperwork.png" }
             ],
             knowledge: [
-                { title: "Neue Realität", text: "Wissen über Rückbildung, Baby-Schlaf und das 'Vierte Trimester'. Alles, um die erste Zeit zu meistern." }
+                { title: "Neue Realität", text: "Wissen über Rückbildung, Baby-Schlaf und das 'Vierte Trimester'. Alles, um die erste Zeit zu meistern.", image: "/mascot/papa_research.png" }
             ]
         },
         loss: {
@@ -93,9 +94,20 @@ const TabOnboarding = ({ mode, activeTab, onDismiss, babyName, gender }) => {
 
                 {/* Header Decoration */}
                 <div className="flex justify-center mb-6">
-                    <div className="bg-indigo-100 p-4 rounded-full text-indigo-600">
-                        <Info size={32} />
-                    </div>
+                    {currentSlide.image ? (
+                        <div className="w-40 h-40">
+                            <img
+                                src={currentSlide.image}
+                                alt={currentSlide.title}
+                                className="w-full h-full object-contain drop-shadow-md animate-in zoom-in-50 duration-500"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="bg-indigo-100 p-4 rounded-full text-indigo-600">
+                            <Info size={32} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Content */}
