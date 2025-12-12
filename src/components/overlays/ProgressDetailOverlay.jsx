@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { X, Sprout, Ruler, Weight, Baby } from 'lucide-react';
+import { X, Sprout, Ruler, Weight, Baby, Sparkles } from 'lucide-react';
 import { PREGNANCY_WEEKS } from '../../data/content';
+import Baby3DOverlay from './Baby3DOverlay';
 
 const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
     if (!statusData || !statusData.week) return null;
     const weekContent = PREGNANCY_WEEKS[statusData.week] || {};
 
     const [imgError, setImgError] = useState(false);
+    const [showBaby3D, setShowBaby3D] = useState(false);
+
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-300" onClick={closeDetail}></div>
@@ -67,11 +70,38 @@ const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
                             <>
                                 <div><h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase">Ihr Befinden</h3><p className="text-xl font-bold text-stone-800 dark:text-stone-100">{weekContent.feeling}</p></div>
                                 <div className="bg-indigo-50 dark:bg-indigo-900/30 p-5 rounded-2xl"><h3 className="text-xs font-bold text-indigo-400 dark:text-indigo-300 uppercase">Dein Pro-Tipp</h3><p className="text-stone-700 dark:text-stone-300">{weekContent.tip}</p></div>
+
+                                <div className="pt-4 pb-2">
+                                    <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase mb-3">3D Ansicht (Woche {statusData.week})</h3>
+                                    <div
+                                        onClick={() => setShowBaby3D(true)}
+                                        className="relative h-48 rounded-2xl overflow-hidden group shadow-md cursor-pointer"
+                                    >
+                                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
+                                        <img
+                                            src={`/images/fetus_3d/week_${[4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40].reduce((prev, curr) => Math.abs(curr - statusData.week) < Math.abs(prev - statusData.week) ? curr : prev)}.png`}
+                                            alt={`Baby in Woche ${statusData.week}`}
+                                            className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                        <div className="absolute bottom-3 right-4 z-20 flex items-center gap-2 text-white/90 text-xs font-medium bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10 group-hover:bg-white/20 transition-colors">
+                                            <Sparkles size={12} />
+                                            <span>Vergrößern</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </>
                         )}
                     </div>
                 </div>
             </div>
+
+            {/* 3D Baby Overlay */}
+            {showBaby3D && (
+                <Baby3DOverlay
+                    week={statusData.week}
+                    onClose={() => setShowBaby3D(false)}
+                />
+            )}
         </div>
     );
 };
