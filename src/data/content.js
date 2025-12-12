@@ -59,7 +59,30 @@ export const PREGNANCY_WEEKS = {
     14: { size: 'eine Orange', image: '/images/orange.png', cm: 8.7, g: 43, feeling: 'Babybauch wächst', tip: 'Mach die ersten Bauch-Fotos.', development: 'Das Baby beginnt, Fruchtwasser zu trinken.', mom: 'Ein kleines Bäuchlein könnte sichtbar werden.' },
     15: { size: 'ein Apfel', image: '/images/apfel.png', cm: 10.1, g: 70, feeling: 'Libido schwankt', tip: 'Geduld und Zärtlichkeit ohne Druck.', development: 'Es kann jetzt Lichtveränderungen wahrnehmen.', mom: 'Das Herzzeitvolumen steigt um bis zu 40%.' },
     16: { size: 'eine Avocado', image: '/images/avocado.png', cm: 11.6, g: 100, feeling: 'Nestbautrieb startet', tip: 'Entrümple das Arbeitszimmer/Zukünftiges Kinderzimmer.', development: 'Das Herz pumpt ca. 24 Liter Blut pro Tag.', mom: 'Vielleicht spürt sie das erste "Flattern" (Kindsbewegungen).' },
-    17: { size: 'eine Birne', image: '/images/birne.png', cm: 13.0, g: 140, feeling: 'Bänderdehnung', tip: 'Biete ihr eine Rückenmassage an.', development: 'Das Skelett verknöchert langsam (bisher Knorpel).', mom: 'Die Mutterbänder dehnen sich, was Ziehen in der Leiste verursacht.' },
+    17: {
+        size: 'eine Birne',
+        image: '/images/birne.png',
+        cm: 13.0,
+        g: 140,
+        feeling: 'Bänderdehnung',
+        tip: 'Biete ihr eine Rückenmassage an.',
+        development: {
+            summary: 'Das Skelett verknöchert langsam. Die Knorpel werden zu festen Knochen.',
+            details: [
+                { headline: "Skelett-Umbau", text: "Aus dem weichen Knorpel wird jetzt harter Knochen. Auch die Gehörknöchelchen verfestigen sich – das Baby beginnt zu hören!" },
+                { headline: "Proportionen", text: "Die Beine sind jetzt länger als die Arme. Das Baby sieht immer mehr aus wie ein 'richtiger' Mensch." },
+                { headline: "Fettgewebe", text: "Das 'Braune Fett' wird angelegt. Es ist wichtig für die Wärmeregulation nach der Geburt." }
+            ]
+        },
+        mom: {
+            summary: 'Die Mutterbänder dehnen sich, was Ziehen in der Leiste verursacht.',
+            details: [
+                { headline: "Mutterbänder", text: "Die Gebärmutter wächst rasant. Die Haltebänder (Mutterbänder) müssen Schwerstarbeit leisten, was oft als stechender Schmerz in der Leiste spürbar ist." },
+                { headline: "Kreislauf", text: "Das Herz muss viel mehr Blut pumpen. Schwindel beim schnellen Aufstehen ist normal. Langsam machen!" },
+                { headline: "Träume", text: "Viele Schwangere berichten jetzt von extrem lebhaften, manchmal wilden Träumen. Das ist die psychische Verarbeitung der Veränderung." }
+            ]
+        }
+    },
     18: { size: 'eine Paprika', image: '/images/paprika.png', cm: 14.2, g: 190, feeling: 'Erstes Flattern?', tip: 'Hand auf den Bauch, Geduld haben.', development: 'Die Ohren sind an der richtigen Stelle; Hören beginnt.', mom: 'Der Schwerpunkt verlagert sich, was zu Rückenschmerzen führen kann.' },
     19: { size: 'eine Mango', image: '/images/mango.png', cm: 15.3, g: 240, feeling: 'Heißhunger', tip: 'Geh auch nachts für Eis zur Tanke.', development: 'Vernix (Käseschmiere) bildet sich zum Hautschutz.', mom: 'Pigmentveränderungen (Linea Nigra) können am Bauch erscheinen.' },
     20: { size: 'eine Banane', image: '/images/banane.png', cm: 16.4, g: 300, feeling: 'Halbzeit!', tip: 'Feiert Bergfest. Geht schick essen.', development: 'Geschlechtsorgane sind im Ultraschall gut erkennbar.', mom: 'Der Bauchnabel wölbt sich eventuell nach außen.' },
@@ -87,14 +110,279 @@ export const PREGNANCY_WEEKS = {
 };
 
 export const POSTPARTUM_WEEKS = {
-    1: { title: "Wochenbett-Start", feeling: "Adrenalin & Erschöpfung", tip: "Besuche rigoros begrenzen. Sie gehört ins Bett." },
-    2: { title: "Baby-Blues", feeling: "Tränenmeer", tip: "Trösten, nicht 'fixen'. Es sind die Hormone." },
-    3: { title: "Cluster-Feeding", feeling: "Dauer-Stillen", tip: "Richte ihr eine bequeme 'Still-Station' mit Snacks ein." },
-    4: { title: "Erste Routine?", feeling: "Vorsichtige Zuversicht", tip: "Überimm eine feste Aufgabe (z.B. das Abend-Bad)." },
-    5: { title: "Wachstumsschub", feeling: "Quengelig", tip: "Tragen, tragen, tragen. Der Gymnastikball ist dein Freund." },
-    6: { title: "Nachsorge", feeling: "Körper-Check", tip: "Frag sie, wie der Arzttermin war. Sei sensibel mit dem Thema Rückbildung." },
-    8: { title: "Alltag kehrt ein", feeling: "Neu-Orientierung", tip: "Plant kleine 'Wir-Momente' ohne Baby (wenn auch nur 10 Min)." },
-    12: { title: "Die 4. Trimester-Grenze", feeling: "Aufwachen", tip: "Reflektiert zusammen: Was läuft gut, was nervt?" }
+    0: {
+        title: "Willkommen",
+        feeling: "Alles ist neu",
+        tip: "Besuche rigoros begrenzen. Sie gehört ins Bett.",
+        baby: {
+            summary: "Schläft viel (bis zu 16h). Der erste Stuhlgang (Kindspech).",
+            details: [
+                { headline: "Schlafverhalten", text: "Neugeborene schlafen 16-18 Stunden, aber in kurzen Phasen (2-4h). Tag und Nacht sind noch unbekannt." },
+                { headline: "Kindspech", text: "Der erste Stuhlgang ist schwarz-grün und klebrig (Mekonium). Das ist ein gutes Zeichen – der Darm arbeitet." },
+                { headline: "Gewicht", text: "Eine Abnahme von bis zu 10% des Geburtsgewichts in den ersten Tagen ist völlig normal. Das holen sie schnell wieder auf." }
+            ]
+        },
+        mom: {
+            summary: "Wochenfluss ist stark. Geburtsverletzungen heilen.",
+            details: [
+                { headline: "Wochenfluss (Lochien)", text: "Stärker als die Periode. Ruhe ist jetzt die wichtigste Medizin, damit die Gebärmutter heilen kann." },
+                { headline: "Milcheinschuss", text: "Zwischen Tag 3 und 5 schießt die Milch ein. Die Brüste können spannen, heiß werden und schmerzen. Coolpacks helfen." },
+                { headline: "Hormon-Chaos", text: "Der 'Baby Blues' kann sich schon ankündigen. Tränen ohne Grund sind okay." }
+            ]
+        }
+    },
+    1: {
+        title: "Wochenbett-Start",
+        feeling: "Adrenalin & Erschöpfung",
+        tip: "Besuche rigoros begrenzen. Sie gehört ins Bett.",
+        baby: {
+            summary: "Schläft viel (bis zu 16h). Der erste Stuhlgang (Kindspech).",
+            details: [
+                { headline: "Schlafverhalten", text: "Neugeborene schlafen 16-18 Stunden, aber in kurzen Phasen (2-4h). Tag und Nacht sind noch unbekannt." },
+                { headline: "Kindspech", text: "Der erste Stuhlgang ist schwarz-grün und klebrig (Mekonium). Das ist ein gutes Zeichen – der Darm arbeitet." },
+                { headline: "Gewicht", text: "Eine Abnahme von bis zu 10% des Geburtsgewichts in den ersten Tagen ist völlig normal. Das holen sie schnell wieder auf." }
+            ]
+        },
+        mom: {
+            summary: "Wochenfluss ist stark. Geburtsverletzungen heilen.",
+            details: [
+                { headline: "Wochenfluss (Lochien)", text: "Stärker als die Periode. Ruhe ist jetzt die wichtigste Medizin, damit die Gebärmutter heilen kann." },
+                { headline: "Milcheinschuss", text: "Zwischen Tag 3 und 5 schießt die Milch ein. Die Brüste können spannen, heiß werden und schmerzen. Coolpacks helfen." },
+                { headline: "Hormon-Chaos", text: "Der 'Baby Blues' kann sich schon ankündigen. Tränen ohne Grund sind okay." }
+            ]
+        }
+    },
+    2: {
+        title: "Baby-Blues",
+        feeling: "Tränenmeer",
+        tip: "Trösten, nicht 'fixen'. Es sind die Hormone.",
+        baby: {
+            summary: "Nabelschnurrest fällt ab. Saugreflex ist stark.",
+            details: [
+                { headline: "Der Nabel", text: "Der Rest der Nabelschnur trocknet ein und fällt meist zwischen Tag 5 und 14 ab. Einfach trocken halten." },
+                { headline: "Saugbedürfnis", text: "Saugen beruhigt. Hände, Schnuller oder Brust – alles wird probiert. Es ist ihr wichtigster Reflex." },
+                { headline: "Wachstum", text: "Jetzt sollte das Geburtsgewicht langsam wieder erreicht sein." }
+            ]
+        },
+        mom: {
+            summary: "Der 'Baby Blues' trifft viele: Plötzliches Weinen.",
+            details: [
+                { headline: "Heultage", text: "Ca. 80% aller Mütter (und auch Väter!) erleben den Baby Blues. Es ist keine Depression, sondern ein Hormonabfall." },
+                { headline: "Körperpflege", text: "Kurze Duschen tun gut. Baden erst, wenn der Wochenfluss vorbei ist (Infektionsgefahr)." },
+                { headline: "Narbenpflege", text: "Egal ob Dammriss oder Kaiserschnitt – Luft an die Wunde lassen hilft der Heilung." }
+            ]
+        }
+    },
+    3: {
+        title: "Cluster-Feeding",
+        feeling: "Dauer-Stillen",
+        tip: "Richte ihr eine bequeme 'Still-Station' mit Snacks ein.",
+        baby: {
+            summary: "Will abends oft stundenlang trinken ('Cluster Feeding').",
+            details: [
+                { headline: "Cluster Feeding", text: "Abendliches Dauerstillen ist normal. Es regt die Milchproduktion für den nächsten Wachstumsschub an." },
+                { headline: "Baby-Akne", text: "Kleine Pickelchen im Gesicht? Das sind deine Hormone, die noch im Babykreislauf sind. Geht von alleine weg." },
+                { headline: "Bauchweh", text: "Der Darm reift nach. Fliegergriff und sanfte Bauchmassagen können Linderung verschaffen." }
+            ]
+        },
+        mom: {
+            summary: "Brustwarzen können empfindlich sein. Erschöpfung am Peak.",
+            details: [
+                { headline: "Wunde Brustwarzen", text: "Viel Luft dranlassen, Lanolin-Salbe nutzen. Wenn es blutet oder extrem schmerzt: Hebamme fragen!" },
+                { headline: "Schlafmangel", text: "Jetzt zeigt sich der Schlafentzug. Übernimm das Wickeln in der Nacht, damit sie liegen bleiben kann." },
+                { headline: "Ernährung", text: "Sie braucht Energie. Stillen verbraucht ca. 500 kcal extra. Snacks bereitstellen!" }
+            ]
+        }
+    },
+    4: {
+        title: "Erste Routine?",
+        feeling: "Vorsichtige Zuversicht",
+        tip: "Überimm eine feste Aufgabe (z.B. das Abend-Bad).",
+        baby: {
+            summary: "Beginnt, Gesichter kurz zu fixieren. Kopf heben üben.",
+            details: [
+                { headline: "Sichtfeld", text: "Dein Baby sieht am besten auf 20-30 cm Entfernung – genau der Abstand beim Tragen oder Stillen." },
+                { headline: "Tummy Time", text: "Kurz auf den Bauch legen (unter Aufsicht) stärkt die Nackenmuskulatur. Aber nur wenn es wach ist." },
+                { headline: "Weinen", text: "Das Weinen erreicht oft in Woche 4-6 seinen Höhepunkt. Es ist Kommunikation, keine Manipulation." }
+            ]
+        },
+        mom: {
+            summary: "Wochenfluss wird weniger. Erste Spaziergänge.",
+            details: [
+                { headline: "Bewegung", text: "Erste kurze Spaziergänge sind okay. Aber auf den Körper hören: Wenn der Wochenfluss wieder rot wird, war es zu viel." },
+                { headline: "Beckenboden", text: "Noch keine Übungen, aber bewusstes 'Ansteuern' und Schonen ist wichtig. Nicht schwer heben!" },
+                { headline: "Isolation", text: "Viele Mamas fühlen sich jetzt einsam, wenn der Partner wieder arbeitet. Check-ins sind wichtig." }
+            ]
+        }
+    },
+    5: {
+        title: "Wachstumsschub",
+        feeling: "Quengelig",
+        tip: "Tragen, tragen, tragen. Der Gymnastikball ist dein Freund.",
+        baby: {
+            summary: "Erster großer Schub. Wirkt unzufrieden, trinkt häufiger.",
+            details: [
+                { headline: "Der 5-Wochen-Schub", text: "Die Welt wird schärfer, lauter, bunter. Das macht Angst. Das Baby braucht jetzt viel Nähe ('Klammerphase')." },
+                { headline: "Lächeln?", text: "Vielleicht siehst du schon ein erstes, echtes soziales Lächeln (kein Pups-Lächeln mehr)." },
+                { headline: "Schlaf-Regression", text: "Durch den Schub schlafen viele Babys plötzlich wieder schlechter. Durchhalten." }
+            ]
+        },
+        mom: {
+            summary: "Vielleicht startet der hormonelle Haarausfall.",
+            details: [
+                { headline: "Haarausfall", text: "Der Östrogenspiegel fällt. Die Haare, die in der Schwangerschaft nicht ausgefallen sind, fallen jetzt aus. Das wächst nach!" },
+                { headline: "Zweifel", text: "'Mache ich das richtig?' - Mütterzweifel sind normal. Bestärke sie in ihrer Intuition." },
+                { headline: "Partnerschaft", text: "Der erste Stress legt sich, jetzt knallt es oft mal. Redet über Erwartungen." }
+            ]
+        }
+    },
+    6: {
+        title: "Nachsorge",
+        feeling: "Körper-Check",
+        tip: "Frag sie, wie der Arzttermin war. Sei sensibel.",
+        baby: {
+            summary: "Das erste soziale Lächeln! Reagiert auf Ansprache.",
+            details: [
+                { headline: "Kommunikation", text: "Es beginnt zu 'erzählen' (Gurr-Laute). Antworte ihm, das fördert die Sprachentwicklung." },
+                { headline: "Greifen", text: "Die Hände öffnen sich öfter. Es versucht vielleicht schon unkoordiniert nach Dingen zu schlagen." },
+                { headline: "Wachphasen", text: "Es ist jetzt länger am Stück wach und will unterhalten werden." }
+            ]
+        },
+        mom: {
+            summary: "Abschlussuntersuchung Gynäkologe. Rückbildung startet.",
+            details: [
+                { headline: "Der Check-Up", text: "Nach ca. 6 Wochen prüft der Arzt die Rückbildung der Gebärmutter und Wundheilung." },
+                { headline: "Rückbildungskurs", text: "Super wichtig für Beckenboden und Bauchmuskeln. Motivier sie, hinzugehen (und pass aufs Baby auf)." },
+                { headline: "Sex", text: "Nach dem Arzt-OK theoretisch möglich. Praktisch: Nur wenn SIE bereit ist (Kopf & Körper)." }
+            ]
+        }
+    },
+    7: {
+        title: "Nachsorge",
+        feeling: "Körper-Check",
+        tip: "Frag sie, wie der Arzttermin war. Sei sensibel.",
+        baby: {
+            summary: "Das erste soziale Lächeln! Reagiert auf Ansprache.",
+            details: [
+                { headline: "Kommunikation", text: "Es beginnt zu 'erzählen' (Gurr-Laute). Antworte ihm, das fördert die Sprachentwicklung." },
+                { headline: "Greifen", text: "Die Hände öffnen sich öfter. Es versucht vielleicht schon unkoordiniert nach Dingen zu schlagen." },
+                { headline: "Wachphasen", text: "Es ist jetzt länger am Stück wach und will unterhalten werden." }
+            ]
+        },
+        mom: {
+            summary: "Abschlussuntersuchung Gynäkologe. Rückbildung startet.",
+            details: [
+                { headline: "Der Check-Up", text: "Nach ca. 6 Wochen prüft der Arzt die Rückbildung der Gebärmutter und Wundheilung." },
+                { headline: "Rückbildungskurs", text: "Super wichtig für Beckenboden und Bauchmuskeln. Motivier sie, hinzugehen (und pass aufs Baby auf)." },
+                { headline: "Sex", text: "Nach dem Arzt-OK theoretisch möglich. Praktisch: Nur wenn SIE bereit ist (Kopf & Körper)." }
+            ]
+        }
+    },
+    8: {
+        title: "Alltag kehrt ein",
+        feeling: "Neu-Orientierung",
+        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        baby: {
+            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            details: [
+                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
+                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
+                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+            ]
+        },
+        mom: {
+            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            details: [
+                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
+                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
+                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+            ]
+        }
+    },
+    9: {
+        title: "Alltag kehrt ein",
+        feeling: "Neu-Orientierung",
+        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        baby: {
+            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            details: [
+                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
+                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
+                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+            ]
+        },
+        mom: {
+            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            details: [
+                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
+                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
+                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+            ]
+        }
+    },
+    10: {
+        title: "Alltag kehrt ein",
+        feeling: "Neu-Orientierung",
+        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        baby: {
+            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            details: [
+                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
+                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
+                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+            ]
+        },
+        mom: {
+            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            details: [
+                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
+                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
+                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+            ]
+        }
+    },
+    11: {
+        title: "Alltag kehrt ein",
+        feeling: "Neu-Orientierung",
+        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        baby: {
+            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            details: [
+                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
+                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
+                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+            ]
+        },
+        mom: {
+            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            details: [
+                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
+                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
+                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+            ]
+        }
+    },
+    12: {
+        title: "Die 4. Trimester-Grenze",
+        feeling: "Aufwachen",
+        tip: "Reflektiert zusammen: Was läuft gut, was nervt?",
+        baby: {
+            summary: "Kopfkontrolle ist stabil. Brabbelt viel.",
+            details: [
+                { headline: "Stabilität", text: "In Bauchlage wird der Kopf stolz oben gehalten. Die Welt wird aus einer neuen Perspektive entdeckt." },
+                { headline: "Interaktion", text: "Es lacht laut, quietscht und sucht aktiv Kontakt. Es erkennt vertraute Personen." },
+                { headline: "Rhythmus", text: "Vielleicht (ganz vielleicht) hat sich ein grober Tag-Nacht-Rhythmus eingependelt." }
+            ]
+        },
+        mom: {
+            summary: "Die 'akute' Phase ist vorbei. Zeit für Bilanz.",
+            details: [
+                { headline: "Meilenstein", text: "Das 'Vierte Trimester' ist geschafft. Der Körper hat Großes geleistet und sich regeneriert." },
+                { headline: "Beruf", text: "Vielleicht geht es um den Wiedereinstieg oder Elternzeit-Planung. Finanz-Check machen." },
+                { headline: "Freiheit", text: "Erste längere Trennungen vom Baby (z.B. für einen Abend) sind jetzt oft mental möglich." }
+            ]
+        }
+    }
 };
 
 // Helper icon
@@ -362,6 +650,59 @@ export const ARTICLES = {
             { headline: "Elterngeld & Elternzeit", text: "Der Klassiker: 12+2 Monate. Aber es gibt auch ElterngeldPlus für Teilzeit. Rechnet es frühzeitig durch!" },
             { headline: "Vaterschaftsanerkennung", text: "Seid ihr nicht verheiratet? Dann musst du die Vaterschaft offiziell anerkennen (Jugendamt/Standesamt). Genauso das Sorgerecht." },
             { headline: "Kindergeld", text: "Gibt's für alle. Antrag bei der Familienkasse stellen (geht oft schon online vorbereitet)." }
+        ]
+    }
+};
+
+export const ARTICLES_POSTPARTUM = {
+    bonding: {
+        title: "Bindung aufbauen",
+        icon: User,
+        color: "indigo",
+        content: [
+            { headline: "Haut an Haut", text: "Kuscheln ist nicht nur gemütlich, es schüttet Oxytocin aus. Das Bindungshormon hilft euch beiden, anzukommen." },
+            { headline: "Tragen hilft", text: "Ein Tragetuch oder eine Trage ist Gold wert. Das Baby ist nah bei dir, beruhigt sich schneller und du hast die Hände frei." },
+            { headline: "Deine Aufgaben", text: "Baden, Wickeln, Spazieren – mach diese Dinge zu deinen exklusiven Papa-Momenten. Routine schafft Vertrauen." }
+        ]
+    },
+    sleep: {
+        title: "Schlaf-Survival",
+        icon: Moon,
+        color: "blue",
+        content: [
+            { headline: "Schichtsystem", text: "Teilt die Nächte auf, wenn möglich. Oder einer übernimmt die erste Nachthälfte (bis 1 Uhr), der andere die zweite." },
+            { headline: "Power Naps", text: "Schlaf, wenn das Baby schläft. Ja, der Haushalt bleibt liegen. Dein Schlaf ist jetzt wichtiger als ein sauberer Boden." },
+            { headline: "Akzeptanz", text: "Es ist nur eine Phase. Das Mantra aller Eltern. Es wird besser. Versprochen." }
+        ]
+    },
+    ppd_dad: {
+        title: "PPD beim Mann?",
+        icon: AlertTriangle,
+        color: "rose",
+        content: [
+            { headline: "Nicht nur Mamas", text: "Auch Väter können eine postpartale Depression entwickeln (ca. 10%). Gereiztheit, Rückzug, Leeregefühl sind Warnsignale." },
+            { headline: "Reden hilft", text: "Fress es nicht in dich rein. Sprich mit deiner Partnerin oder einem Freund. Es ist keine Schwäche, sich Hilfe zu holen." },
+            { headline: "Professionelle Hilfe", text: "Wenn das Gefühl anhält: Geh zum Hausarzt. Es gibt Therapien, die schnell helfen." }
+        ]
+    },
+    relationship: {
+        title: "Eltern vs. Paar",
+        icon: Heart,
+        color: "emerald",
+        content: [
+            { headline: "Kleine Inseln", text: "Ein gemeinsamer Kaffee am Morgen, 10 Minuten auf dem Sofa. Sucht euch kleine Momente, in denen ihr kein 'Team' seid, sondern ein Paar." },
+            { headline: "Kommunikation", text: "Sagt euch, was ihr braucht. 'Ich bin müde' ist kein Vorwurf. 'Ich brauche 30 Min Pause' ist eine klare Bitte." },
+            { headline: "Geduld", text: "Ihr seid beide im Ausnahmezustand. Seid gnädig miteinander. Niemand meint es böse." }
+        ]
+    },
+    metime: {
+        title: "Zeit für Dich",
+        icon: Battery,
+        color: "amber",
+        content: [
+            { headline: "Auftanken", text: "Du kannst nicht aus einer leeren Tasse schenken. Nimm dir Auszeiten für Sport, Freunde oder Hobbys." },
+            { headline: "Absprache", text: "Plant feste Zeiten ein. Dienstagabend ist Papa-Sport-Zeit. Donnerstagabend ist Mama-Zeit. Verlässlichkeit reduziert Stress." },
+            { headline: "Kein schlechtes Gewissen", text: "Ein entspannter Papa ist für das Baby (und die Mama) wertvoller als ein ausgebrannter Märtyrer." }
         ]
     }
 };

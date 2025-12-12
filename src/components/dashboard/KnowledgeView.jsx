@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, Sprout, Sparkles, AlertCircle, Heart, User } from 'lucide-react';
-import { PREGNANCY_WEEKS, POSTPARTUM_WEEKS, LOSS_CONTENT, ARTICLES } from '../../data/content';
+import { PREGNANCY_WEEKS, POSTPARTUM_WEEKS, LOSS_CONTENT, ARTICLES, ARTICLES_POSTPARTUM } from '../../data/content';
 import ArticleOverlay from '../overlays/ArticleOverlay';
 import Baby3DOverlay from '../overlays/Baby3DOverlay';
 
@@ -79,9 +79,18 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                 icon: isPostpartum ? Heart : Sprout,
                 content: {
                     title: isPostpartum ? 'Entwicklung' : info.size,
-                    text: info.development,
-                    meta: isPostpartum ? null : `${info.cm} cm | ${info.g} g`
+                    text: (() => {
+                        const source = isPostpartum ? info.baby : info.development;
+                        if (!source) return 'Wachstum und Gedeihen.';
+                        return typeof source === 'object' ? source.summary : source;
+                    })(),
+                    meta: isPostpartum ? null : `${info.cm} cm | ${info.g} g`,
+                    details: (() => {
+                        const source = isPostpartum ? info.baby : info.development;
+                        return (typeof source === 'object' && source.details) ? source.details : null;
+                    })()
                 },
+                baseColor: isPostpartum ? 'rose' : 'emerald',
                 color: isPostpartum ? 'text-rose-500 bg-rose-50 dark:bg-rose-900/40' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/40'
             },
             {
@@ -90,8 +99,19 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                 icon: User,
                 content: {
                     title: 'Körper & Gefühl',
-                    text: info.mom || info.feeling // Fallback to feeling if mom text missing
+                    text: (() => {
+                        // In pregnancy: info.mom is string (usually). In postpartum: info.mom is object.
+                        // But we want to support object in pregnancy too.
+                        const source = info.mom;
+                        if (!source) return info.feeling || 'Alles okay?';
+                        return typeof source === 'object' ? source.summary : source;
+                    })(),
+                    details: (() => {
+                        const source = info.mom;
+                        return (typeof source === 'object' && source.details) ? source.details : null;
+                    })()
                 },
+                baseColor: 'rose',
                 color: 'text-rose-500 bg-rose-50 dark:bg-rose-900/40'
             },
             {
@@ -102,9 +122,45 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     title: 'Pro-Tipp',
                     text: info.tip
                 },
+                baseColor: 'amber',
                 color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/40'
             }
         ];
+
+        console.log('DEBUG CATEGORIES:', categories); // SEE WHAT IS ACTUALLY HERE
+
+
+        const handleCardClick = (cat) => {
+            // Check if we have detailed content to show
+            if (cat.content.details) {
+                setSelectedArticle({
+                    title: cat.title,
+                    icon: cat.icon,
+                    color: cat.baseColor,
+                    content: cat.content.details
+                });
+            } else if (cat.id === 'dad' && isPostpartum) {
+                // Special handling for Dad card in postpartum if we want to show generic dad tips or just the tip
+                // For now, let's keep it simple or maybe expand it later.
+                // Currently just shows the tip as a single item if we click it.
+                setSelectedArticle({
+                    title: cat.title,
+                    icon: cat.icon,
+                    color: cat.baseColor,
+                    content: [{ headline: 'Tipp der Woche', text: cat.content.text }]
+                });
+            } else {
+                // Fallback for pregnancy cards or non-detailed cards
+                setSelectedArticle({
+                    title: cat.title,
+                    icon: cat.icon,
+                    color: cat.baseColor,
+                    content: [
+                        { headline: cat.content.title, text: cat.content.text }
+                    ]
+                });
+            }
+        };
 
         return (
             <div className="space-y-6 animate-in fade-in pb-24">
@@ -143,13 +199,16 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     {categories.map((cat) => (
                         <div key={cat.id} className="space-y-2">
                             <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest pl-2">{cat.title}</h3>
-                            <div className="bg-white dark:bg-stone-900 p-6 rounded-[24px] border border-stone-100 dark:border-stone-800 shadow-sm flex gap-4">
-                                <div className={`p-3 h-fit rounded-2xl flex-shrink-0 ${cat.color}`}>
+                            <div
+                                onClick={() => handleCardClick(cat)}
+                                className="bg-white dark:bg-stone-900 p-6 rounded-[24px] border border-stone-100 dark:border-stone-800 shadow-sm flex gap-4 cursor-pointer hover:border-stone-300 dark:hover:border-stone-700 transition-colors group"
+                            >
+                                <div className={`p-3 h-fit rounded-2xl flex-shrink-0 ${cat.color} group-hover:scale-110 transition-transform`}>
                                     <cat.icon size={24} />
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-stone-800 dark:text-stone-100 mb-1">{cat.content.title}</h4>
-                                    <p className="text-stone-600 dark:text-stone-400 leading-relaxed text-sm">
+                                    <p className="text-stone-600 dark:text-stone-400 leading-relaxed text-sm line-clamp-2">
                                         {cat.content.text}
                                     </p>
                                     {cat.content.meta && (
@@ -167,7 +226,7 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                 <div className="space-y-3 pt-4">
                     <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest pl-2">Mehr Wissen</h3>
                     <div className="grid grid-cols-2 gap-3">
-                        {Object.entries(ARTICLES).map(([key, article]) => {
+                        {Object.entries(mode === 'postpartum' ? ARTICLES_POSTPARTUM : ARTICLES).map(([key, article]) => {
                             const colorMap = {
                                 indigo: {
                                     card: "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-100 dark:border-indigo-800/20 hover:border-indigo-200",
