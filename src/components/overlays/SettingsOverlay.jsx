@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Download, Trash2, Shield, FileText, Info, ChevronRight, Check } from 'lucide-react';
 import { exportUserData } from '../../utils/dataManagement';
 
-const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0" }) => {
+const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, gender, onSaveProfile }) => {
     const [exportStatus, setExportStatus] = useState('idle'); // idle, success
 
     const handleExport = () => {
@@ -42,6 +42,50 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0" }) => {
                 </div>
 
                 <div className="space-y-6">
+
+                    {/* Section: Baby Profil */}
+                    <div>
+                        <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 ml-1">Baby Profil</h3>
+                        <div className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 p-4 space-y-4">
+
+                            {/* Name Input */}
+                            <div>
+                                <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase mb-1.5">Name (Optional)</label>
+                                <input
+                                    type="text"
+                                    defaultValue={babyName}
+                                    onBlur={(e) => onSaveProfile({ babyName: e.target.value })}
+                                    placeholder="z.B. Krümel, Erbse oder Name"
+                                    className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-3 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                />
+                            </div>
+
+                            {/* Gender Selection */}
+                            <div>
+                                <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase mb-2">Geschlecht</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { id: 'boy', label: 'Junge', icon: '👦' },
+                                        { id: 'girl', label: 'Mädchen', icon: '👧' },
+                                        { id: 'surprise', label: 'Überraschung', icon: '🎁' }
+                                    ].map((opt) => (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => onSaveProfile({ gender: opt.id })}
+                                            className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all ${gender === opt.id
+                                                ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
+                                                : 'bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                                                }`}
+                                        >
+                                            <span className="text-xl">{opt.icon}</span>
+                                            <span className="text-xs font-medium">{opt.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
 
                     {/* Section: Data */}
                     <div>

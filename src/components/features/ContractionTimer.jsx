@@ -5,6 +5,7 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
     const [isTiming, setIsTiming] = useState(false);
     const [startTime, setStartTime] = useState(null);
     const [elapsed, setElapsed] = useState(0);
+    const [showInfo, setShowInfo] = useState(true);
 
     useEffect(() => {
         let interval;
@@ -80,6 +81,31 @@ const ContractionTimer = ({ contractions, saveContractions, closeTimer }) => {
                 {isTiming ? <Square fill="currentColor" /> : <Play fill="currentColor" />}
                 {isTiming ? "Stoppen" : "Wehe Starten"}
             </button>
+
+            {/* INSTRUCTIONS TOGGLE */}
+            <div className="mt-6 text-center">
+                <button
+                    onClick={() => setShowInfo(!showInfo)}
+                    className="text-stone-400 dark:text-stone-500 text-xs font-semibold hover:text-stone-600 dark:hover:text-stone-300 transition"
+                >
+                    {showInfo ? "Anleitung ausblenden" : "Wann ins Krankenhaus?"}
+                </button>
+
+                {showInfo && (
+                    <div className="mt-4 bg-stone-50 dark:bg-stone-800 text-left p-4 rounded-2xl text-sm text-stone-600 dark:text-stone-300 animate-in fade-in slide-in-from-top-2">
+                        <h4 className="font-bold text-stone-800 dark:text-stone-100 mb-2">Die 5-1-1 Regel</h4>
+                        <p className="mb-2">Eine gute Faustregel, wann es losgeht:</p>
+                        <ul className="list-disc pl-4 space-y-1 mb-3 text-xs leading-relaxed">
+                            <li>Wehen kommen alle <strong>5 Minuten</strong></li>
+                            <li>Dauern jeweils <strong>1 Minute</strong> lang</li>
+                            <li>Bleiben so stark für <strong>1 Stunde</strong></li>
+                        </ul>
+                        <p className="text-xs italic opacity-70 border-t border-stone-200 dark:border-stone-700 pt-2">
+                            Hinweis: Hör auf dein Bauchgefühl. Wenn du unsicher bist oder Blasensprung hast → ruf im Kreißsaal an!
+                        </p>
+                    </div>
+                )}
+            </div>
 
             {contractions.length > 0 && (
                 <div className="mt-8">

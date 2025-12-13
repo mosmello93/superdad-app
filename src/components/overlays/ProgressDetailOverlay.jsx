@@ -110,7 +110,7 @@ const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
                                     >
                                         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
                                         <img
-                                            src={`/images/fetus_3d/week_${[4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40].reduce((prev, curr) => Math.abs(curr - viewedWeek) < Math.abs(prev - viewedWeek) ? curr : prev)}.png`}
+                                            src={`/images/fetus_3d/week_${Math.max(4, Math.min(viewedWeek, 41))}.png`}
                                             alt={`Baby in Woche ${viewedWeek}`}
                                             className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
                                         />

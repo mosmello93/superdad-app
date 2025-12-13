@@ -4,7 +4,7 @@ import { X, Download, Share2 } from 'lucide-react';
 const Baby3DOverlay = ({ week, onClose }) => {
     if (!week) return null;
 
-    const availableWeeks = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40];
+    const availableWeeks = Array.from({ length: 38 }, (_, i) => i + 4); // Weeks 4 to 41
     const closestWeek = availableWeeks.reduce((prev, curr) => Math.abs(curr - week) < Math.abs(prev - week) ? curr : prev);
     const imagePath = `/images/fetus_3d/week_${closestWeek}.png`;
 

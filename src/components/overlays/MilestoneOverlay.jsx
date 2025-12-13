@@ -2,7 +2,9 @@ import React, { useRef } from 'react';
 import { CheckCircle, Lock, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { MILESTONES_PREGNANCY, MILESTONES_POSTPARTUM } from '../../data/milestones';
 
-const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mode, milestonePhotos = {}, onSavePhoto }) => {
+const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mode, milestonePhotos = {}, onSavePhoto, milestoneDates = {}, onUpdateDate }) => {
+    // DEBUG: Inspect dates
+    console.log('MilestoneOverlay render:', { unlockedMilestones, milestoneDates, mode });
 
     // Select data based on mode
     const milestoneData = mode === 'pregnancy' ? MILESTONES_PREGNANCY : MILESTONES_POSTPARTUM;
@@ -107,7 +109,16 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
                                         {milestone.title}
                                     </h3>
                                     {isUnlocked && (
-                                        <p className="text-[10px] text-stone-400 dark:text-stone-500 font-medium">{milestone.timing}</p>
+                                        <div className="mt-1 mb-2">
+                                            <p className="text-[10px] text-stone-400 dark:text-stone-500 font-medium mb-1">{milestone.timing}</p>
+                                            <input
+                                                type="date"
+                                                value={milestoneDates && milestoneDates[milestone.id] ? milestoneDates[milestone.id] : ''}
+                                                onChange={(e) => onUpdateDate(milestone.id, e.target.value)}
+                                                onClick={(e) => e.stopPropagation()} // Prevent closing/toggling
+                                                className="text-xs bg-transparent border-b border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 w-full"
+                                            />
+                                        </div>
                                     )}
                                 </div>
 

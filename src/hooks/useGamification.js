@@ -1,17 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import { calculateLevel } from '../utils/gamification';
 
-export const useGamification = (tasks, habits) => {
+export const useGamification = (tasks, habitXP) => {
     const [newLevelUnlocked, setNewLevelUnlocked] = useState(null); // { level: 2, title: "..." }
 
     const currentXP = useMemo(() => {
-        if (!tasks || !habits) return 0;
+        if (!tasks) return 0;
 
         const tasksDone = tasks.filter(t => t.completed).length * 50;
-        const habitsDone = Object.values(habits).filter(v => v === true).length * 10;
+        // habitXP is now a cumulative number passed in
+        const safeHabitXP = habitXP || 0;
 
-        return tasksDone + habitsDone;
-    }, [tasks, habits]);
+        return tasksDone + safeHabitXP;
+    }, [tasks, habitXP]);
 
     // Level Tracking
     useEffect(() => {
@@ -22,9 +23,11 @@ export const useGamification = (tasks, habits) => {
             // LEVEL UP!
             setNewLevelUnlocked(currentLevelInfo);
             localStorage.setItem('dad_last_level', currentLevelInfo.level.toString());
-        } else if (currentLevelInfo.level < savedLevel) {
-            // Sync down if reset happened
-            localStorage.setItem('dad_last_level', currentLevelInfo.level.toString());
+        }
+        // Remove aggressive sync down to avoid resetting on app load (when data is still fetching)
+        if (currentLevelInfo.level < savedLevel && currentXP > 0) {
+            // Optional: Only sync down if we are sure it's not a loading glitch
+            // For now, doing nothing is safer. The user stays at "Level 5" in storage even if temporary XP is 0.
         }
     }, [currentXP]);
 

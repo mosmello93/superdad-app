@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 
-export const useHabits = (initialHabits, saveProfile) => {
+export const useHabits = (initialHabits, saveProfile, onHabitAction) => {
     // Default structure to prevent crashes if data is missing
     const defaultHabits = {
         hydration: false, oasis: false, shield: false, nightshift: false,
         reading: false, movement: false, patience: false, fresh_air: false,
         silence: false, nature: false,
         date_night: false, nesting: false, shower: false, sleep: false,
-        writing: false, music: false
+        writing: false, music: false,
+        lastResetDate: new Date().toDateString()
     };
     const [habits, setHabits] = useState({ ...defaultHabits, ...initialHabits });
 
@@ -20,20 +21,39 @@ export const useHabits = (initialHabits, saveProfile) => {
     // --- AUTO-RESET LOGIC FOR HYDRATION (Every 2 hours) ---
     useEffect(() => {
         const checkReset = () => {
-            if (!habits.hydrationTime) return;
-
             const now = Date.now();
+            const today = new Date().toDateString();
+
+            // 1. Daily Reset Logic
+            if (habits.lastResetDate !== today) {
+                const newHabits = { ...habits };
+                // Reset all boolean habits to false
+                Object.keys(newHabits).forEach(key => {
+                    if (typeof newHabits[key] === 'boolean') {
+                        newHabits[key] = false;
+                    }
+                });
+                newHabits.lastResetDate = today;
+                setHabits(newHabits);
+                saveProfile({ habits: newHabits });
+                return; // Stop here if we did a full reset
+            }
+
+            // 2. Hydration Reset (2 hours)
+            if (!habits.hydrationTime) return;
             const twoHoursMs = 2 * 60 * 60 * 1000;
 
-            // If hydration is marked as done AND it's been more than 2 hours
             if (habits.hydration && (now - habits.hydrationTime > twoHoursMs)) {
-                const newHabits = { ...habits, hydration: false }; // Reset checked state only
+                const newHabits = { ...habits, hydration: false };
                 setHabits(newHabits);
                 saveProfile({ habits: newHabits });
             }
         };
 
         const interval = setInterval(checkReset, 60000); // Check every minute
+        // Also run once on mount to handle overnight closes
+        checkReset();
+
         return () => clearInterval(interval);
     }, [habits, saveProfile]);
 
@@ -46,7 +66,16 @@ export const useHabits = (initialHabits, saveProfile) => {
         };
         setHabits(newHabits);
         saveProfile({ habits: newHabits });
+
+        // Trigger XP update via callback
+        if (onHabitAction) {
+            onHabitAction(isDone ? 10 : -10); // +10 for doing it, -10 for undoing
+        }
     };
 
-    return { habits, toggleHabit };
+    const resetHabits = () => {
+        setHabits(defaultHabits);
+    };
+
+    return { habits, toggleHabit, resetHabits };
 };

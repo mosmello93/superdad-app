@@ -73,6 +73,15 @@ const App = () => {
     const [tasks, setTasks] = useState([]);
     const [contractions, setContractions] = useState([]);
     const [dadLogs, setDadLogs] = useState([]);
+    const [habitXP, setHabitXP] = useState(0);
+
+    const updateHabitXP = (delta) => {
+        setHabitXP(prev => {
+            const newXP = Math.max(0, prev + delta);
+            saveProfile({ habitXP: newXP });
+            return newXP;
+        });
+    };
 
     // New State for Features
     const [showMilestones, setShowMilestones] = useState(false);
@@ -87,6 +96,7 @@ const App = () => {
     const [showOnboarding, setShowOnboarding] = useState(true);
 
     const [unlockedMilestones, setUnlockedMilestones] = useState([]);
+    const [milestoneDates, setMilestoneDates] = useState({});
     const [completedTasks, setCompletedTasks] = useState([]);
 
     // Navigation State
@@ -135,8 +145,8 @@ const App = () => {
     };
 
     // --- HOOKS INTEGRATION ---
-    const { habits, toggleHabit } = useHabits(initialHabits, saveProfile);
-    const { currentXP, newLevelUnlocked, dismissLevelUp } = useGamification(tasks, habits);
+    const { habits, toggleHabit, resetHabits } = useHabits(initialHabits, saveProfile, updateHabitXP);
+    const { currentXP, newLevelUnlocked, dismissLevelUp } = useGamification(tasks, habitXP);
 
     useEffect(() => {
         // Auth Listener setup
@@ -182,8 +192,19 @@ const App = () => {
                 if (data.contractions) setContractions(data.contractions);
                 if (data.dadLogs) setDadLogs(data.dadLogs);
 
+                // XP Logic with Migration
+                if (data.habitXP !== undefined) {
+                    setHabitXP(data.habitXP);
+                } else if (data.habits) {
+                    // MIGRATION: Calculate initial XP from existing habits for the first time
+                    const existingHabitXP = Object.values(data.habits).filter(v => v === true).length * 10;
+                    setHabitXP(existingHabitXP);
+                    // We don't save immediately to avoid write-loops, it will save on next action
+                }
+
                 // Load New Features
                 if (data.unlockedMilestones) setUnlockedMilestones(data.unlockedMilestones);
+                if (data.milestoneDates) setMilestoneDates(data.milestoneDates);
                 if (data.completedTasks) setCompletedTasks(data.completedTasks);
                 if (data.partnerHistory) setPartnerHistory(data.partnerHistory);
             }
@@ -231,11 +252,33 @@ const App = () => {
 
     // New Wrapper Functions
     const toggleMilestone = (id) => {
-        const newSet = unlockedMilestones.includes(id)
-            ? unlockedMilestones.filter(m => m !== id)
-            : [...unlockedMilestones, id];
+        const isUnlocking = !unlockedMilestones.includes(id);
+        const newSet = isUnlocking
+            ? [...unlockedMilestones, id]
+            : unlockedMilestones.filter(m => m !== id);
+
         setUnlockedMilestones(newSet);
-        saveProfile({ unlockedMilestones: newSet });
+
+        // Date Logic
+        let newDates = { ...milestoneDates };
+        if (isUnlocking) {
+            // ALWAYS set the date when unlocking (auto-stamp)
+            // Use ISO string split to ensure YYYY-MM-DD format universally (avoid locale issues)
+            const today = new Date().toISOString().split('T')[0];
+            newDates[id] = today;
+        } else {
+            // If un-checking, remove the date
+            delete newDates[id];
+        }
+        setMilestoneDates(newDates);
+
+        saveProfile({ unlockedMilestones: newSet, milestoneDates: newDates });
+    };
+
+    const updateMilestoneDate = (id, newDate) => {
+        const newDates = { ...milestoneDates, [id]: newDate };
+        setMilestoneDates(newDates);
+        saveProfile({ milestoneDates: newDates });
     };
 
     const toggleBureaucracyTask = (id) => {
@@ -316,7 +359,7 @@ const App = () => {
         }
     };
 
-    if (loading && !isAuthReady) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
+    if (!isAuthReady || loading) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
 
     return (
         <div className="min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-sans text-stone-800 dark:text-stone-100 pb-safe selection:bg-stone-200 dark:selection:bg-stone-800 flex flex-col transition-colors duration-300">
@@ -455,6 +498,8 @@ const App = () => {
                     mode={mode}
                     milestonePhotos={milestonePhotos}
                     onSavePhoto={saveMilestonePhoto}
+                    milestoneDates={milestoneDates}
+                    onUpdateDate={updateMilestoneDate}
                 />
             )}
 
@@ -481,9 +526,44 @@ const App = () => {
             {showSettings && (
                 <SettingsOverlay
                     onClose={() => setShowSettings(false)}
+                    babyName={babyName}
+                    gender={gender}
+                    onSaveProfile={saveProfile}
                     onResetApp={() => {
-                        saveProfile({ mode: null, dueDate: null, babyName: '', gender: 'surprise' });
+                        const emptyState = {
+                            mode: null, dueDate: null, babyName: '', gender: 'surprise', ssw: null,
+                            habitXP: 0, unlockedMilestones: [], milestoneDates: {}, completedTasks: [],
+                            dadLogs: [], contractions: [], contacts: {}, bagItems: [], tasks: [],
+                            vibeCheck: '', vibeHistory: [], partnerHistory: [], habits: null
+                        };
+                        saveProfile(emptyState);
+
+                        // Reset Local State
+                        setHabitXP(0);
+                        setUnlockedMilestones([]);
+                        setMilestoneDates({});
+                        setCompletedTasks([]);
+                        setDadLogs([]);
+                        setContractions([]);
+                        setContacts({});
+                        setBagItems([]);
+                        setTasks([]);
+                        setVibeCheck('');
+                        setVibeHistory([]);
+                        setPartnerHistory([]);
+                        setBabyName('');
+                        setGender('surprise');
+                        setMode(null);
+                        setDueDate(null);
+                        setInitialHabits(null); // Clear initial habits to prevent re-merge
+                        resetHabits(); // Force hook to reset to defaults
+
+                        // Clear Local Storage
                         localStorage.removeItem('seenTabs');
+                        localStorage.removeItem('dad_last_level');
+                        localStorage.removeItem('theme');
+                        if (userId) localStorage.removeItem(`milestone_photos_${userId}`);
+
                         setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
                         setShowSettings(false);
                         setShowOnboarding(true);
