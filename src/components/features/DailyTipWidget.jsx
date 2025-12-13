@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Lightbulb, RefreshCw } from 'lucide-react';
 import { generateDailyTip } from '../../utils/gemini';
 
-const DailyTipWidget = ({ mode, week, babyName }) => {
+const DailyTipWidget = ({ mode, week, babyName, gender }) => {
     const [tip, setTip] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,7 @@ const DailyTipWidget = ({ mode, week, babyName }) => {
         // Fetch new
         setLoading(true);
         try {
-            const result = await generateDailyTip(mode, week, babyName);
+            const result = await generateDailyTip(mode, week, babyName, gender);
             setTip(result);
             localStorage.setItem(storageKey, result);
         } catch (error) {

@@ -1,10 +1,9 @@
-const https = require('https');
+import https from 'https';
 
-const apiKey = "AIzaSyDbqNtgd1VZktbCRypz8Ww-0l1YoQZ2bOQ";
-
+const apiKey = "AIzaSyD70AO-FEDpU7SYJ30qeJLPX4qUqD0P9QE";
 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
 
-console.log("Checking models...");
+console.log("Checking models via ESM script...");
 
 https.get(url, (res) => {
     let data = '';
@@ -15,9 +14,9 @@ https.get(url, (res) => {
             const json = JSON.parse(data);
             if (json.models) {
                 console.log("SUCCESS! Available Models:");
-                json.models.forEach(m => console.log(m.name));
+                json.models.forEach(m => console.log(`- ${m.name}`));
             } else {
-                console.log("Response (No Models):", data);
+                console.log("Response (No Models):", JSON.stringify(json, null, 2));
             }
         } catch (e) {
             console.log("Raw Response (Non-JSON):", data);

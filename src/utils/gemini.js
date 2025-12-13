@@ -1,5 +1,5 @@
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-// Fallback key removed for security
+const apiKey = "AIzaSyD70AO-FEDpU7SYJ30qeJLPX4qUqD0P9QE";
+// Key hardcoded for immediate functionality per user request
 
 const FALLBACK_QUESTIONS = {
     loss: [
@@ -44,9 +44,32 @@ export const callGemini = async (prompt) => {
     console.log(`Gemini Call: Key Present (Length: ${cleanKey.length}), Model: gemini-1.5-flash`);
 
     try {
-        // Try the standard alias first
+        // Strategy: Newest Model (2.5) -> Lite Model (2.0)
+
+        // 1. Try Gemini 2.5 Flash
+        const result25 = await tryModel('gemini-2.5-flash', cleanKey, prompt);
+        if (result25) return result25;
+
+        // 2. Try Gemini 2.0 Flash Lite (Free Tier Optimized)
+        console.warn("2.5 Flash failed, trying 2.0 Lite...");
+        const resultLite = await tryModel('gemini-2.0-flash-lite-001', cleanKey, prompt);
+        if (resultLite) return resultLite;
+
+        // Both failed
+        console.warn("All AI models failed. Using offline fallback.");
+        return `DEBUG ERROR: All models failed. Check console for 429/404.`;
+
+    } catch (error) {
+        console.error("Gemini API Exec Error:", error);
+        return `DEBUG ERROR: Exception ${error.message}`;
+    }
+};
+
+// Helper to try a specific model
+const tryModel = async (model, key, prompt) => {
+    try {
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -55,17 +78,16 @@ export const callGemini = async (prompt) => {
         );
 
         if (!response.ok) {
-            console.warn(`API Error ${response.status}. Using fallback.`);
-            // If API fails (e.g. 404 Model Not Found), we return a smooth fallback
-            // so the user sees a result instead of an error message.
-            return getRandomFallback(mode);
+            const txt = await response.text();
+            console.warn(`Model ${model} failed: ${response.status} ${txt}`);
+            return null; // Return null to trigger next fallback
         }
 
         const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || getRandomFallback(mode);
-    } catch (error) {
-        console.error("Gemini API Exec Error:", error);
-        return getRandomFallback(mode);
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    } catch (e) {
+        console.warn(`Exception trying ${model}:`, e);
+        return null;
     }
 };
 
@@ -74,10 +96,14 @@ const getRandomFallback = (mode) => {
     return list[Math.floor(Math.random() * list.length)];
 };
 
-export const generateDailyTip = async (mode, week, babyName) => {
+export const generateDailyTip = async (mode, week, babyName, gender) => {
+    const genderStr = gender === 'boy' ? 'Sohn' : (gender === 'girl' ? 'Tochter' : 'Kind');
+
     const context = mode === 'loss'
         ? "Ein Vater, der den Verlust seines Kindes verarbeitet."
-        : (mode === 'postpartum' ? `Ein Vater mit einem Neugeborenen (Woche ${week}).` : `Ein werdender Vater in der Schwangerschaftswoche ${week}.`);
+        : (mode === 'postpartum'
+            ? `Ein Vater mit einem Neugeborenen (Woche ${week}, Name: ${babyName || 'Baby'}, ${genderStr}).`
+            : `Ein werdender Vater in der Schwangerschaftswoche ${week} (Kind: ${babyName || 'Baby'}, ${genderStr}).`);
 
     const prompt = `Erstelle einen kurzen, motivierenden "Tipp des Tages" oder eine kleine "Challenge" für ${context}.
     Maximal 2 Sätze. Duze den Nutzer. Sei empathisch, aber locker ("Kumpel-Ton", aber respektvoll).

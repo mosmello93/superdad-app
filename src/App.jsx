@@ -393,7 +393,7 @@ const App = () => {
                             {activeTab === 'home' && (
                                 <div className="space-y-6">
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-100 fill-mode-backwards">
-                                        <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} />
+                                        <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} gender={gender} />
                                     </div>
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200 fill-mode-backwards">
                                         <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
@@ -416,7 +416,7 @@ const App = () => {
                                 <div className="space-y-6 animate-in fade-in">
                                     <PartnerPulse mode={mode} history={partnerHistory} onSave={savePartnerMood} />
                                     <DeepTalkSoft mode={mode} statusData={statusData} />
-                                    <AIVibeCheck vibeCheck={vibeCheck} vibeHistory={vibeHistory} saveVibeCheck={saveVibeCheck} mode={mode} />
+                                    <AIVibeCheck vibeCheck={vibeCheck} vibeHistory={vibeHistory} saveVibeCheck={saveVibeCheck} mode={mode} ssw={statusData.week} gender={gender} babyName={babyName} />
                                 </div>
                             )}
 
@@ -519,6 +519,8 @@ const App = () => {
                 <AIChatOverlay
                     mode={mode}
                     babyName={babyName}
+                    gender={gender}
+                    ssw={statusData.week} // Pass current week
                     onClose={() => setShowAIChat(false)}
                 />
             )}

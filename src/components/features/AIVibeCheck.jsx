@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Battery, RefreshCw, Wand2, Sparkles, History } from 'lucide-react';
 import { callGemini } from '../../utils/gemini';
 
-const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode }) => {
+const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode, ssw, gender, babyName }) => {
     const [vibeInput, setVibeInput] = useState(vibeCheck || '');
     const [aiAdvice, setAiAdvice] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,11 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode }) => {
 
         saveVibeCheck(vibeInput, updatedHistory);
 
-        const prompt = `Du bist ein empathischer, bodenständiger Coach für Väter. Der Vater befindet sich in der Phase: ${mode === 'loss' ? 'Verlust/Trauer nach stiller Geburt' : (mode === 'postpartum' ? 'Wochenbett/Neugeborenes' : 'Schwangerschaft')}. Er hat gerade folgendes als seinen Status eingegeben: "${vibeInput}". Gib ihm eine sehr kurze, unterstützende Antwort (max. 2 Sätze) auf Deutsch. Sei wie ein guter Freund: verständnisvoll aber stärkend.`;
+        const contextInfo = mode === 'loss'
+            ? 'Verlust/Trauer'
+            : `${mode === 'postpartum' ? 'Postpartum' : 'Schwangerschaft'} Woche ${ssw || '?'}, Kind: ${babyName || 'Baby'} (${gender === 'boy' ? 'Junge' : (gender === 'girl' ? 'Mädchen' : 'Überraschung')})`;
+
+        const prompt = `Du bist ein empathischer Coach für Väter. Kontext: ${contextInfo}. Stimmungs-Check des Vaters: "${vibeInput}". Gib ihm eine sehr kurze, aufbauende Reaktion (max. 2 Sätze) auf Deutsch. Duze ihn.`;
         const result = await callGemini(prompt);
         setAiAdvice(result);
         setLoading(false);
