@@ -49,6 +49,7 @@ import LevelUpOverlay from './components/overlays/LevelUpOverlay';
 import ContractionTimerOverlay from './components/overlays/ContractionTimerOverlay';
 import BadgesOverlay, { BadgeUnlockOverlay } from './components/overlays/BadgesOverlay';
 import NameSwiperOverlay from './components/overlays/NameSwiperOverlay';
+import BudgetOverlay from './components/overlays/BudgetOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -97,6 +98,7 @@ const App = () => {
     const [showAIChat, setShowAIChat] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showNameSwiper, setShowNameSwiper] = useState(false);
+    const [showBudget, setShowBudget] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -444,7 +446,9 @@ const App = () => {
                                             openBureaucracy={() => setShowBureaucracy(true)}
                                             openResources={() => setShowResources(true)}
                                             openEmergency={() => setShowEmergency(true)}
+                                            openEmergency={() => setShowEmergency(true)}
                                             openNameSwiper={() => setShowNameSwiper(true)}
+                                            openBudget={() => setShowBudget(true)}
                                         />
                                     )}
                                     <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
@@ -623,6 +627,13 @@ const App = () => {
                 <NameSwiperOverlay
                     preselectedGender={gender}
                     onClose={() => setShowNameSwiper(false)}
+                />
+            )}
+
+            {/* BABY BUDGET */}
+            {showBudget && (
+                <BudgetOverlay
+                    onClose={() => setShowBudget(false)}
                 />
             )}
 

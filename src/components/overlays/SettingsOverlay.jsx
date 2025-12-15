@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { X, Download, Trash2, Shield, FileText, Info, ChevronRight, Check } from 'lucide-react';
 import { exportUserData } from '../../utils/dataManagement';
 
+import PrivacyPolicyOverlay from './PrivacyPolicyOverlay';
+import ImprintOverlay from './ImprintOverlay';
+
 const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, gender, onSaveProfile }) => {
     const [exportStatus, setExportStatus] = useState('idle'); // idle, success
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [showImprint, setShowImprint] = useState(false);
 
     const handleExport = () => {
         exportUserData();
@@ -74,8 +79,8 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                                             key={opt.id}
                                             onClick={() => onSaveProfile({ gender: opt.id })}
                                             className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all ${gender === opt.id
-                                                ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
-                                                : 'bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                                                    ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
+                                                    : 'bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                                                 }`}
                                         >
                                             <span className="text-xl">{opt.icon}</span>
@@ -139,7 +144,7 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                         <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 ml-1">Rechtliches</h3>
                         <div className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700">
 
-                            <a href="#" className="flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors border-b border-stone-100 dark:border-stone-700">
+                            <button onClick={() => setShowPrivacy(true)} className="w-full flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors border-b border-stone-100 dark:border-stone-700 text-left">
                                 <div className="flex items-center gap-3">
                                     <div className="bg-stone-100 dark:bg-stone-700 p-2 rounded-xl text-stone-600 dark:text-stone-400">
                                         <Shield size={18} />
@@ -147,9 +152,9 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                                     <span className="font-semibold text-stone-800 dark:text-stone-100">Datenschutzerklärung</span>
                                 </div>
                                 <ChevronRight size={16} className="text-stone-300" />
-                            </a>
+                            </button>
 
-                            <a href="#" className="flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <button onClick={() => setShowImprint(true)} className="w-full flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left">
                                 <div className="flex items-center gap-3">
                                     <div className="bg-stone-100 dark:bg-stone-700 p-2 rounded-xl text-stone-600 dark:text-stone-400">
                                         <FileText size={18} />
@@ -157,7 +162,7 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                                     <span className="font-semibold text-stone-800 dark:text-stone-100">Impressum</span>
                                 </div>
                                 <ChevronRight size={16} className="text-stone-300" />
-                            </a>
+                            </button>
                         </div>
                     </div>
 
@@ -171,6 +176,10 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
 
                 </div>
             </div>
+
+            {/* Configured Overlays */}
+            {showPrivacy && <PrivacyPolicyOverlay onClose={() => setShowPrivacy(false)} />}
+            {showImprint && <ImprintOverlay onClose={() => setShowImprint(false)} />}
         </div>
     );
 };

@@ -4,6 +4,9 @@ import { BUREAUCRACY_TASKS, BUREAUCRACY_ASSETS } from '../../data/bureaucracy';
 
 const BureaucracySoft = ({ completedTasks = [], toggleTask, close, mode }) => {
     const [selectedTask, setSelectedTask] = useState(null);
+    const [customTasks, setCustomTasks] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('custom_bureaucracy_items') || '[]'); } catch { return []; }
+    });
 
     // Filter Logic based on Mode
     const filteredTasks = BUREAUCRACY_TASKS.filter(task => {
@@ -47,6 +50,78 @@ const BureaucracySoft = ({ completedTasks = [], toggleTask, close, mode }) => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6 pb-32">
                 <div className="space-y-4">
+                    {/* INPUT SECTION */}
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        const input = e.target.elements.customTask;
+                        if (!input.value.trim()) return;
+
+                        const newCustom = {
+                            id: `custom_bureau_${Date.now()}`,
+                            title: input.value,
+                            description: "Eigene Aufgabe",
+                            category: 'general', // Needs a fallback mapping or custom handling
+                            urgency: 'normal',
+                            timing: { type: 'custom' },
+                            icon: Circle, // Fallback Icon
+                            guide: 'Selbst erstellte Aufgabe.'
+                        };
+
+                        // Load existing
+                        const existing = JSON.parse(localStorage.getItem('custom_bureaucracy_items') || '[]');
+                        const updated = [newCustom, ...existing];
+                        localStorage.setItem('custom_bureaucracy_items', JSON.stringify(updated));
+                        // Force re-render logic? Ideally we'd have state.
+                        // I need to lift state up or duplicate logic. 
+                        // Let's usestate for this component.
+                        setCustomTasks(updated);
+                        input.value = '';
+                    }} className="relative mb-6">
+                        <input
+                            name="customTask"
+                            type="text"
+                            placeholder="Neue Aufgabe hinzufügen..."
+                            className="w-full pl-5 pr-12 py-4 rounded-2xl border-none shadow-sm bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-100 focus:ring-2 focus:ring-emerald-500/50"
+                        />
+                        <button
+                            type="submit"
+                            className="absolute right-2 top-2 bottom-2 aspect-square bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 rounded-xl hover:bg-emerald-500 hover:text-white transition flex items-center justify-center font-bold text-xl"
+                        >
+                            +
+                        </button>
+                    </form>
+
+                    {/* CUSTOM TASKS */}
+                    {customTasks.length > 0 && (
+                        <div className="mb-8">
+                            <h3 className="text-sm font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-wider mb-3 ml-1">Eigene Aufgaben</h3>
+                            <div className="space-y-3">
+                                {customTasks.map(task => {
+                                    const isDone = completedTasks.includes(task.id);
+                                    return (
+                                        <div key={task.id} className={`bg-white dark:bg-stone-900 p-4 rounded-2xl border ${isDone ? 'border-emerald-100 dark:border-emerald-900/30 opacity-60' : 'border-stone-100 dark:border-stone-800'} shadow-sm flex items-center gap-4 transition group`}>
+                                            <div onClick={() => toggleTask(task.id)} className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer ${isDone ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-stone-100 dark:bg-stone-800 text-stone-400'}`}>
+                                                {isDone ? <CheckCircle size={24} /> : <Circle size={24} />}
+                                            </div>
+                                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setSelectedTask(task)}>
+                                                <h3 className={`font-bold text-stone-800 dark:text-stone-100 truncate ${isDone && 'line-through text-stone-400 dark:text-stone-600'}`}>{task.title}</h3>
+                                                <p className="text-xs text-stone-500 dark:text-stone-400">Eigene Aufgabe</p>
+                                            </div>
+                                            <button onClick={(e) => {
+                                                e.stopPropagation();
+                                                const updated = customTasks.filter(t => t.id !== task.id);
+                                                setCustomTasks(updated);
+                                                localStorage.setItem('custom_bureaucracy_items', JSON.stringify(updated));
+                                                if (isDone) toggleTask(task.id);
+                                            }} className="p-2 text-stone-300 hover:text-red-500"><X size={18} /></button>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+
                     {sortedTasks.map(task => {
                         const isDone = completedTasks.includes(task.id);
                         const asset = BUREAUCRACY_ASSETS[task.category];

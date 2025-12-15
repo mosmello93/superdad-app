@@ -3,7 +3,7 @@ import { X, Shield, Lock, Server, Globe } from 'lucide-react';
 
 const PrivacyPolicyOverlay = ({ onClose }) => {
     return (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center pointer-events-auto">
             {/* Backdrop - Transparent as requested */}
             <div className="absolute inset-0 bg-transparent" onClick={onClose}></div>
 

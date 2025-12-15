@@ -2,7 +2,7 @@ import React from 'react';
 import { Backpack, Clock, Trophy, Shield, FileText, Link, AlertTriangle, Heart } from 'lucide-react';
 
 
-const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, openBureaucracy, openResources, openEmergency, openNameSwiper }) => {
+const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, openBureaucracy, openResources, openEmergency, openNameSwiper, openBudget }) => {
     return (
         <div className="relative mb-8">
             {/* Mascot Decoration */}
@@ -83,7 +83,17 @@ const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, 
                     <h3 className="font-bold text-gray-900 dark:text-stone-200">Wichtige<br />Links</h3>
                 </div>
 
-                {/* SLOT 6: NAME SWIPER (Pregnancy Only) */}
+                {/* SLOT 6: BABY BUDGET (Pregnancy Only) */}
+                {mode === 'pregnancy' && (
+                    <div onClick={openBudget} className="bg-[#ECFDF5] dark:bg-emerald-900/40 p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-emerald-100/50 dark:border-emerald-800/50 group overflow-hidden">
+                        <div className="mb-4 flex items-center justify-center text-emerald-500 dark:text-emerald-400">
+                            <img src="/mascot/papa_budget.png" alt="Budget" className="w-24 h-24 object-contain transform hover:scale-110 transition-transform" />
+                        </div>
+                        <h3 className="font-bold text-emerald-900 dark:text-emerald-200">Baby-<br />Budget</h3>
+                    </div>
+                )}
+
+                {/* SLOT 7: NAME SWIPER (Pregnancy Only) */}
                 {mode === 'pregnancy' && (
                     <div onClick={openNameSwiper} className="bg-[#FFF1F2] dark:bg-rose-900/40 p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-rose-100/50 dark:border-rose-800/50 group overflow-hidden">
                         <div className="mb-4 flex items-center justify-center text-rose-500 dark:text-rose-400">
