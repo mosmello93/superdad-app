@@ -6,7 +6,37 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     react(),
-    VitePWA({ registerType: 'autoUpdate', manifest: false })
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      manifest: {
+        name: 'papa',
+        short_name: 'papa',
+        description: 'Der Begleiter für werdende Väter',
+        theme_color: '#FDFCF8',
+        background_color: '#FDFCF8',
+        display: 'standalone',
+        orientation: 'portrait',
+        icons: [
+          {
+            src: '/images/papa_icon.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/images/papa_icon.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: '/images/papa_icon.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      }
+    })
   ],
   server: { host: true },
   // WICHTIG: Fügt die PostCSS Konfiguration ein, damit Tailwind erkannt wird.

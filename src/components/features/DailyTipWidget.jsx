@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Lightbulb, RefreshCw } from 'lucide-react';
 import { generateDailyTip } from '../../utils/gemini';
 
-const DailyTipWidget = ({ mode, week, babyName, gender }) => {
+const DailyTipWidget = ({ mode, week, babyName, userName, gender }) => {
     const [tip, setTip] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,7 @@ const DailyTipWidget = ({ mode, week, babyName, gender }) => {
         // Fetch new
         setLoading(true);
         try {
-            const result = await generateDailyTip(mode, week, babyName, gender);
+            const result = await generateDailyTip(mode, week, babyName, gender, userName);
             setTip(result);
             localStorage.setItem(storageKey, result);
         } catch (error) {
@@ -62,7 +62,9 @@ const DailyTipWidget = ({ mode, week, babyName, gender }) => {
                     </button>
                 </div>
 
-                <h3 className="text-amber-800 dark:text-amber-200 font-bold mb-2 text-sm uppercase tracking-wider">Dein Daily Vibe</h3>
+                <h3 className="text-amber-800 dark:text-amber-200 font-bold mb-2 text-sm uppercase tracking-wider">
+                    {mode === 'loss' ? 'Dein Impuls' : 'Dein Daily Vibe'}
+                </h3>
 
                 <div className="min-h-[60px]">
                     {loading ? (

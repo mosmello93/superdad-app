@@ -1,5 +1,4 @@
-const apiKey = "AIzaSyD70AO-FEDpU7SYJ30qeJLPX4qUqD0P9QE";
-// Key hardcoded for immediate functionality per user request
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 const FALLBACK_QUESTIONS = {
     loss: [
@@ -23,14 +22,16 @@ const FALLBACK_QUESTIONS = {
     ]
 };
 
-export const callGemini = async (prompt) => {
+export const callGemini = async (prompt, explicitMode = null) => {
     // 1. Determine Key
     const effectiveKey = apiKey;
 
-    // 2. Identify Mode for Context (Simple Match)
-    let mode = 'pregnancy';
-    if (prompt.includes('Verlust') || prompt.includes('Sternenkind')) mode = 'loss';
-    else if (prompt.includes('Neugeborenes') || prompt.includes('Neugeborenen') || prompt.includes('Wochenbett')) mode = 'postpartum';
+    // 2. Identify Mode for Context (Simple Match) or use explicit mode
+    let mode = explicitMode || 'pregnancy';
+    if (!explicitMode) {
+        if (prompt.includes('Verlust') || prompt.includes('Sternenkind')) mode = 'loss';
+        else if (prompt.includes('Neugeborenes') || prompt.includes('Neugeborenen') || prompt.includes('Wochenbett')) mode = 'postpartum';
+    }
 
     // 3. Check Key Presence
     if (!effectiveKey || effectiveKey === "DEIN_EIGENER_GOOGLE_AI_KEY_HIER") {
@@ -41,7 +42,7 @@ export const callGemini = async (prompt) => {
     const cleanKey = effectiveKey.trim();
 
     // DEBUG: Key status
-    console.log(`Gemini Call: Key Present (Length: ${cleanKey.length}), Model: gemini-1.5-flash`);
+    console.log(`Gemini Call: Key Present (Length: ${cleanKey.length})`);
 
     try {
         // Strategy: Newest Model (2.5) -> Lite Model (2.0)
@@ -57,11 +58,11 @@ export const callGemini = async (prompt) => {
 
         // Both failed
         console.warn("All AI models failed. Using offline fallback.");
-        return `DEBUG ERROR: All models failed. Check console for 429/404.`;
+        return getRandomFallback(mode);
 
     } catch (error) {
         console.error("Gemini API Exec Error:", error);
-        return `DEBUG ERROR: Exception ${error.message}`;
+        return getRandomFallback(mode);
     }
 };
 
@@ -100,14 +101,22 @@ export const generateDailyTip = async (mode, week, babyName, gender) => {
     const genderStr = gender === 'boy' ? 'Sohn' : (gender === 'girl' ? 'Tochter' : 'Kind');
 
     const context = mode === 'loss'
-        ? "Ein Vater, der den Verlust seines Kindes verarbeitet."
+        ? `Ein Vater, der den Verlust seines Kindes verarbeitet (Sternenkind Name: ${babyName || 'das Kind'}).`
         : (mode === 'postpartum'
             ? `Ein Vater mit einem Neugeborenen (Woche ${week}, Name: ${babyName || 'Baby'}, ${genderStr}).`
             : `Ein werdender Vater in der Schwangerschaftswoche ${week} (Kind: ${babyName || 'Baby'}, ${genderStr}).`);
 
-    const prompt = `Erstelle einen kurzen, motivierenden "Tipp des Tages" oder eine kleine "Challenge" für ${context}.
-    Maximal 2 Sätze. Duze den Nutzer. Sei empathisch, aber locker ("Kumpel-Ton", aber respektvoll).
-    Wenn Name "${babyName}" bekannt, nutze ihn gerne.`;
+    let prompt;
+    if (mode === 'loss') {
+        prompt = `Erstelle einen kurzen, tröstenden oder stärkenden "Gedanken des Tages" für ${context}.
+        Maximal 2 Sätze. Duze den Nutzer sanft. Sei sehr empathisch, ruhig und seriös. 
+        Vermeide jeglichen "Kumpel-Ton", keine Witze, kein "Hey Kumpel".
+        Wenn Name "${babyName}" bekannt, nutze ihn gerne respektvoll.`;
+    } else {
+        prompt = `Erstelle einen kurzen, motivierenden "Tipp des Tages" oder eine kleine "Challenge" für ${context}.
+        Maximal 2 Sätze. Duze den Nutzer. Sei empathisch, persönlich und auf Augenhöhe, aber nicht zu salopp ("kein übertriebener Kumpel-Ton").
+        Wenn Name "${babyName}" bekannt, nutze ihn gerne.`;
+    }
 
-    return await callGemini(prompt);
+    return await callGemini(prompt, mode);
 };

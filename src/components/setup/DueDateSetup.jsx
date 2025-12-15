@@ -3,11 +3,35 @@ import { Baby } from 'lucide-react';
 
 const DueDateSetup = ({ saveProfile, mode }) => {
     const [localDate, setLocalDate] = useState('');
-    const [name, setName] = useState('');
+    const [babyName, setBabyName] = useState('');
+    const [userName, setUserName] = useState('');
     const [gender, setGender] = useState('surprise');
     const [ssw, setSsw] = useState('');
 
-    const handleSave = () => { saveProfile({ dueDate: localDate, babyName: name, gender: gender, ssw: ssw }); };
+    const handleSave = () => {
+        if (!localDate) return;
+
+        // Manual Validation
+        const selected = new Date(localDate);
+        const today = new Date();
+        const maxDate = new Date();
+
+        if (mode === 'pregnancy') {
+            maxDate.setDate(today.getDate() + 285); // 40 weeks + buffer
+            if (selected > maxDate) {
+                alert("Das Datum liegt zu weit in der Zukunft (max. 40 Wochen).");
+                return;
+            }
+        } else {
+            // Postpartum / Loss (cannot be in future)
+            if (selected > today) {
+                alert("Das Datum darf nicht in der Zukunft liegen.");
+                return;
+            }
+        }
+
+        saveProfile({ dueDate: localDate, babyName: babyName, userName: userName, gender: gender, ssw: ssw });
+    };
 
     const textConfig = {
         pregnancy: {
@@ -46,12 +70,37 @@ const DueDateSetup = ({ saveProfile, mode }) => {
 
             <div className="mb-3 text-left">
                 <label className="text-xs font-bold text-stone-400 uppercase ml-2">{labelDate}</label>
-                <input type="date" value={localDate} onChange={(e) => setLocalDate(e.target.value)} className="w-full p-3 mt-1 bg-stone-50 rounded-2xl text-center font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+                <input
+                    type="date"
+                    value={localDate}
+                    max={mode === 'pregnancy' ? new Date(new Date().setDate(new Date().getDate() + 300)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setLocalDate(e.target.value)}
+                    className="w-full p-3 mt-1 bg-stone-50 rounded-2xl text-center font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                />
             </div>
 
             <div className="mb-3 text-left">
-                <label className="text-xs font-bold text-stone-400 uppercase ml-2">Name (Optional)</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="z.B. Krümel" className="w-full p-3 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+                <label className="text-xs font-bold text-stone-400 uppercase ml-2">Dein Vorname (Optional)</label>
+                <input
+                    type="text"
+                    value={userName}
+                    maxLength={20}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder="Wie sollen wir dich nennen?"
+                    className="w-full p-3 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                />
+            </div>
+
+            <div className="mb-3 text-left">
+                <label className="text-xs font-bold text-stone-400 uppercase ml-2">Baby-Name / Spitzname (Optional)</label>
+                <input
+                    type="text"
+                    value={babyName}
+                    maxLength={20}
+                    onChange={(e) => setBabyName(e.target.value)}
+                    placeholder="z.B. Krümel"
+                    className="w-full p-3 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                />
             </div>
 
             <div className="mb-5 text-left">
@@ -65,11 +114,16 @@ const DueDateSetup = ({ saveProfile, mode }) => {
 
             {mode === 'loss' && (
                 <div className="mb-5 text-left animate-in fade-in">
-                    <label className="text-xs font-bold text-stone-400 uppercase ml-2">SSW (Optional)</label>
+                    <label className="text-xs font-bold text-stone-400 uppercase ml-2">SSW (0-42)</label>
                     <input
                         type="number"
                         value={ssw}
-                        onChange={(e) => setSsw(e.target.value)}
+                        min="0"
+                        max="42"
+                        onChange={(e) => {
+                            const val = Math.min(42, Math.max(0, parseInt(e.target.value) || 0));
+                            setSsw(val.toString());
+                        }}
                         placeholder="In welcher Woche?"
                         className="w-full p-3 mt-1 bg-stone-50 rounded-2xl font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     />

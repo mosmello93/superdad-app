@@ -440,7 +440,7 @@ export const LOSS_GUIDES = [
 export const getTasks = (mode, stage) => {
     if (mode === 'pregnancy') {
         if (stage === 1) return [{ id: 'p1-1', text: 'Arzttermine planen', category: 'Logistik' }, { id: 'p1-2', text: 'Codewörter definieren', category: 'Emotional' }, { id: 'p1-3', text: 'Snack-Notfall-Kit kaufen', category: 'Support' }];
-        if (stage === 2) return [{ id: 'p2-1', text: 'Zimmer planen', category: 'Vorbereitung' }, { id: 'p2-2', text: 'Geburtskurs buchen', category: 'Logistik' }, { id: 'p2-3', text: 'Massage lernen', category: 'Support' }];
+        if (stage === 2) return [{ id: 'p2-1', text: 'Möbel aufbauen (Crib/Wickeltisch)', category: 'Nestbau' }, { id: 'p2-2', text: 'Sicherheits-Check (Kabel/Steckdosen)', category: 'Sicherheit' }, { id: 'p2-3', text: 'Geburtskurs buchen', category: 'Logistik' }];
         if (stage === 3) return [{ id: 'p3-1', text: 'Weg zur Klinik testen', category: 'Notfall' }, { id: 'p3-2', text: 'Ruhe-Tag organisieren', category: 'Emotional' }, { id: 'p3-3', text: 'Anträge vorbereiten', category: 'Bürokratie' }];
     }
     if (mode === 'postpartum') {
@@ -453,30 +453,30 @@ export const getTasks = (mode, stage) => {
 };
 
 export const HABITS_PREGNANCY = [
-    { key: 'hydration', title: "Wasser", text: "Bring ihr ein Glas", icon: Droplets, color: 'blue' },
-    { key: 'oasis', title: "Oase", text: "Tägliche Geste", icon: Sparkles, color: 'amber' },
-    { key: 'reading', title: "Wissen", text: "Lies einen Artikel", icon: BookOpen, color: 'indigo' },
-    { key: 'movement', title: "Bewegung", text: "Spaziergang?", icon: Activity, color: 'emerald' },
-    { key: 'date_night', title: "Date Night", text: "Zeit zu zweit", icon: Heart, color: 'rose' },
-    { key: 'nesting', title: "Nestbau", text: "Zimmer planen", icon: Home, color: 'stone' }
+    { key: 'hydration', title: "Wasser", text: "Bring ihr ein Glas", description: "Austrocknung ist ein Energie-Killer. Erinner sie ans Trinken, das hilft gegen Kreislaufprobleme.", icon: Droplets, color: 'blue' },
+    { key: 'oasis', title: "Oase", text: "Tägliche Geste", description: "Eine kleine Aufmerksamkeit ohne Anlass (Blumen, Massage) zeigt: Ich sehe dich und wertschätze, was du leistest.", icon: Sparkles, color: 'amber' },
+    { key: 'reading', title: "Wissen", text: "Lies einen Artikel", description: "Wissen beruhigt. Lies dich ein, damit du bei Arztterminen und Entscheidungen auf Augenhöhe mitreden kannst.", icon: BookOpen, color: 'indigo' },
+    { key: 'movement', title: "Bewegung", text: "Spaziergang?", description: "Sanfte Bewegung hilft gegen Müdigkeit und Rückenschmerzen. Motiviere sie zu einem kurzen Spaziergang.", icon: Activity, color: 'emerald' },
+    { key: 'date_night', title: "Date Night", text: "Zeit zu zweit", description: "Pflegt eure Beziehung, bevor der Baby-Alltag startet. Ein Abend nur für euch als Paar.", icon: Heart, color: 'rose' },
+    { key: 'nesting', title: "Nestbau", text: "Zimmer planen", description: "Hilf aktiv mit, das Zuhause sicher und gemütlich zu machen. Das gibt ihr Sicherheit.", icon: Home, color: 'cyan' }
 ];
 
 export const HABITS_POSTPARTUM = [
-    { key: 'hydration', title: "Still-Snack", text: "Wasser & Nüsse", icon: Utensils, color: 'orange' },
-    { key: 'nightshift', title: "Nacht-Held", text: "Wickeln übernehmen", icon: Moon, color: 'indigo' },
-    { key: 'patience', title: "Geduld", text: "Durchatmen", icon: Feather, color: 'rose' },
-    { key: 'fresh_air', title: "Frische Luft", text: "Rausgehen", icon: Sprout, color: 'emerald' },
-    { key: 'shower', title: "Duschen", text: "Baby halten", icon: Droplets, color: 'blue' },
-    { key: 'sleep', title: "Schlaf", text: "Mittagsschlaf", icon: Moon, color: 'stone' }
+    { key: 'hydration', title: "Still-Snack", text: "Wasser & Nüsse", description: "Stillen macht hungrig und durstig. Stell ihr ungefragt Snacks und Wasser griffbereit hin.", icon: Utensils, color: 'orange' },
+    { key: 'nightshift', title: "Nacht-Held", text: "Wickeln übernehmen", description: "Jede Stunde Schlaf am Stück ist für sie Gold wert. Übernimm die Nachtschicht nach dem Stillen.", icon: Moon, color: 'indigo' },
+    { key: 'patience', title: "Geduld", text: "Durchatmen", description: "Hormone und Schlafmangel sind eine explosive Mischung. Bezieh ihre Laune nicht auf dich. Atme durch.", icon: Feather, color: 'rose' },
+    { key: 'fresh_air', title: "Frische Luft", text: "Rausgehen", description: "Ein Tapetenwechsel tut euch allen gut. Pack das Baby ein und geht eine Runde raus.", icon: Sprout, color: 'emerald' },
+    { key: 'shower', title: "Duschen", text: "Baby halten", description: "Schenk ihr 20 Minuten Zeit nur für sich im Bad. Ohne Babyfon, ohne Störung.", icon: Droplets, color: 'blue' },
+    { key: 'sleep', title: "Schlaf", text: "Mittagsschlaf", description: "Nutzt jede Pause zum Schlafen. Der Haushalt läuft nicht weg, eure Gesundheit ist wichtiger.", icon: Moon, color: 'fuchsia' }
 ];
 
 export const HABITS_LOSS = [
-    { key: 'hydration', title: "Fürsorge", text: "Tee hinstellen", icon: Droplets, color: 'stone' },
-    { key: 'shield', title: "Schutzschild", text: "Besuch abwehren", icon: ShieldCheck, color: 'zinc' },
-    { key: 'silence', title: "Stille", text: "Kerze anzünden", icon: Sparkles, color: 'amber' },
-    { key: 'nature', title: "Natur", text: "Waldspaziergang", icon: Sprout, color: 'emerald' },
-    { key: 'writing', title: "Schreiben", text: "Tagebuch", icon: FileText, color: 'indigo' },
-    { key: 'music', title: "Musik", text: "Playlist hören", icon: Play, color: 'rose' }
+    { key: 'hydration', title: "Fürsorge", text: "Tee hinstellen", description: "Kleine Gesten der Fürsorge sagen mehr als Worte. Zeig ihr, dass du da bist.", icon: Droplets, color: 'stone' },
+    { key: 'shield', title: "Schutzschild", text: "Besuch abwehren", description: "Du bist der Türsteher. Schütze euren Raum vor gut gemeinten, aber anstrengenden Besuchern.", icon: ShieldCheck, color: 'zinc' },
+    { key: 'silence', title: "Stille", text: "Kerze anzünden", description: "Manchmal muss man nichts sagen. Gemeinsames Schweigen kann sehr verbindend sein.", icon: Sparkles, color: 'amber' },
+    { key: 'nature', title: "Natur", text: "Waldspaziergang", description: "Die Natur urteilt nicht und fordert nichts. Das kann beim Heilen helfen.", icon: Sprout, color: 'emerald' },
+    { key: 'writing', title: "Schreiben", text: "Tagebuch", description: "Gedanken aufzuschreiben hilft, das Chaos im Kopf zu ordnen. Ermutige sie dazu.", icon: FileText, color: 'indigo' },
+    { key: 'music', title: "Musik", text: "Playlist hören", description: "Musik kann trösten, wo Worte fehlen. Erstellt eine Playlist für euch.", icon: Play, color: 'rose' }
 ];
 
 export const HOSPITAL_BAG_CONTENT = {
@@ -486,14 +486,15 @@ export const HOSPITAL_BAG_CONTENT = {
             { id: 'mutterpass', text: 'Mutterpass' },
             { id: 'kk', text: 'Versicherungskarte' },
             { id: 'perso', text: 'Ausweise (Beide)' },
-            { id: 'stammbuch', text: 'Stammbuch / Heiratsurkunde' }
+            { id: 'stammbuch', text: 'Stammbuch / Heiratsurkunde' },
+            { id: 'bestattung', text: 'Ggf. Bestattungswünsche' }
         ]
     },
     mom: {
         title: "Für Mama",
         items: [
             { id: 'shirts', text: '2-3 weite Shirts/Nachthemden' },
-            { id: 'slip', text: 'Bequeme Unterwäsche' },
+            { id: 'slip', text: 'Bequeme Unterwäsche (Baumwolle)' },
             { id: 'socks', text: 'Warme Socken' },
             { id: 'toiletries', text: 'Kulturbeutel & Lippenbalsam' },
             { id: 'snack_mom', text: 'Lieblings-Snacks' }
@@ -515,6 +516,43 @@ export const HOSPITAL_BAG_CONTENT = {
             { id: 'change', text: 'Wechselkleidung' },
             { id: 'tech', text: 'Powerbank & Ladekabel' },
             { id: 'music', text: 'Playlist & Kopfhörer' }
+        ]
+    }
+};
+
+export const LOSS_HOSPITAL_BAG_CONTENT = {
+    documents: {
+        title: "Wichtige Dokumente",
+        items: [
+            { id: 'mutterpass', text: 'Mutterpass & Karte' },
+            { id: 'perso', text: 'Ausweise & Stammbuch' },
+            { id: 'forms', text: 'Ggf. Formulare Klinikum' }
+        ]
+    },
+    memories: {
+        title: "Erinnerungen schaffen",
+        items: [
+            { id: 'camera', text: 'Kamera / Handy (geladen)' },
+            { id: 'blanket', text: 'Besondere Decke / Tuch' },
+            { id: 'toy', text: 'Kleines Kuscheltier (2x zum Tauschen)' },
+            { id: 'box', text: 'Erinnerungskiste (für Armband etc.)' },
+            { id: 'set', text: 'Abdruck-Set (Füße/Hände)' }
+        ]
+    },
+    farewell: {
+        title: "Für den Abschied",
+        items: [
+            { id: 'clothes_baby', text: 'Kleidung für das Sternenkind' },
+            { id: 'symbol', text: 'Persönlicher Gegenstand / Brief' }
+        ]
+    },
+    parents: {
+        title: "Für Euch (Kraft)",
+        items: [
+            { id: 'food', text: 'Ausreichend Snacks & Getränke' },
+            { id: 'comfy', text: 'Weiche, warme Kleidung' },
+            { id: 'slippers', text: 'Hausschuhe / Dicke Socken' },
+            { id: 'hygiene', text: 'Kulturbeutel (mild)' }
         ]
     }
 };
@@ -640,6 +678,27 @@ export const ARTICLES = {
             { headline: "Deine Rolle im Kreißsaal", text: "Du bist nicht der Zuschauer, du bist der Co-Pilot. Wasser reichen, Mut machen, Stirn tupfen, Ärzte 'übersetzen'. Deine Ruhe überträgt sich auf sie." },
             { headline: "Wenn es anders kommt", text: "Not-Kaiserschnitt? Saugglocke? Bleib bei ihr (oder beim Baby, wenn sie versorgt wird). Du bist ihre Verbindung zur Realität." },
             { headline: "Der erste Schrei", text: "Es ist okay, wenn du nicht sofort weinst. Jeder reagiert anders. Aber genieß diesen Moment, er kommt nie wieder." }
+        ]
+    },
+
+    parenting: {
+        title: "Deep Talk: Erziehung",
+        icon: MessageCircle,
+        color: "violet",
+        content: [
+            { headline: "Wie wurdet ihr erzogen?", text: "Redet darüber, was eure Eltern toll gemacht haben – und was ihr auf keinen Fall wiederholen wollt. Das prägt euren eigenen Stil." },
+            { headline: "Werte", text: "Was ist euch wichtig? Höflichkeit? Selbstständigkeit? Kreativität? Einigt euch auf 3 Kernwerte für eure Familie." },
+            { headline: "Konflikte", text: "Wer darf 'Nein' sagen? Wie geht ihr mit Wutanfällen um? Einig zu sein (zumindest vor dem Kind) ist der Schlüssel." }
+        ]
+    },
+    red_flags: {
+        title: "Warnsignale (Wichtig!)",
+        icon: AlertTriangle,
+        color: "rose",
+        content: [
+            { headline: "Deine Rolle als Wächter", text: "Du siehst sie jeden Tag. Dir fallen Veränderungen auf, die sie vielleicht ignoriert. Achte auf Ödeme (Wasser) im Gesicht oder extrem geschwollene Hände." },
+            { headline: "Präeklampsie (Schwangerschaftsvergiftung)", text: "Warnzeichen: Starke Kopfschmerzen, Flimmern vor den Augen, Übelkeit (im 3. Trimester), Bluthochdruck. Sofort zum Arzt!" },
+            { headline: "Psychische Signale", text: "Wenn sie gar nicht mehr schlafen kann, extrem ängstlich ist oder 'grundlos' weint (über Wochen): Das kann eine prä- oder postpartale Depression sein." }
         ]
     },
     finance: {

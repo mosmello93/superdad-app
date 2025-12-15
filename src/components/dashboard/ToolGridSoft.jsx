@@ -1,8 +1,8 @@
 import React from 'react';
-import { Backpack, Clock, Trophy, Shield, FileText, Link, AlertTriangle } from 'lucide-react';
-import Timer from '../features/ContractionTimer';
+import { Backpack, Clock, Trophy, Shield, FileText, Link, AlertTriangle, Heart } from 'lucide-react';
 
-const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, openBureaucracy, openResources, openEmergency }) => {
+
+const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, openBureaucracy, openResources, openEmergency, openNameSwiper }) => {
     return (
         <div className="relative mb-8">
             {/* Mascot Decoration */}
@@ -82,6 +82,16 @@ const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, 
                     </div>
                     <h3 className="font-bold text-gray-900 dark:text-stone-200">Wichtige<br />Links</h3>
                 </div>
+
+                {/* SLOT 6: NAME SWIPER (Pregnancy Only) */}
+                {mode === 'pregnancy' && (
+                    <div onClick={openNameSwiper} className="bg-[#FFF1F2] dark:bg-rose-900/40 p-6 rounded-[32px] cursor-pointer transition hover:shadow-md border border-rose-100/50 dark:border-rose-800/50 group overflow-hidden">
+                        <div className="mb-4 flex items-center justify-center text-rose-500 dark:text-rose-400">
+                            <img src="/mascot/papa_names.png" alt="Namen-Finder" className="w-24 h-24 object-contain transform hover:scale-110 transition-transform" />
+                        </div>
+                        <h3 className="font-bold text-rose-900 dark:text-rose-200">Namen-<br />Finder</h3>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -54,6 +54,7 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                                 <input
                                     type="text"
                                     defaultValue={babyName}
+                                    maxLength={20}
                                     onBlur={(e) => onSaveProfile({ babyName: e.target.value })}
                                     placeholder="z.B. Krümel, Erbse oder Name"
                                     className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-3 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"

@@ -13,17 +13,31 @@ const OnboardingFlow = ({ onComplete }) => {
             bg: "bg-stone-50"
         },
         {
-            title: "Dein zweites Gehirn.",
-            text: "Termine, Wissen, Mental Load – wir halten dir den Rücken frei.",
+            title: "Dein AI Coach.",
+            text: "Frag ihn alles. Er kennt deine Woche, dein Baby und gibt dir Antworten statt nur Links.",
             image: "/mascot/papa_smart.png",
             color: "bg-indigo-100 dark:bg-indigo-900/40",
             bg: "bg-stone-50"
         },
         {
             title: "Starkes Team.",
-            text: "Verstehe ihre Signale und bleibe Partner, nicht nur Vater.",
+            text: "Verstehe ihre Signale und bleibe Partner, nicht nur Vater. Tägliche Tipps helfen dir dabei.",
             image: "/mascot/papa_caring.png",
             color: "bg-rose-100 dark:bg-rose-900/40",
+            bg: "bg-stone-50"
+        },
+        {
+            title: "Deine Tools.",
+            text: "Alles griffbereit: Vom Wehen-Timer über die Kliniktasche bis zum Namen-Finder. Wir haben an alles gedacht.",
+            image: "/mascot/papa_builder.png",
+            color: "bg-blue-100 dark:bg-blue-900/40",
+            bg: "bg-stone-50"
+        },
+        {
+            title: "Level Up!",
+            text: "Sammle XP für gute Gewohnheiten, schalte Badges frei und werde zum Super-Dad.",
+            image: "/mascot/papa_level5.png", // Using level5 mascot for gamification
+            color: "bg-emerald-100 dark:bg-emerald-900/40",
             bg: "bg-stone-50"
         }
     ];

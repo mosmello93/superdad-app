@@ -22,10 +22,10 @@ const AIVibeCheck = ({ vibeCheck, saveVibeCheck, vibeHistory = [], mode, ssw, ge
         saveVibeCheck(vibeInput, updatedHistory);
 
         const contextInfo = mode === 'loss'
-            ? 'Verlust/Trauer'
+            ? `Verlust/Trauer (Sternenkind Name: ${babyName || 'das Kind'})`
             : `${mode === 'postpartum' ? 'Postpartum' : 'Schwangerschaft'} Woche ${ssw || '?'}, Kind: ${babyName || 'Baby'} (${gender === 'boy' ? 'Junge' : (gender === 'girl' ? 'Mädchen' : 'Überraschung')})`;
 
-        const prompt = `Du bist ein empathischer Coach für Väter. Kontext: ${contextInfo}. Stimmungs-Check des Vaters: "${vibeInput}". Gib ihm eine sehr kurze, aufbauende Reaktion (max. 2 Sätze) auf Deutsch. Duze ihn.`;
+        const prompt = `Du bist ein empathischer Coach für Väter. Kontext: ${contextInfo}. Stimmungs-Check des Vaters: "${vibeInput}". Gib ihm eine sehr kurze, aufbauende Reaktion (max. 2 Sätze) auf Deutsch. Duze ihn persönlich, aber bleib seriös (vermeide "Kumpel"-Sprache).`;
         const result = await callGemini(prompt);
         setAiAdvice(result);
         setLoading(false);

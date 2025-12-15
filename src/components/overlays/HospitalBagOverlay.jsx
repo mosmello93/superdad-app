@@ -1,18 +1,11 @@
 import React from 'react';
 import { X, CheckSquare } from 'lucide-react';
-import { HOSPITAL_BAG_CONTENT } from '../../data/content';
+import { HOSPITAL_BAG_CONTENT, LOSS_HOSPITAL_BAG_CONTENT } from '../../data/content';
 
 const HospitalBagOverlay = ({ bagItems, toggleItem, closeBag, mode, ssw }) => {
-    let categories = Object.keys(HOSPITAL_BAG_CONTENT);
-
-    // Filter logic for Loss Mode
-    if (mode === 'loss') {
-        // If early loss (e.g. < 24 weeks) or unknown, hide baby stuff. 
-        // Showing baby clothes can be very painful if there is no baby to take home.
-        if (!ssw || ssw < 24) {
-            categories = categories.filter(cat => cat !== 'baby');
-        }
-    }
+    // Select content based on mode
+    const contentSource = mode === 'loss' ? LOSS_HOSPITAL_BAG_CONTENT : HOSPITAL_BAG_CONTENT;
+    let categories = Object.keys(contentSource);
 
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
@@ -29,7 +22,7 @@ const HospitalBagOverlay = ({ bagItems, toggleItem, closeBag, mode, ssw }) => {
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 space-y-8">
                     {categories.map(catKey => {
-                        const category = HOSPITAL_BAG_CONTENT[catKey];
+                        const category = contentSource[catKey];
                         return (
                             <div key={catKey}>
                                 <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-3 ml-1">{category.title}</h3>

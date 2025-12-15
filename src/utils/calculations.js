@@ -2,7 +2,14 @@
 import { OASIS_IDEAS } from '../data/content';
 
 export const calculateStatus = (dateString, mode) => {
-    if (mode === 'loss') return { status: 'Loss', progress: 0, stage: 'after', label: 'Sternenkind' };
+    if (mode === 'loss') {
+        const [y, m, d] = dateString ? dateString.split('-').map(Number) : [0, 0, 0];
+        const refDate = dateString ? new Date(y, m - 1, d) : new Date();
+        const today = new Date();
+        const diffTime = Math.abs(today - refDate);
+        const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+        return { status: 'Loss', progress: 0, stage: 'after', label: 'Sternenkind', week: diffWeeks + 1 };
+    }
     if (!dateString) return { status: 'NotSet', progress: 0, stage: 0, label: '' };
 
     const [y, m, d] = dateString.split('-').map(Number);

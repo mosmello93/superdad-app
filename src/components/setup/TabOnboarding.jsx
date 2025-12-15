@@ -10,17 +10,21 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Dein Cockpit", text: `Hier siehst du sofort, in welcher Woche ihr seid, wie groß ${name} schon ist und deinen aktuellen XP-Level.`, image: "/mascot/papa_neutral.png" },
                 { title: "Daily Dads", text: "Tägliche Aufgaben (Habits) halten dich auf Kurs. Klicke sie an, um sie zu erledigen.", image: "/mascot/papa_checklist.png" },
                 { title: "Dein Dad Log", text: "Dein Tagebuch. Schreib direkt hier deine Gedanken auf. Es ist privat und nur für dich.", image: "/mascot/papa_writing.png" },
+                { title: "AI Coach", text: "Unten rechts findest du den Button zu deinem Coach. Er ist rund um die Uhr für dich da.", image: "/mascot/papa_smart.png" },
                 { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos).", image: "/mascot/papa_smart.png" }
             ],
             team: [
                 { title: "Euer Wir", text: "Beziehung ist Arbeit. Hier findest du alles, um mit deiner Partnerin in Verbindung zu bleiben.", image: "/mascot/papa_caring.png" },
                 { title: "Partner Pulse", text: "Wie geht es ihr heute? Ein schneller Check, um Empathie zu zeigen.", image: "/mascot/papa_caring.png" },
                 { title: "Vibe Check", text: "Wie ist die Stimmung zwischen euch? Nutze die AI-Analyse ganz unten.", image: "/mascot/papa_smart.png" }, // Or new icon? Smart fits AI.
-                { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen.", image: "/mascot/papa_talking.png", fallback: "/mascot/papa_neutral.png" } // papa_talking doesn't exist? Use fallback or neutral. Let's use neutral or happy.
+                { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen.", image: "/mascot/papa_caring.png", fallback: "/mascot/papa_neutral.png" } // papa_talking doesn't exist? Use fallback or neutral. Let's use neutral or happy.
             ],
             tools: [
-                { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}: Den Wehen-Timer, die Packliste und Hilfe bei Bürokratie.`, image: "/mascot/papa_builder.png" },
-                { title: "To-Dos", text: "Hast du alles erledigt? Hake deine Aufgaben in der Checkliste ab.", image: "/mascot/papa_checklist.png" }
+                { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}. Starte direkt mit dem wichtigsten für den Endspurt.`, image: "/mascot/papa_builder.png" },
+                { title: "Namen-Finder", text: "Tinder für Babynamen. Swipe gemeinsam mit deiner Partnerin, bis ihr ein Match habt.", image: "/mascot/papa_happy.png" },
+                { title: "Wehen-Timer", text: "Wenn es losgeht: Timen, analysieren, Ruhe bewahren. Wir sagen dir, wann ihr losmüsst.", image: "/mascot/papa_timer.png" },
+                { title: "Kliniktasche", text: "Nichts vergessen. Die ultimative Checkliste für den großen Tag.", image: "/mascot/papa_packing.png" },
+                { title: "Papierkram", text: "Elterngeld, Kindergeld, Vaterschaftsanerkennung. Alle Links, keine Panik.", image: "/mascot/papa_paperwork.png" }
             ],
             knowledge: [
                 { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Fakten statt Blabla.", image: "/mascot/papa_smart.png" },
@@ -32,6 +36,7 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Wochenbett-Modus", text: `Der Fokus liegt auf Fürsorge. Wie geht es der Mama? Wie geht es ${name}?`, image: "/mascot/papa_holding_baby.png" },
                 { title: "Neue Habits", text: "Deine Daily Dads haben sich angepasst: 'Nachtschicht übernehmen', 'Essen machen' sind jetzt deine Missionen.", image: "/mascot/papa_tired.png" },
                 { title: "Dad Log", text: "Schlafmangel macht vergesslich. Notiere hier besondere Momente oder einfach nur Frust.", image: "/mascot/papa_writing.png" },
+                { title: "AI Coach", text: "Dein Notfall-Anker. Egal ob Wickel-Frage oder Beruhigungs-Tipp: Frag einfach den Coach unten rechts.", image: "/mascot/papa_smart.png" },
                 { title: "Navigation", text: "Unten findest du 4 Bereiche: Home (Aufgaben), Team (Wir), Tools (Helfer) und Wissen (Infos).", image: "/mascot/papa_smart.png" }
             ],
             team: [
@@ -40,8 +45,9 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Deep Talk", text: "Fragen für Elternpaare. Damit ihr nicht nur über Windeln redet.", image: "/mascot/papa_neutral.png" }
             ],
             tools: [
-                { title: "Helfer im Chaos", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.` }, // Missing image here
-                { title: "Meilensteine", text: `Tracke die Meilensteine von ${name} und finde wichtige Adressen für Notfälle.`, image: "/mascot/papa_happy.png" },
+                { title: "Helfer im Chaos", text: `Alles was du jetzt brauchst. Für dich, für ${name} und für den Papierkrieg.`, image: "/mascot/papa_builder.png" },
+                { title: "Meilensteine", text: "Das erste Lächeln, der erste Brei. Halte die wichtigsten Momente fest.", image: "/mascot/papa_happy.png" },
+                { title: "Notfall-Kontakte", text: "Kinderarzt, Hebamme, Giftnotruf. Alles sofort griffbereit, wenn es brennt.", image: "/mascot/papa_emergency.png" },
                 { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir bei den Anträgen.", image: "/mascot/papa_paperwork.png" }
             ],
             knowledge: [

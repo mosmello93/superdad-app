@@ -9,7 +9,7 @@ const DeepTalkSoft = ({ mode, statusData }) => {
         setLoading(true);
         const context = mode === 'loss' ? "Eltern, die um ihr Kind trauern. Fokus auf sanftem Austausch, Erinnerung, gegenseitiger Stütze." : (mode === 'postpartum' ? "Eltern mit Neugeborenem." : "Werdende Eltern.");
         const prompt = `Eine kurze, tiefe Frage für ein Paar (${context}). Nur die Frage.`;
-        const result = await callGemini(prompt);
+        const result = await callGemini(prompt, mode);
         setQuestion(result);
         setLoading(false);
     }, [mode, statusData.week]);

@@ -53,10 +53,43 @@ const HabitActionOverlay = ({ title, subtitle, icon: Icon, options, color, onClo
                             <p className="text-sm text-stone-600 dark:text-stone-400">{option.text}</p>
                         </div>
                     ))}
+
+                    {/* Custom Option */}
+                    <div
+                        onClick={() => !isDone && setSelectedIdx('custom')}
+                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${selectedIdx === 'custom'
+                            ? `${c.border} ${c.bg} ring-2 ${c.ring} ring-offset-1 dark:ring-offset-stone-900`
+                            : 'border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-800 hover:border-stone-200 dark:hover:border-stone-700'
+                            } ${isDone && selectedIdx !== 'custom' ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                        <div className="flex justify-between items-center mb-1">
+                            <h4 className="font-bold text-stone-800 dark:text-stone-200">Eigene Idee</h4>
+                            {selectedIdx === 'custom' && <CheckCircle size={18} className={c.check} />}
+                        </div>
+                        {selectedIdx === 'custom' ? (
+                            <input
+                                type="text"
+                                autoFocus
+                                placeholder="Was hast du gemacht?"
+                                className={`w-full bg-transparent border-b ${c.border} border-dashed focus:outline-none text-sm p-1 pt-2 placeholder-stone-400`}
+                                onClick={(e) => e.stopPropagation()} // Prevent deselection
+                                id="custom-habit-input"
+                            />
+                        ) : (
+                            <p className="text-sm text-stone-600 dark:text-stone-400">Etwas anderes Großartiges</p>
+                        )}
+                    </div>
                 </div>
 
                 <button
-                    onClick={handleAccept}
+                    onClick={() => {
+                        if (selectedIdx === 'custom') {
+                            const customText = document.getElementById('custom-habit-input')?.value || "Eigene Idee";
+                            onConfirm({ title: "Eigene Mission", text: customText });
+                        } else {
+                            handleAccept();
+                        }
+                    }}
                     disabled={isDone || selectedIdx === null}
                     className={`w-full py-4 rounded-2xl font-bold text-white transition flex items-center justify-center ${isDone
                         ? 'bg-green-500 cursor-default'

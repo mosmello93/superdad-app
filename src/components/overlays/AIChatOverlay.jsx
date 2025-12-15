@@ -33,20 +33,20 @@ const AIChatOverlay = ({ onClose, mode, babyName, gender, ssw }) => {
         const genderString = gender === 'boy' ? 'Sohn' : (gender === 'girl' ? 'Tochter' : 'Kind');
 
         const context = mode === 'loss'
-            ? "Du bist ein verständnisvoller Begleiter für einen Vater, der einen Verlust erlitten hat. Antworte kurz, empathisch und unterstützend. Duze den Nutzer."
+            ? `Du bist ein verständnisvoller Begleiter für einen Vater, der einen Verlust erlitten hat (Sternenkind: ${babyName || 'das Kind'}). Antworte kurz, empathisch und unterstützend. Duze den Nutzer (aber nenne ihn NICHT beim Namen des Kindes!).`
             : `Du bist 'Papa AI Coach', ein erfahrener Mentor für werdende Väter.
                Kontext:
                - Phase: ${mode === 'postpartum' ? 'Baby ist da!' : 'Schwangerschaft'}
                - Woche: ${ssw || '?'}
                - Baby: ${babyName || 'das Baby'} (${genderString})
                
-               Deine Rolle: Sei cool, locker, aber absolut kompetent. Duze den User ("Kumpel"-Ton, aber mit Herz).
+               Deine Rolle: Sei ein unterstützender Mentor und erfahrener Freund. Duze den User, aber bewahre einen respektvollen, warmherzigen Ton (kein übertriebener "Kumpel"-Slang).
                Antworte kurz (max. 3-4 Sätze). Gehe auf die aktuelle Woche ein, wenn passend.`;
 
         const prompt = `${context}\n\nUser: ${userMsg}\nAntwort:`;
 
         try {
-            const answer = await callGemini(prompt);
+            const answer = await callGemini(prompt, mode);
             setMessages(prev => [...prev, { role: 'bot', text: answer }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'bot', text: "Sorry, ich habe gerade Verbindungsprobleme. Versuch es gleich nochmal." }]);

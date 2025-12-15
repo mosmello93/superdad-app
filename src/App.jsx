@@ -6,6 +6,7 @@ import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 // Config
 import { auth, db } from './config/firebase';
 import { OASIS_IDEAS, LOSS_SHIELD_OPTIONS, LOSS_CARE_OPTIONS } from './data/content';
+import { ACHIEVEMENTS } from './data/achievements';
 
 // Utils
 import { calculateStatus, getDailyOasis } from './utils/calculations';
@@ -45,6 +46,9 @@ import GamificationOverlay from './components/overlays/GamificationOverlay';
 import AIChatOverlay from './components/overlays/AIChatOverlay';
 import SettingsOverlay from './components/overlays/SettingsOverlay';
 import LevelUpOverlay from './components/overlays/LevelUpOverlay';
+import ContractionTimerOverlay from './components/overlays/ContractionTimerOverlay';
+import BadgesOverlay, { BadgeUnlockOverlay } from './components/overlays/BadgesOverlay';
+import NameSwiperOverlay from './components/overlays/NameSwiperOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -62,6 +66,7 @@ const App = () => {
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
     const [dueDate, setDueDate] = useState(null);
     const [babyName, setBabyName] = useState('');
+    const [userName, setUserName] = useState(''); // New: Dad's Name
     const [gender, setGender] = useState('surprise');
     const [ssw, setSsw] = useState(null);
 
@@ -91,6 +96,7 @@ const App = () => {
     const [showGamification, setShowGamification] = useState(false);
     const [showAIChat, setShowAIChat] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+    const [showNameSwiper, setShowNameSwiper] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -135,6 +141,8 @@ const App = () => {
     const [showBag, setShowBag] = useState(false);
     const [showEmergency, setShowEmergency] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
+    const [showContractionTimer, setShowContractionTimer] = useState(false);
+    const [showBadges, setShowBadges] = useState(false); // New State // New State
 
     // Initial Data for Hooks (Will be updated from Firestore)
     const [initialHabits, setInitialHabits] = useState(null);
@@ -146,7 +154,7 @@ const App = () => {
 
     // --- HOOKS INTEGRATION ---
     const { habits, toggleHabit, resetHabits } = useHabits(initialHabits, saveProfile, updateHabitXP);
-    const { currentXP, newLevelUnlocked, dismissLevelUp } = useGamification(tasks, habitXP);
+    const { currentXP, newLevelUnlocked, dismissLevelUp, newBadgeUnlocked, dismissBadge, unlockedBadges } = useGamification(tasks, habitXP, habits);
 
     useEffect(() => {
         // Auth Listener setup
@@ -181,6 +189,7 @@ const App = () => {
                 setMode(data.mode);
                 setDueDate(data.dueDate);
                 if (data.babyName) setBabyName(data.babyName);
+                if (data.userName) setUserName(data.userName); // Load Dad's Name
                 if (data.gender) setGender(data.gender);
                 if (data.ssw) setSsw(data.ssw);
                 if (data.habits) setInitialHabits(data.habits);
@@ -382,8 +391,9 @@ const App = () => {
                             statusData={statusData}
                             mode={mode}
                             babyName={babyName}
+                            userName={userName}
                             xp={currentXP}
-                            onOpenGamification={() => setShowGamification(true)}
+                            onOpenGamification={() => setShowBadges(true)}
                             onOpenSettings={() => setShowSettings(true)}
                             darkMode={darkMode}
                             toggleDarkMode={() => setDarkMode(!darkMode)}
@@ -393,7 +403,7 @@ const App = () => {
                             {activeTab === 'home' && (
                                 <div className="space-y-6">
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-100 fill-mode-backwards">
-                                        <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} gender={gender} />
+                                        <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} userName={userName} gender={gender} />
                                     </div>
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200 fill-mode-backwards">
                                         <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
@@ -434,6 +444,7 @@ const App = () => {
                                             openBureaucracy={() => setShowBureaucracy(true)}
                                             openResources={() => setShowResources(true)}
                                             openEmergency={() => setShowEmergency(true)}
+                                            openNameSwiper={() => setShowNameSwiper(true)}
                                         />
                                     )}
                                     <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
@@ -573,11 +584,45 @@ const App = () => {
                 />
             )}
 
-            {/* LEVEL UP CELEBRATION */}
-            {newLevelUnlocked && (
+            {/* LEVEL UP CELEBRATION - Disabled in Loss Mode */}
+            {newLevelUnlocked && mode !== 'loss' && (
                 <LevelUpOverlay
                     levelInfo={newLevelUnlocked}
                     onClose={dismissLevelUp}
+                />
+            )}
+
+            {/* CONTRACTION TIMER */}
+            {showContractionTimer && (
+                <ContractionTimerOverlay
+                    onClose={() => setShowContractionTimer(false)}
+                />
+            )}
+
+            {/* BADGE UNLOCK CELEBRATION */}
+            {newBadgeUnlocked && (
+                <BadgeUnlockOverlay
+                    badge={newBadgeUnlocked}
+                    onClose={dismissBadge}
+                />
+            )}
+
+            {/* BADGES COLLECTION OVERLAY */}
+            {showBadges && (
+                <BadgesOverlay
+                    unlockedBadges={unlockedBadges}
+                    allBadges={ACHIEVEMENTS}
+                    onClose={() => setShowBadges(false)}
+                    currentXP={currentXP}
+                    levelInfo={calculateLevel(currentXP)}
+                />
+            )}
+
+            {/* NAME SWIPER */}
+            {showNameSwiper && (
+                <NameSwiperOverlay
+                    preselectedGender={gender}
+                    onClose={() => setShowNameSwiper(false)}
                 />
             )}
 
