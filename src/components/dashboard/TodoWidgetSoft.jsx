@@ -52,8 +52,8 @@ const TodoWidgetSoft = ({ statusData, tasks, toggleTask, mode }) => {
             <div className="space-y-2 mb-4">
                 {currentTasks.map(task => (
                     <div key={task.id} onClick={() => toggleTask(task.id, task.completed)} className={`flex items-center p-3 rounded-2xl cursor-pointer transition-all group ${task.completed ? 'bg-stone-50 dark:bg-stone-950 text-stone-400 dark:text-stone-600' : 'hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200'}`}>
-                        <div className={`mr-3 ${task.completed ? 'text-emerald-500 dark:text-emerald-600' : 'text-stone-300 dark:text-stone-600'}`}>
-                            {task.completed ? <CheckCircle size={22} /> : <Circle size={22} />}
+                        <div className={`mr-3 transition-transform duration-300 ${task.completed ? 'text-emerald-500 dark:text-emerald-600 scale-110' : 'text-stone-300 dark:text-stone-600 scale-100'}`}>
+                            {task.completed ? <CheckCircle size={22} className="animate-in zoom-in spin-in-90 duration-300" /> : <Circle size={22} />}
                         </div>
                         <span className={`text-sm font-medium flex-1 ${task.completed ? 'line-through' : ''}`}>{task.text}</span>
 

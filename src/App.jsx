@@ -478,170 +478,196 @@ const App = () => {
 
                     <div className="fixed bottom-6 left-0 right-0 px-6 max-w-md mx-auto z-40 pointer-events-none">
                         <div className="bg-white/90 backdrop-blur-md border border-stone-200 shadow-xl rounded-full p-2 flex justify-between items-center pointer-events-auto">
-                            <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition ${activeTab === 'home' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Home size={20} /></button>
-                            <button onClick={() => setActiveTab('team')} className={`p-3 rounded-full transition ${activeTab === 'team' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><Users size={20} /></button>
-                            <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition ${activeTab === 'tools' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><LayoutGrid size={20} /></button>
-                            <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition ${activeTab === 'knowledge' ? 'bg-stone-800 text-white' : 'text-stone-400 hover:text-stone-600'}`}><BookOpen size={20} /></button>
+                            <button onClick={() => setActiveTab('home')} className={`p-3 rounded-full transition-all duration-300 ${activeTab === 'home' ? 'bg-stone-800 text-white scale-110 shadow-md' : 'text-stone-400 hover:text-stone-600 hover:scale-105'}`}><Home size={20} /></button>
+                            <button onClick={() => setActiveTab('team')} className={`p-3 rounded-full transition-all duration-300 ${activeTab === 'team' ? 'bg-stone-800 text-white scale-110 shadow-md' : 'text-stone-400 hover:text-stone-600 hover:scale-105'}`}><Users size={20} /></button>
+                            <button onClick={() => setActiveTab('tools')} className={`p-3 rounded-full transition-all duration-300 ${activeTab === 'tools' ? 'bg-stone-800 text-white scale-110 shadow-md' : 'text-stone-400 hover:text-stone-600 hover:scale-105'}`}><LayoutGrid size={20} /></button>
+                            <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition-all duration-300 ${activeTab === 'knowledge' ? 'bg-stone-800 text-white scale-110 shadow-md' : 'text-stone-400 hover:text-stone-600 hover:scale-105'}`}><BookOpen size={20} /></button>
                         </div>
                     </div>
-                </>
-            )}
+                </div>
+        </>
+    )
+}
 
-            {/* OVERLAYS */}
-            {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
-            {getOverlayData() && (
-                <HabitActionOverlay
-                    title={getOverlayData().title}
-                    subtitle={getOverlayData().subtitle}
-                    options={getOverlayData().options}
-                    color={getOverlayData().color}
-                    isDone={habits[activeOverlayHabit]}
-                    onConfirm={markOverlayHabitDone}
-                    onClose={() => setActiveOverlayHabit(null)}
-                />
-            )}
+{/* OVERLAYS */ }
+{ showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} /> }
+{
+    getOverlayData() && (
+        <HabitActionOverlay
+            title={getOverlayData().title}
+            subtitle={getOverlayData().subtitle}
+            options={getOverlayData().options}
+            color={getOverlayData().color}
+            isDone={habits[activeOverlayHabit]}
+            onConfirm={markOverlayHabitDone}
+            onClose={() => setActiveOverlayHabit(null)}
+        />
+    )
+}
 
-            {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
-            {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
+{ showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} /> }
+{ showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} /> }
 
-            {/* NEW OVERLAYS */}
-            {showMilestones && (
-                <MilestoneOverlay
-                    unlockedMilestones={unlockedMilestones}
-                    toggleMilestone={toggleMilestone}
-                    close={() => setShowMilestones(false)}
-                    mode={mode}
-                    milestonePhotos={milestonePhotos}
-                    onSavePhoto={saveMilestonePhoto}
-                    milestoneDates={milestoneDates}
-                    onUpdateDate={updateMilestoneDate}
-                />
-            )}
+{/* NEW OVERLAYS */ }
+{
+    showMilestones && (
+        <MilestoneOverlay
+            unlockedMilestones={unlockedMilestones}
+            toggleMilestone={toggleMilestone}
+            close={() => setShowMilestones(false)}
+            mode={mode}
+            milestonePhotos={milestonePhotos}
+            onSavePhoto={saveMilestonePhoto}
+            milestoneDates={milestoneDates}
+            onUpdateDate={updateMilestoneDate}
+        />
+    )
+}
 
-            {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
-            {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
-            {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}
+{ showShield && <ShieldOverlay close={() => setShowShield(false)} /> }
+{ showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} /> }
+{ showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} /> }
 
-            {showGamification && (
-                <GamificationOverlay
-                    xp={currentXP}
-                    levelInfo={calculateLevel(currentXP)}
-                    onClose={() => setShowGamification(false)}
-                />
-            )}
+{
+    showGamification && (
+        <GamificationOverlay
+            xp={currentXP}
+            levelInfo={calculateLevel(currentXP)}
+            onClose={() => setShowGamification(false)}
+        />
+    )
+}
 
-            {showAIChat && (
-                <AIChatOverlay
-                    mode={mode}
-                    babyName={babyName}
-                    gender={gender}
-                    ssw={statusData.week} // Pass current week
-                    onClose={() => setShowAIChat(false)}
-                />
-            )}
+{
+    showAIChat && (
+        <AIChatOverlay
+            mode={mode}
+            babyName={babyName}
+            gender={gender}
+            ssw={statusData.week} // Pass current week
+            onClose={() => setShowAIChat(false)}
+        />
+    )
+}
 
-            {showSettings && (
-                <SettingsOverlay
-                    onClose={() => setShowSettings(false)}
-                    babyName={babyName}
-                    gender={gender}
-                    onSaveProfile={saveProfile}
-                    onResetApp={() => {
-                        const emptyState = {
-                            mode: null, dueDate: null, babyName: '', gender: 'surprise', ssw: null,
-                            habitXP: 0, unlockedMilestones: [], milestoneDates: {}, completedTasks: [],
-                            dadLogs: [], contractions: [], contacts: {}, bagItems: [], tasks: [],
-                            vibeCheck: '', vibeHistory: [], partnerHistory: [], habits: null
-                        };
-                        saveProfile(emptyState);
+{
+    showSettings && (
+        <SettingsOverlay
+            onClose={() => setShowSettings(false)}
+            babyName={babyName}
+            gender={gender}
+            onSaveProfile={saveProfile}
+            onResetApp={() => {
+                const emptyState = {
+                    mode: null, dueDate: null, babyName: '', gender: 'surprise', ssw: null,
+                    habitXP: 0, unlockedMilestones: [], milestoneDates: {}, completedTasks: [],
+                    dadLogs: [], contractions: [], contacts: {}, bagItems: [], tasks: [],
+                    vibeCheck: '', vibeHistory: [], partnerHistory: [], habits: null
+                };
+                saveProfile(emptyState);
 
-                        // Reset Local State
-                        setHabitXP(0);
-                        setUnlockedMilestones([]);
-                        setMilestoneDates({});
-                        setCompletedTasks([]);
-                        setDadLogs([]);
-                        setContractions([]);
-                        setContacts({});
-                        setBagItems([]);
-                        setTasks([]);
-                        setVibeCheck('');
-                        setVibeHistory([]);
-                        setPartnerHistory([]);
-                        setBabyName('');
-                        setGender('surprise');
-                        setMode(null);
-                        setDueDate(null);
-                        setInitialHabits(null); // Clear initial habits to prevent re-merge
-                        resetHabits(); // Force hook to reset to defaults
+                // Reset Local State
+                setHabitXP(0);
+                setUnlockedMilestones([]);
+                setMilestoneDates({});
+                setCompletedTasks([]);
+                setDadLogs([]);
+                setContractions([]);
+                setContacts({});
+                setBagItems([]);
+                setTasks([]);
+                setVibeCheck('');
+                setVibeHistory([]);
+                setPartnerHistory([]);
+                setBabyName('');
+                setGender('surprise');
+                setMode(null);
+                setDueDate(null);
+                setInitialHabits(null); // Clear initial habits to prevent re-merge
+                resetHabits(); // Force hook to reset to defaults
 
-                        // Clear Local Storage
-                        localStorage.removeItem('seenTabs');
-                        localStorage.removeItem('dad_last_level');
-                        localStorage.removeItem('theme');
-                        if (userId) localStorage.removeItem(`milestone_photos_${userId}`);
+                // Clear Local Storage
+                localStorage.removeItem('seenTabs');
+                localStorage.removeItem('dad_last_level');
+                localStorage.removeItem('theme');
+                if (userId) localStorage.removeItem(`milestone_photos_${userId}`);
 
-                        setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
-                        setShowSettings(false);
-                        setShowOnboarding(true);
-                    }}
-                />
-            )}
+                setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
+                setShowSettings(false);
+                setShowOnboarding(true);
+            }}
+        />
+    )
+}
 
-            {/* LEVEL UP CELEBRATION - Disabled in Loss Mode */}
-            {newLevelUnlocked && mode !== 'loss' && (
-                <LevelUpOverlay
-                    levelInfo={newLevelUnlocked}
-                    onClose={dismissLevelUp}
-                />
-            )}
+{/* LEVEL UP CELEBRATION - Disabled in Loss Mode */ }
+{
+    newLevelUnlocked && mode !== 'loss' && (
+        <LevelUpOverlay
+            levelInfo={newLevelUnlocked}
+            onClose={dismissLevelUp}
+        />
+    )
+}
 
-            {/* CONTRACTION TIMER */}
-            {showContractionTimer && (
-                <ContractionTimerOverlay
-                    onClose={() => setShowContractionTimer(false)}
-                />
-            )}
+{/* CONTRACTION TIMER */ }
+{
+    showContractionTimer && (
+        <ContractionTimerOverlay
+            onClose={() => setShowContractionTimer(false)}
+        />
+    )
+}
 
-            {/* BADGE UNLOCK CELEBRATION */}
-            {newBadgeUnlocked && (
-                <BadgeUnlockOverlay
-                    badge={newBadgeUnlocked}
-                    onClose={dismissBadge}
-                />
-            )}
+{/* BADGE UNLOCK CELEBRATION */ }
+{
+    newBadgeUnlocked && (
+        <BadgeUnlockOverlay
+            badge={newBadgeUnlocked}
+            onClose={dismissBadge}
+        />
+    )
+}
 
-            {/* BADGES COLLECTION OVERLAY */}
-            {showBadges && (
-                <BadgesOverlay
-                    unlockedBadges={unlockedBadges}
-                    allBadges={ACHIEVEMENTS}
-                    onClose={() => setShowBadges(false)}
-                    currentXP={currentXP}
-                    levelInfo={calculateLevel(currentXP)}
-                />
-            )}
+{/* BADGES COLLECTION OVERLAY */ }
+{
+    showBadges && (
+        <BadgesOverlay
+            unlockedBadges={unlockedBadges}
+            allBadges={ACHIEVEMENTS}
+            onClose={() => setShowBadges(false)}
+            currentXP={currentXP}
+            levelInfo={calculateLevel(currentXP)}
+        />
+    )
+}
 
-            {/* NAME SWIPER */}
-            {showNameSwiper && (
-                <NameSwiperOverlay
-                    preselectedGender={gender}
-                    onClose={() => setShowNameSwiper(false)}
-                />
-            )}
+{/* NAME SWIPER */ }
+{
+    showNameSwiper && (
+        <NameSwiperOverlay
+            preselectedGender={gender}
+            onClose={() => setShowNameSwiper(false)}
+        />
+    )
+}
 
-            {/* BABY BUDGET */}
-            {showBudget && (
-                <BudgetOverlay
-                    onClose={() => setShowBudget(false)}
-                />
-            )}
+{/* BABY BUDGET */ }
+{
+    showBudget && (
+        <BudgetOverlay
+            onClose={() => setShowBudget(false)}
+        />
+    )
+}
 
-            {/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */}
-            {!showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
-                <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
-            )}
-        </div>
+{/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */ }
+{
+    !showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
+        <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
+    )
+}
+        </div >
     );
 };
 
