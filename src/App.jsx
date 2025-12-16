@@ -15,6 +15,7 @@ import { calculateStatus, getDailyOasis } from './utils/calculations';
 import { useHabits } from './hooks/useHabits';
 import { useGamification } from './hooks/useGamification';
 import { calculateLevel } from './utils/gamification';
+import { checkAndSendNotifications, requestNotificationPermission } from './utils/notifications';
 
 // Components
 import HeaderSoft from './components/layout/HeaderSoft';
@@ -23,7 +24,6 @@ import ModeSelection from './components/layout/ModeSelection';
 import ProgressCardSoft from './components/dashboard/ProgressCardSoft';
 import HabitGridSoft from './components/dashboard/HabitGridSoft';
 import ToolGridSoft from './components/dashboard/ToolGridSoft';
-import TodoWidgetSoft from './components/dashboard/TodoWidgetSoft';
 import KnowledgeView from './components/dashboard/KnowledgeView';
 
 import DeepTalkSoft from './components/features/DeepTalkSoft';
@@ -50,6 +50,10 @@ import ContractionTimerOverlay from './components/overlays/ContractionTimerOverl
 import BadgesOverlay, { BadgeUnlockOverlay } from './components/overlays/BadgesOverlay';
 import NameSwiperOverlay from './components/overlays/NameSwiperOverlay';
 import BudgetOverlay from './components/overlays/BudgetOverlay';
+import CalendarOverlay from './components/overlays/CalendarOverlay';
+import CryCompassOverlay from './components/overlays/CryCompassOverlay';
+import ShiftPlannerOverlay from './components/overlays/ShiftPlannerOverlay';
+import MissionsOverlay from './components/overlays/MissionsOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
@@ -144,7 +148,15 @@ const App = () => {
     const [showEmergency, setShowEmergency] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
     const [showContractionTimer, setShowContractionTimer] = useState(false);
-    const [showBadges, setShowBadges] = useState(false); // New State // New State
+    const [showBadges, setShowBadges] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [showCryCompass, setShowCryCompass] = useState(false);
+    const [showShiftPlanner, setShowShiftPlanner] = useState(false);
+    const [showMissions, setShowMissions] = useState(false);
+
+    // Shift Data
+    const [activeShift, setActiveShift] = useState(null); // { person: 'Papa', startTime: ts }
+    const [shiftHistory, setShiftHistory] = useState([]);
 
     // Initial Data for Hooks (Will be updated from Firestore)
     const [initialHabits, setInitialHabits] = useState(null);
@@ -218,6 +230,10 @@ const App = () => {
                 if (data.milestoneDates) setMilestoneDates(data.milestoneDates);
                 if (data.completedTasks) setCompletedTasks(data.completedTasks);
                 if (data.partnerHistory) setPartnerHistory(data.partnerHistory);
+                if (data.partnerHistory) setPartnerHistory(data.partnerHistory);
+                if (data.lastSeenWeek) setLastSeenWeek(data.lastSeenWeek);
+                if (data.activeShift) setActiveShift(data.activeShift);
+                if (data.shiftHistory) setShiftHistory(data.shiftHistory);
             }
             setLoading(false);
         });
@@ -303,6 +319,12 @@ const App = () => {
     // Partner Pulse Logic
     const [partnerHistory, setPartnerHistory] = useState([]);
 
+    // Notification State
+    const [lastSeenWeek, setLastSeenWeek] = useState(0);
+
+    // Initial Notification Check (Wait for data load)
+
+
     const savePartnerMood = (moodId) => {
         const entry = { date: Date.now(), moodId };
         const newHistory = [entry, ...partnerHistory]; // Newest first
@@ -331,6 +353,16 @@ const App = () => {
     };
 
     const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
+
+    // Initial Notification Check
+    useEffect(() => {
+        if (!loading && mode && statusData && statusData.week) {
+            checkAndSendNotifications(mode, statusData.week, lastSeenWeek, (newWeek) => {
+                setLastSeenWeek(newWeek);
+                saveProfile({ lastSeenWeek: newWeek });
+            });
+        }
+    }, [loading, mode, statusData, lastSeenWeek]);
 
     // --- OVERLAY DATA PREP ---
     const getOverlayData = () => {
@@ -399,6 +431,7 @@ const App = () => {
                             onOpenSettings={() => setShowSettings(true)}
                             darkMode={darkMode}
                             toggleDarkMode={() => setDarkMode(!darkMode)}
+                            onRequestNotifications={requestNotificationPermission} // Pass detailed function
                         />
                         <div className="px-4">
                             {/* VIEW SWITCHER */}
@@ -446,12 +479,14 @@ const App = () => {
                                             openBureaucracy={() => setShowBureaucracy(true)}
                                             openResources={() => setShowResources(true)}
                                             openEmergency={() => setShowEmergency(true)}
-                                            openEmergency={() => setShowEmergency(true)}
                                             openNameSwiper={() => setShowNameSwiper(true)}
                                             openBudget={() => setShowBudget(true)}
+                                            openCalendar={() => setShowCalendar(true)}
+                                            openCryCompass={() => setShowCryCompass(true)}
+                                            openShiftPlanner={() => setShowShiftPlanner(true)}
+                                            openMissions={() => setShowMissions(true)}
                                         />
                                     )}
-                                    <TodoWidgetSoft statusData={statusData} tasks={tasks} toggleTask={toggleTask} mode={mode} />
                                 </div>
                             )}
 
@@ -484,189 +519,251 @@ const App = () => {
                             <button onClick={() => setActiveTab('knowledge')} className={`p-3 rounded-full transition-all duration-300 ${activeTab === 'knowledge' ? 'bg-stone-800 text-white scale-110 shadow-md' : 'text-stone-400 hover:text-stone-600 hover:scale-105'}`}><BookOpen size={20} /></button>
                         </div>
                     </div>
-                </div>
-        </>
-    )
-}
 
-{/* OVERLAYS */ }
-{ showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} /> }
-{
-    getOverlayData() && (
-        <HabitActionOverlay
-            title={getOverlayData().title}
-            subtitle={getOverlayData().subtitle}
-            options={getOverlayData().options}
-            color={getOverlayData().color}
-            isDone={habits[activeOverlayHabit]}
-            onConfirm={markOverlayHabitDone}
-            onClose={() => setActiveOverlayHabit(null)}
-        />
-    )
-}
+                </>
+            )
+            }
 
-{ showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} /> }
-{ showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} /> }
+            {/* OVERLAYS */}
+            {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
+            {
+                getOverlayData() && (
+                    <HabitActionOverlay
+                        title={getOverlayData().title}
+                        subtitle={getOverlayData().subtitle}
+                        options={getOverlayData().options}
+                        color={getOverlayData().color}
+                        isDone={habits[activeOverlayHabit]}
+                        onConfirm={markOverlayHabitDone}
+                        onClose={() => setActiveOverlayHabit(null)}
+                    />
+                )
+            }
 
-{/* NEW OVERLAYS */ }
-{
-    showMilestones && (
-        <MilestoneOverlay
-            unlockedMilestones={unlockedMilestones}
-            toggleMilestone={toggleMilestone}
-            close={() => setShowMilestones(false)}
-            mode={mode}
-            milestonePhotos={milestonePhotos}
-            onSavePhoto={saveMilestonePhoto}
-            milestoneDates={milestoneDates}
-            onUpdateDate={updateMilestoneDate}
-        />
-    )
-}
+            {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
+            {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
 
-{ showShield && <ShieldOverlay close={() => setShowShield(false)} /> }
-{ showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} /> }
-{ showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} /> }
+            {/* NEW OVERLAYS */}
+            {
+                showMilestones && (
+                    <MilestoneOverlay
+                        unlockedMilestones={unlockedMilestones}
+                        toggleMilestone={toggleMilestone}
+                        close={() => setShowMilestones(false)}
+                        mode={mode}
+                        milestonePhotos={milestonePhotos}
+                        onSavePhoto={saveMilestonePhoto}
+                        milestoneDates={milestoneDates}
+                        onUpdateDate={updateMilestoneDate}
+                    />
+                )
+            }
 
-{
-    showGamification && (
-        <GamificationOverlay
-            xp={currentXP}
-            levelInfo={calculateLevel(currentXP)}
-            onClose={() => setShowGamification(false)}
-        />
-    )
-}
+            {showShield && <ShieldOverlay close={() => setShowShield(false)} />}
+            {showBureaucracy && <BureaucracySoft completedTasks={completedTasks} toggleTask={toggleBureaucracyTask} close={() => setShowBureaucracy(false)} mode={mode} />}
+            {showResources && <ResourceOverlay close={() => setShowResources(false)} mode={mode} />}
 
-{
-    showAIChat && (
-        <AIChatOverlay
-            mode={mode}
-            babyName={babyName}
-            gender={gender}
-            ssw={statusData.week} // Pass current week
-            onClose={() => setShowAIChat(false)}
-        />
-    )
-}
+            {
+                showGamification && (
+                    <GamificationOverlay
+                        xp={currentXP}
+                        levelInfo={calculateLevel(currentXP)}
+                        onClose={() => setShowGamification(false)}
+                    />
+                )
+            }
 
-{
-    showSettings && (
-        <SettingsOverlay
-            onClose={() => setShowSettings(false)}
-            babyName={babyName}
-            gender={gender}
-            onSaveProfile={saveProfile}
-            onResetApp={() => {
-                const emptyState = {
-                    mode: null, dueDate: null, babyName: '', gender: 'surprise', ssw: null,
-                    habitXP: 0, unlockedMilestones: [], milestoneDates: {}, completedTasks: [],
-                    dadLogs: [], contractions: [], contacts: {}, bagItems: [], tasks: [],
-                    vibeCheck: '', vibeHistory: [], partnerHistory: [], habits: null
-                };
-                saveProfile(emptyState);
+            {
+                showAIChat && (
+                    <AIChatOverlay
+                        mode={mode}
+                        babyName={babyName}
+                        gender={gender}
+                        ssw={statusData.week} // Pass current week
+                        onClose={() => setShowAIChat(false)}
+                    />
+                )
+            }
 
-                // Reset Local State
-                setHabitXP(0);
-                setUnlockedMilestones([]);
-                setMilestoneDates({});
-                setCompletedTasks([]);
-                setDadLogs([]);
-                setContractions([]);
-                setContacts({});
-                setBagItems([]);
-                setTasks([]);
-                setVibeCheck('');
-                setVibeHistory([]);
-                setPartnerHistory([]);
-                setBabyName('');
-                setGender('surprise');
-                setMode(null);
-                setDueDate(null);
-                setInitialHabits(null); // Clear initial habits to prevent re-merge
-                resetHabits(); // Force hook to reset to defaults
+            {
+                showSettings && (
+                    <SettingsOverlay
+                        onClose={() => setShowSettings(false)}
+                        babyName={babyName}
+                        gender={gender}
+                        onSaveProfile={saveProfile}
+                        onResetApp={() => {
+                            const emptyState = {
+                                mode: null, dueDate: null, babyName: '', gender: 'surprise', ssw: null,
+                                habitXP: 0, unlockedMilestones: [], milestoneDates: {}, completedTasks: [],
+                                dadLogs: [], contractions: [], contacts: {}, bagItems: [], tasks: [],
+                                vibeCheck: '', vibeHistory: [], partnerHistory: [], habits: null
+                            };
+                            saveProfile(emptyState);
 
-                // Clear Local Storage
-                localStorage.removeItem('seenTabs');
-                localStorage.removeItem('dad_last_level');
-                localStorage.removeItem('theme');
-                if (userId) localStorage.removeItem(`milestone_photos_${userId}`);
+                            // Reset Local State
+                            setHabitXP(0);
+                            setUnlockedMilestones([]);
+                            setMilestoneDates({});
+                            setCompletedTasks([]);
+                            setDadLogs([]);
+                            setContractions([]);
+                            setContacts({});
+                            setBagItems([]);
+                            setTasks([]);
+                            setVibeCheck('');
+                            setVibeHistory([]);
+                            setPartnerHistory([]);
+                            setBabyName('');
+                            setGender('surprise');
+                            setMode(null);
+                            setDueDate(null);
+                            setInitialHabits(null); // Clear initial habits to prevent re-merge
+                            resetHabits(); // Force hook to reset to defaults
 
-                setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
-                setShowSettings(false);
-                setShowOnboarding(true);
-            }}
-        />
-    )
-}
+                            // Clear Local Storage
+                            localStorage.removeItem('seenTabs');
+                            localStorage.removeItem('dad_last_level');
+                            localStorage.removeItem('theme');
+                            if (userId) localStorage.removeItem(`milestone_photos_${userId}`);
 
-{/* LEVEL UP CELEBRATION - Disabled in Loss Mode */ }
-{
-    newLevelUnlocked && mode !== 'loss' && (
-        <LevelUpOverlay
-            levelInfo={newLevelUnlocked}
-            onClose={dismissLevelUp}
-        />
-    )
-}
+                            setSeenTabs({ home: false, team: false, tools: false, knowledge: false });
+                            setShowSettings(false);
+                            setShowOnboarding(true);
+                        }}
+                    />
+                )
+            }
 
-{/* CONTRACTION TIMER */ }
-{
-    showContractionTimer && (
-        <ContractionTimerOverlay
-            onClose={() => setShowContractionTimer(false)}
-        />
-    )
-}
+            {/* LEVEL UP CELEBRATION - Disabled in Loss Mode */}
+            {
+                newLevelUnlocked && mode !== 'loss' && (
+                    <LevelUpOverlay
+                        levelInfo={newLevelUnlocked}
+                        onClose={dismissLevelUp}
+                    />
+                )
+            }
 
-{/* BADGE UNLOCK CELEBRATION */ }
-{
-    newBadgeUnlocked && (
-        <BadgeUnlockOverlay
-            badge={newBadgeUnlocked}
-            onClose={dismissBadge}
-        />
-    )
-}
+            {/* CONTRACTION TIMER */}
+            {
+                showContractionTimer && (
+                    <ContractionTimerOverlay
+                        onClose={() => setShowContractionTimer(false)}
+                    />
+                )
+            }
 
-{/* BADGES COLLECTION OVERLAY */ }
-{
-    showBadges && (
-        <BadgesOverlay
-            unlockedBadges={unlockedBadges}
-            allBadges={ACHIEVEMENTS}
-            onClose={() => setShowBadges(false)}
-            currentXP={currentXP}
-            levelInfo={calculateLevel(currentXP)}
-        />
-    )
-}
+            {/* BADGE UNLOCK CELEBRATION */}
+            {
+                newBadgeUnlocked && (
+                    <BadgeUnlockOverlay
+                        badge={newBadgeUnlocked}
+                        onClose={dismissBadge}
+                    />
+                )
+            }
 
-{/* NAME SWIPER */ }
-{
-    showNameSwiper && (
-        <NameSwiperOverlay
-            preselectedGender={gender}
-            onClose={() => setShowNameSwiper(false)}
-        />
-    )
-}
+            {/* BADGES COLLECTION OVERLAY */}
+            {
+                showBadges && (
+                    <BadgesOverlay
+                        unlockedBadges={unlockedBadges}
+                        allBadges={ACHIEVEMENTS}
+                        onClose={() => setShowBadges(false)}
+                        currentXP={currentXP}
+                        levelInfo={calculateLevel(currentXP)}
+                    />
+                )
+            }
 
-{/* BABY BUDGET */ }
-{
-    showBudget && (
-        <BudgetOverlay
-            onClose={() => setShowBudget(false)}
-        />
-    )
-}
+            {/* NAME SWIPER */}
+            {
+                showNameSwiper && (
+                    <NameSwiperOverlay
+                        preselectedGender={gender}
+                        onClose={() => setShowNameSwiper(false)}
+                    />
+                )
+            }
 
-{/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */ }
-{
-    !showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
-        <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
-    )
-}
+            {/* BABY BUDGET */}
+            {
+                showBudget && (
+                    <BudgetOverlay
+                        onClose={() => setShowBudget(false)}
+                    />
+                )
+            }
+
+            {/* NEW POSTPARTUM TOOLS */}
+            {
+                showCryCompass && (
+                    <CryCompassOverlay
+                        onClose={() => setShowCryCompass(false)}
+                    />
+                )
+            }
+            {
+                showShiftPlanner && (
+                    <ShiftPlannerOverlay
+                        onClose={() => setShowShiftPlanner(false)}
+                        activeShift={activeShift}
+                        history={shiftHistory}
+                        startShift={(person) => {
+                            const newShift = { person, startTime: Date.now() };
+                            setActiveShift(newShift);
+                            saveProfile({ activeShift: newShift });
+                            // Notify user?
+                        }}
+                        endShift={() => {
+                            if (!activeShift) return;
+                            const duration = Date.now() - activeShift.startTime;
+                            const entry = {
+                                person: activeShift.person,
+                                duration,
+                                endedAt: Date.now()
+                            };
+                            const newHistory = [entry, ...shiftHistory].slice(0, 10); // Keep last 10
+                            setShiftHistory(newHistory);
+                            setActiveShift(null);
+                            saveProfile({ activeShift: null, shiftHistory: newHistory });
+                        }}
+                    />
+                )
+            }
+
+            {/* MISSIONS OVERLAY */}
+            {
+                showMissions && (
+                    <MissionsOverlay
+                        onClose={() => setShowMissions(false)}
+                        statusData={statusData}
+                        tasks={tasks}
+                        toggleTask={toggleTask}
+                        mode={mode}
+                    />
+                )
+            }
+
+            {/* CALENDAR OVERLAY */}
+            {
+                showCalendar && (
+                    <CalendarOverlay
+                        onClose={() => setShowCalendar(false)}
+                        dueDate={dueDate}
+                        birthDate={mode === 'postpartum' ? dueDate : null} // Rough approximation if birthDate not stored separately, ideally use separate field
+                        mode={mode}
+                    />
+                )
+            }
+
+            {/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */}
+            {
+                !showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
+                    <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
+                )
+            }
         </div >
     );
 };

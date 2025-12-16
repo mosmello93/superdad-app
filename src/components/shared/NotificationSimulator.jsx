@@ -16,18 +16,8 @@ const NotificationSimulator = ({ habits, mode, dueDate }) => {
             const isNight = currentHour < 8 || currentHour >= 22;
             if (isNight) return;
 
-            // 3. Check hydration time
-            const lastHydration = habits.hydrationTime;
-            const tenHoursMs = 10 * 60 * 60 * 1000;
-
-            // Show if never done OR last done > 10 hours ago
-            if (!lastHydration || (now.getTime() - lastHydration > tenHoursMs)) {
-                setNotification({
-                    title: "💧 Trink-Erinnerung",
-                    text: "Hey Dad, hast du ihr heute schon Wasser gebracht?",
-                    icon: Droplets
-                });
-            }
+            // 3. Hydration check disabled by user request
+            // if (!lastHydration || (now.getTime() - lastHydration > tenHoursMs)) { ... }
         };
 
         // Initial check after 3 seconds

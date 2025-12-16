@@ -20,11 +20,11 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Deep Talk", text: "Karten mit Fragen für tiefe Gespräche, wenn euch die Themen ausgehen.", image: "/mascot/papa_caring.png", fallback: "/mascot/papa_neutral.png" } // papa_talking doesn't exist? Use fallback or neutral. Let's use neutral or happy.
             ],
             tools: [
-                { title: "Deine Werkzeuge", text: `Hier findest du alles Praktische für ${name}. Starte direkt mit dem wichtigsten für den Endspurt.`, image: "/mascot/papa_builder.png" },
-                { title: "Namen-Finder", text: "Tinder für Babynamen. Swipe gemeinsam mit deiner Partnerin, bis ihr ein Match habt.", image: "/mascot/papa_happy.png" },
-                { title: "Wehen-Timer", text: "Wenn es losgeht: Timen, analysieren, Ruhe bewahren. Wir sagen dir, wann ihr losmüsst.", image: "/mascot/papa_timer.png" },
-                { title: "Kliniktasche", text: "Nichts vergessen. Die ultimative Checkliste für den großen Tag.", image: "/mascot/papa_packing.png" },
-                { title: "Papierkram", text: "Elterngeld, Kindergeld, Vaterschaftsanerkennung. Alle Links, keine Panik.", image: "/mascot/papa_paperwork.png" }
+                { title: "Deine Toolbox", text: `Alles sortiert in 3 Bereiche: SOS (Notfall), Orga (Täglich) und Wissen (Schlau machen).`, image: "/mascot/papa_builder.png" },
+                { title: "SOS & Live", text: "Ganz oben in Rot: Der Wehen-Timer. Griffbereit für den Ernstfall, wenn es losgeht.", image: "/mascot/papa_timer.png" },
+                { title: "Wochen-Missionen", text: "Deine Aufgaben für die aktuelle Woche. Hake ab, was wichtig ist!", image: "/mascot/papa_missions.png" },
+                { title: "Orga-Zentrale", text: "Papierkram, Budget & Namen-Finder. Alles, was organisiert werden muss.", image: "/mascot/papa_paperwork.png" },
+                { title: "Wissen & Vorbereitung", text: "Kliniktasche & Meilensteine. Damit du bestens vorbereitet bist.", image: "/mascot/papa_packing.png" }
             ],
             knowledge: [
                 { title: "Wissen ist Macht", text: "Jede Woche neue Infos passend zur SSW. Fakten statt Blabla.", image: "/mascot/papa_smart.png" },
@@ -45,10 +45,11 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Deep Talk", text: "Fragen für Elternpaare. Damit ihr nicht nur über Windeln redet.", image: "/mascot/papa_neutral.png" }
             ],
             tools: [
-                { title: "Helfer im Chaos", text: `Alles was du jetzt brauchst. Für dich, für ${name} und für den Papierkrieg.`, image: "/mascot/papa_builder.png" },
-                { title: "Meilensteine", text: "Das erste Lächeln, der erste Brei. Halte die wichtigsten Momente fest.", image: "/mascot/papa_happy.png" },
-                { title: "Notfall-Kontakte", text: "Kinderarzt, Hebamme, Giftnotruf. Alles sofort griffbereit, wenn es brennt.", image: "/mascot/papa_emergency.png" },
-                { title: "Papierkram", text: "Direkte Links zu Elterngeld und Kindergeld helfen dir bei den Anträgen.", image: "/mascot/papa_paperwork.png" }
+                { title: "Deine Toolbox", text: `Neu sortiert: SOS (Hilfe jetzt), Orga (Täglich) & Wissen. Alles an seinem Platz.`, image: "/mascot/papa_builder.png" },
+                { title: "Schrei-Kompass", text: "Dein SOS-Tool, wenn das Baby weint. Checkliste & Beruhigungs-Sounds.", image: "/mascot/papa_cry.png" },
+                { title: "Schicht-Planer", text: "Fairness im Schlaf-Chaos. Stoppt eure Schichten und seht, wer dran ist.", image: "/mascot/papa_shift.png" },
+                { title: "Wochen-Missionen", text: "Vergiss nichts! Deine Aufgaben für die aktuelle Woche zum Abhaken.", image: "/mascot/papa_missions.png" },
+                { title: "Meilensteine", text: "Das erste Lächeln, der erste Brei. Halte die schönen Momente fest.", image: "/mascot/papa_happy.png" }
             ],
             knowledge: [
                 { title: "Neue Realität", text: "Wissen über Rückbildung, Baby-Schlaf und das 'Vierte Trimester'. Alles, um die erste Zeit zu meistern.", image: "/mascot/papa_research.png" }

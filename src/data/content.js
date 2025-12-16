@@ -195,9 +195,9 @@ export const POSTPARTUM_WEEKS = {
         }
     },
     4: {
-        title: "Erste Routine?",
+        title: "Ankommen & Routine",
         feeling: "Vorsichtige Zuversicht",
-        tip: "Überimm eine feste Aufgabe (z.B. das Abend-Bad).",
+        tip: "Etabliert ein kleines Abendritual (z.B. Lied singen).",
         baby: {
             summary: "Beginnt, Gesichter kurz zu fixieren. Kopf heben üben.",
             details: [
@@ -211,175 +211,343 @@ export const POSTPARTUM_WEEKS = {
             details: [
                 { headline: "Bewegung", text: "Erste kurze Spaziergänge sind okay. Aber auf den Körper hören: Wenn der Wochenfluss wieder rot wird, war es zu viel." },
                 { headline: "Beckenboden", text: "Noch keine Übungen, aber bewusstes 'Ansteuern' und Schonen ist wichtig. Nicht schwer heben!" },
-                { headline: "Isolation", text: "Viele Mamas fühlen sich jetzt einsam, wenn der Partner wieder arbeitet. Check-ins sind wichtig." }
+                { headline: "Isolation", text: "Viele Mütter fühlen sich jetzt einsam, wenn der Partner wieder arbeitet. Ermutige sie zu Verabredungen." }
             ]
         }
     },
     5: {
-        title: "Wachstumsschub",
-        feeling: "Quengelig",
+        title: "Der 1. Sprung",
+        feeling: "Quengelig & Anhänglich",
         tip: "Tragen, tragen, tragen. Der Gymnastikball ist dein Freund.",
         baby: {
-            summary: "Erster großer Schub. Wirkt unzufrieden, trinkt häufiger.",
+            summary: "Erster großer Entwicklungsschub (ca. 5. Woche).",
             details: [
-                { headline: "Der 5-Wochen-Schub", text: "Die Welt wird schärfer, lauter, bunter. Das macht Angst. Das Baby braucht jetzt viel Nähe ('Klammerphase')." },
-                { headline: "Lächeln?", text: "Vielleicht siehst du schon ein erstes, echtes soziales Lächeln (kein Pups-Lächeln mehr)." },
-                { headline: "Schlaf-Regression", text: "Durch den Schub schlafen viele Babys plötzlich wieder schlechter. Durchhalten." }
+                { headline: "Sinnes-Explosion", text: "Die Welt wird schärfer, lauter, bunter. Das macht Angst. Das Baby braucht jetzt viel Nähe ('Klammerphase')." },
+                { headline: "Clusterfeeding", text: "Es will wieder sehr oft trinken, um die Milchproduktion für das Wachstum anzukurbeln." },
+                { headline: "Schlaf-Regression", text: "Durch den Schub schlafen viele Babys plötzlich wieder unruhiger. Das ist vorübergehend." }
             ]
         },
         mom: {
-            summary: "Vielleicht startet der hormonelle Haarausfall.",
+            summary: "Hormonumstellung zeigt sich (Haarausfall?).",
             details: [
-                { headline: "Haarausfall", text: "Der Östrogenspiegel fällt. Die Haare, die in der Schwangerschaft nicht ausgefallen sind, fallen jetzt aus. Das wächst nach!" },
-                { headline: "Zweifel", text: "'Mache ich das richtig?' - Mütterzweifel sind normal. Bestärke sie in ihrer Intuition." },
+                { headline: "Haarausfall", text: "Der Östrogenspiegel fällt. Viele Mütter verlieren jetzt die Haare, die in der Schwangerschaft geblieben sind." },
+                { headline: "Zweifel", text: "'Mache ich das richtig?' - Sie ist durch das Schreien verunsichert. Bestärke sie in ihrer Intuition." },
                 { headline: "Partnerschaft", text: "Der erste Stress legt sich, jetzt knallt es oft mal. Redet über Erwartungen." }
             ]
         }
     },
     6: {
-        title: "Nachsorge",
-        feeling: "Körper-Check",
-        tip: "Frag sie, wie der Arzttermin war. Sei sensibel.",
+        title: "Erstes Lächeln",
+        feeling: "Verliebt",
+        tip: "Reagiere auf jedes Glucksn mit Freude.",
         baby: {
             summary: "Das erste soziale Lächeln! Reagiert auf Ansprache.",
             details: [
-                { headline: "Kommunikation", text: "Es beginnt zu 'erzählen' (Gurr-Laute). Antworte ihm, das fördert die Sprachentwicklung." },
+                { headline: "Kommunikation", text: "Es beginnt zu 'erzählen' (Gurr-Laute). Antworte ihm, das fördert die Sprachentwicklung extrem." },
                 { headline: "Greifen", text: "Die Hände öffnen sich öfter. Es versucht vielleicht schon unkoordiniert nach Dingen zu schlagen." },
-                { headline: "Wachphasen", text: "Es ist jetzt länger am Stück wach und will unterhalten werden." }
+                { headline: "Wachphasen", text: "Es ist jetzt länger am Stück wach und will unterhalten werden (Mobile, Grimassen)." }
             ]
         },
         mom: {
-            summary: "Abschlussuntersuchung Gynäkologe. Rückbildung startet.",
+            summary: "Abschlussuntersuchung Gynäkologe (Nachsorge).",
             details: [
-                { headline: "Der Check-Up", text: "Nach ca. 6 Wochen prüft der Arzt die Rückbildung der Gebärmutter und Wundheilung." },
-                { headline: "Rückbildungskurs", text: "Super wichtig für Beckenboden und Bauchmuskeln. Motivier sie, hinzugehen (und pass aufs Baby auf)." },
-                { headline: "Sex", text: "Nach dem Arzt-OK theoretisch möglich. Praktisch: Nur wenn SIE bereit ist (Kopf & Körper)." }
+                { headline: "Der Check-Up", text: "Nach ca. 6 Wochen prüft der Arzt die Rückbildung der Gebärmutter und Wundheilung. Wichtiger Termin!" },
+                { headline: "Rückbildung", text: "Der Kurs startet bald. Supporte sie, indem du das Baby nimmst, damit sie hingehen kann." },
+                { headline: "Sex", text: "Nach dem Arzt-OK theoretisch möglich. Praktisch: Nur wenn SIE bereit ist (Kopf & Körper). Gleitgel hilft (Stillen macht trocken)." }
             ]
         }
     },
     7: {
-        title: "Nachsorge",
-        feeling: "Körper-Check",
-        tip: "Frag sie, wie der Arzttermin war. Sei sensibel.",
+        title: "Hände entdecken",
+        feeling: "Neugierig",
+        tip: "Buntes Spielzeug oder Hände bewegen.",
         baby: {
-            summary: "Das erste soziale Lächeln! Reagiert auf Ansprache.",
+            summary: "Hand-Augen-Koordination beginnt sich zu entwickeln.",
             details: [
-                { headline: "Kommunikation", text: "Es beginnt zu 'erzählen' (Gurr-Laute). Antworte ihm, das fördert die Sprachentwicklung." },
-                { headline: "Greifen", text: "Die Hände öffnen sich öfter. Es versucht vielleicht schon unkoordiniert nach Dingen zu schlagen." },
-                { headline: "Wachphasen", text: "Es ist jetzt länger am Stück wach und will unterhalten werden." }
+                { headline: "Hände beobachten", text: "Es starrt fasziniert seine eigenen Hände an. 'Das gehört zu mir?'" },
+                { headline: "Farbsehen", text: "Es kann Farben jetzt besser unterscheiden, besonders starke Kontraste (Rot, Gelb, Blau)." },
+                { headline: "Greifen", text: "Es versucht gezielt nach Spielzeug zu greifen, trifft aber oft noch daneben." }
             ]
         },
         mom: {
-            summary: "Abschlussuntersuchung Gynäkologe. Rückbildung startet.",
+            summary: "Alltag mit Baby festigt sich. Körpermitte stärken.",
             details: [
-                { headline: "Der Check-Up", text: "Nach ca. 6 Wochen prüft der Arzt die Rückbildung der Gebärmutter und Wundheilung." },
-                { headline: "Rückbildungskurs", text: "Super wichtig für Beckenboden und Bauchmuskeln. Motivier sie, hinzugehen (und pass aufs Baby auf)." },
-                { headline: "Sex", text: "Nach dem Arzt-OK theoretisch möglich. Praktisch: Nur wenn SIE bereit ist (Kopf & Körper)." }
+                { headline: "Heben & Tragen", text: "Achtung: Baby + MaxiCosi ist schwer! Den Beckenboden immer vorher anspannen." },
+                { headline: "Ernährung", text: "Stillen zehrt aus. Sie braucht weiterhin hochwertige Fette und Vitamine. Nüsse sind Superfood." },
+                { headline: "Narbenpflege", text: "Kaiserschnittnarben können bei Wetterumschwung jucken oder ziehen. Massagen helfen." }
             ]
         }
     },
     8: {
-        title: "Alltag kehrt ein",
-        feeling: "Neu-Orientierung",
-        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        title: "Erste Impfung (U4)",
+        feeling: "Beschützerinstinkt",
+        tip: "Zäpfchen für die Nacht bereithalten (Arzt fragen).",
         baby: {
-            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            summary: "Die U4 Untersuchung steht an. Impfungen möglich.",
             details: [
-                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
-                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
-                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+                { headline: "Der Picks", text: "Die erste 6-fach Impfung + Rotaviren. Das Baby wird weinen, du musst trösten. Danach viel Kuscheln." },
+                { headline: "Reaktionen", text: "Fieber, Schläfrigkeit oder Quengeln sind normale Impfreaktionen für 1-2 Tage." },
+                { headline: "Wachstum", text: "Es wächst jetzt ca. 2,5 cm pro Monat. Die Kleidung wird schon wieder zu klein." }
             ]
         },
         mom: {
-            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            summary: "Sport-Einstieg und neue Identität.",
             details: [
-                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
-                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
-                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+                { headline: "Sanfter Sport", text: "Wenn die Rückbildung läuft, ist Yoga oder Pilates super. Joggen/High-Impact erst viel später!" },
+                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze ihre Hobbys." },
+                { headline: "Freundschaften", text: "Alte Freunde ohne Kinder verstehen den neuen Alltag oft nicht. Das kann schmerzen." }
             ]
         }
     },
     9: {
-        title: "Alltag kehrt ein",
-        feeling: "Neu-Orientierung",
-        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        title: "Schlaf & Rhythmus",
+        feeling: "Müde aber routiniert",
+        tip: "Abendritual konsequent durchziehen (Bad, Buch, Bett).",
         baby: {
-            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            summary: "Tag-Nacht-Unterscheidung festigt sich.",
             details: [
-                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
-                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
-                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+                { headline: "Melatonin", text: "Der Körper beginnt, das Schlafhormon selbst zu produzieren. Dunkelheit am Abend hilft." },
+                { headline: "Schlafsäcke", text: "Strampeln wird stärker. Schlafsäcke sind sicherer als Decken (Erstickungsgefahr)." },
+                { headline: "Kommunikation", text: "Es brabbelt und quietscht in verschiedenen Tonlagen. Es übt seine Stimme." }
             ]
         },
         mom: {
-            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            summary: "Chronischer Schlafmangel kann an die Substanz gehen.",
             details: [
-                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
-                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
-                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+                { headline: "Tiefpunkt", text: "Nach 2 Monaten ohne Durchschlafen sind die Reserven leer. Achte auf Anzeichen von Erschöpfung." },
+                { headline: "Aufteilung", text: "Verhandelt die Aufgaben neu. Muss wirklich alles perfekt sein? Was kann liegen bleiben?" },
+                { headline: "Rauskommen", text: "Ein Abendessen mit Freundinnen (abgepumpte Milch?) wirkt Wunder für die Seele." }
             ]
         }
     },
     10: {
-        title: "Alltag kehrt ein",
-        feeling: "Neu-Orientierung",
-        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        title: "Bewegungsdrang",
+        feeling: "Aktiv & Laut",
+        tip: "Krabbeldecke auf den Boden, weg vom Sofa (Sturzgefahr!).",
         baby: {
-            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            summary: "Will sich bewegen, strampelt wild, dreht sich vielleicht.",
             details: [
-                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
-                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
-                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+                { headline: "Kopfball", text: "In Bauchlage kann der Kopf schon minutenlang sicher gehalten werden." },
+                { headline: "Drehen", text: "Einige Babys drehen sich jetzt zufällig vom Bauch auf den Rücken. Achtung beim Wickeln!" },
+                { headline: "Spucken", text: "Durch viel Bewegung drückt der Magen. 'Speihkinder sind Gedeihkinder'." }
             ]
         },
         mom: {
-            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            summary: "Austausch mit anderen Müttern wird wichtiger.",
             details: [
-                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
-                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
-                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+                { headline: "Netzwerken", text: "Krabbelgruppen oder PEKiP sind weniger fürs Baby, mehr für die Mama (Leidensgenossinnen treffen)." },
+                { headline: "Mental Load", text: "Arzttermine, Impfungen, Kleidung sortieren... die Orga-Last steigt. Nimm ihr was ab." },
+                { headline: "Beziehung", text: "Vergesst euch als Paar nicht. 10 Minuten bewusstes Reden am Tag (ohne Baby-Thema)." }
             ]
         }
     },
     11: {
-        title: "Alltag kehrt ein",
-        feeling: "Neu-Orientierung",
-        tip: "Plant kleine 'Wir-Momente' ohne Baby.",
+        title: "Alles schmecken",
+        feeling: "Sabbernd",
+        tip: "Lätzchen-Vorrat anlegen. Es wird nass.",
         baby: {
-            summary: "Entdeckt seine Hände. Greifreflex wird zu bewusstem Greifen.",
+            summary: "Die orale Phase: Alles wandert in den Mund.",
             details: [
-                { headline: "Hand-Mund", text: "Die Hände landen gezielt im Mund. Das ist keine Hunger-Geste, sondern Forscherdrang." },
-                { headline: "Farben", text: "Es kann jetzt Farben besser unterscheiden. Buntes Spielzeug wird interessant." },
-                { headline: "Impungen", text: "Die ersten Impfungen (U4) stehen vielleicht bald an. Das kann Fieber und Quengeln bedeuten." }
+                { headline: "Munderkundung", text: "Der Mund ist das sensibelste Tastenorgan. Spielzeug, Fäuste, deine Nase – alles wird 'gekostet'." },
+                { headline: "Fremdeln?", text: "Es unterscheidet langsam zwischen 'Mama/Papa' und 'Fremd'. Oma wird vielleicht kritisch beäugt." },
+                { headline: "Zähne?", text: "Das Einschießen der Zähne in den Kiefer kann schon jetzt für starkes Sabbern und Unruhe sorgen." }
             ]
         },
         mom: {
-            summary: "Körpergefühl kehrt zurück. Beckenboden trainieren.",
+            summary: "Blick in die Zukunft: Job & Betreuung.",
             details: [
-                { headline: "Sport", text: "Sanfter Sport (Yoga, Pilates) ist oft wieder okay. Joggen/High-Impact erst später (Beckenboden!)." },
-                { headline: "Identität", text: "Sie fühlt sich langsam wieder wie sie selbst, nicht nur wie eine 'Milchbar'. Unterstütze das." },
-                { headline: "Alltag", text: "Der 'Welpenschutz' von außen lässt nach. Der Haushalt soll wieder laufen? Vorsicht, Stressfalle." }
+                { headline: "Beruf", text: "Wann geht es zurück in den Job? Elterngeld-Anträge prüfen (Basis vs. Plus)." },
+                { headline: "Betreuung", text: "In manchen Städten muss man sich jetzt schon um Kita-Plätze kümmern. Kein Witz." },
+                { headline: "Haushalt", text: "Wenn das Baby mobiler wird, muss die Wohnung 'kindersicher' werden. Putzmittel hochstellen!" }
             ]
         }
     },
     12: {
-        title: "Die 4. Trimester-Grenze",
-        feeling: "Aufwachen",
-        tip: "Reflektiert zusammen: Was läuft gut, was nervt?",
+        title: "4. Trimester Ende",
+        feeling: "Angekommen",
+        tip: "Feiert das! Ihr habt die härteste Zeit geschafft.",
         baby: {
-            summary: "Kopfkontrolle ist stabil. Brabbelt viel.",
+            summary: "Kein Neugeborenes mehr, sondern ein Säugling.",
             details: [
-                { headline: "Stabilität", text: "In Bauchlage wird der Kopf stolz oben gehalten. Die Welt wird aus einer neuen Perspektive entdeckt." },
-                { headline: "Interaktion", text: "Es lacht laut, quietscht und sucht aktiv Kontakt. Es erkennt vertraute Personen." },
-                { headline: "Rhythmus", text: "Vielleicht (ganz vielleicht) hat sich ein grober Tag-Nacht-Rhythmus eingependelt." }
+                { headline: "Stabilität", text: "Kopfkontrolle ist meist sicher. Es wirkt viel robuster als am Anfang." },
+                { headline: "Interaktion", text: "Es lacht laut, quietscht und fordert aktiv Spielzeit ein. Es ist eine echte Persönlichkeit." },
+                { headline: "Rhythmus", text: "Viele Babys haben jetzt 3 Schläfchen am Tag. Nutzt diese Struktur." }
             ]
         },
         mom: {
-            summary: "Die 'akute' Phase ist vorbei. Zeit für Bilanz.",
+            summary: "Die 'akute' Heilungsphase ist abgeschlossen.",
             details: [
-                { headline: "Meilenstein", text: "Das 'Vierte Trimester' ist geschafft. Der Körper hat Großes geleistet und sich regeneriert." },
-                { headline: "Beruf", text: "Vielleicht geht es um den Wiedereinstieg oder Elternzeit-Planung. Finanz-Check machen." },
-                { headline: "Freiheit", text: "Erste längere Trennungen vom Baby (z.B. für einen Abend) sind jetzt oft mental möglich." }
+                { headline: "Körper-Bilanz", text: "Was ist geblieben? Streifen, weicher Bauch? Das sind Heldinnen-Spuren. Feier ihren Körper." },
+                { headline: "Freiheit", text: "Erste längere Trennungen (z.B. ein halber Tag) sind jetzt oft mental möglich." },
+                { headline: "Stolz", text: "Schaut euch Fotos von Woche 1 an. Wahnsinn, was ihr geleistet habt." }
+            ]
+        }
+    },
+    13: {
+        title: "Der 2. Sprung (12. Woche)",
+        feeling: "Wechselhaft",
+        tip: "Routinen geben Sicherheit, wenn die Welt wackelt.",
+        baby: {
+            summary: "Wachstumsschub 'Muster': Es erkennt wiederkehrende Abläufe.",
+            details: [
+                { headline: "Mustererkennung", text: "Es bemerkt, dass Dinge gleich bleiben. Tägliche Rituale werden jetzt extrem wichtig." },
+                { headline: "Körperbeherrschung", text: "Die Bewegungen werden flüssiger, weniger ruckartig. Es kann den Kopf sehr gut halten." },
+                { headline: "Stimmung", text: "Wie bei jedem Schub: Es kann quengelig sein, schlechter schlafen und mehr Nähe fordern." }
+            ]
+        },
+        mom: {
+            summary: "Die Hormone pendeln sich langsam auf ein 'Normal' ein.",
+            details: [
+                { headline: "Rückbildung", text: "Der Kurs wird intensiver. Muskelkater im Beckenboden? Das ist ein gutes Zeichen (Muskeln arbeiten!)." },
+                { headline: "Beruf", text: "Vielleicht kommen erste Gedanken an den Job zurück. Oder die Erkenntnis, dass sich Prioritäten verschoben haben." },
+                { headline: "Freundschaften", text: "Zeit, alte Kontakte zu pflegen. Ein Telefonat ohne Baby-Geschrei im Hintergrund tut gut." }
+            ]
+        }
+    },
+    14: {
+        title: "Greifen & Rasseln",
+        feeling: "Verspielt",
+        tip: "Gib ihm verschiedene Materialien (Holz, Stoff, Knisterpapier).",
+        baby: {
+            summary: "Das gezielte Greifen wird perfektioniert.",
+            details: [
+                { headline: "Beidhändig", text: "Es versucht, Dinge mit beiden Händen zu greifen und zur Mitte zu führen." },
+                { headline: "Rasseln", text: "Geräusche selbst zu erzeugen ist der Hit. Rasseln werden geschüttelt (und gelutscht)." },
+                { headline: "Ablenkung", text: "Beim Stillen/Füttern lässt es sich jetzt leicht ablenken. Sorge für eine ruhige Umgebung." }
+            ]
+        },
+        mom: {
+            summary: "Haarausfall könnte noch ein Thema sein (Geduld!).",
+            details: [
+                { headline: "Date Night", text: "Vielleicht klappt ein Abend zu zweit zuhause? Handy weg, Essen bestellen, Zeit für euch." },
+                { headline: "Selbstbild", text: "Wie fühlt sie sich in ihrer Haut? Ein neues Kleidungsstück, das *jetzt* passt, kann Wunder wirken." },
+                { headline: "Schlaf", text: "Hoffentlich etwas besser? Wenn nicht: Durchhalten. Es ist (leider) normal." }
+            ]
+        }
+    },
+    15: {
+        title: "Kommunikation",
+        feeling: "Lautstark",
+        tip: "Führe 'Gespräche'. Mach Pausen, lass es antworten.",
+        baby: {
+            summary: "Es entdeckt seine Stimme und experimentiert.",
+            details: [
+                { headline: "Quietschen", text: "Es kann sehr laut werden. Es testet, was die Stimme alles kann (Blubbern, Kreischen)." },
+                { headline: "Spiegel", text: "Zeig ihm sein Spiegelbild. Es erkennt sich noch nicht selbst, freut sich aber über das 'andere Baby log'." },
+                { headline: "Lachen", text: "Aus dem Lächeln wird ein echtes Glucksen und Lachen. Kitzeln hilft!" }
+            ]
+        },
+        mom: {
+            summary: "Körperliche Belastung durch Tragen steigt.",
+            details: [
+                { headline: "Beckenboden-Check", text: "Husten, Niesen, Hüpfen – alles dicht? Wenn nicht: Weiter dranbleiben, nicht ignorieren!" },
+                { headline: "Rücken", text: "Das Baby wird schwerer (ca. 6-7kg?). Achte auf ihre Haltung beim Tragen und Stillen." },
+                { headline: "Auszeit", text: "Kann sie mal 2 Stunden alleine raus? Friseur, Sport, Spazieren? Organisier das." }
+            ]
+        }
+    },
+    16: {
+        title: "Der 3. Sprung (19. Woche)",
+        feeling: "Übergänge",
+        tip: "Bleib ruhig, wenn es fremdelt oder weint.",
+        baby: {
+            summary: "Wachstumsschub 'Übergänge' (beginnt oft schon jetzt).",
+            details: [
+                { headline: "Zusammenhänge", text: "Es versteht fließende Übergänge (z.B. Tonleiter, Bewegung). Die Welt wird komplexer." },
+                { headline: "Ernährung", text: "Es schaut dir das Essen vom Löffel? Beikostreife beginnt langsam (aber keine Eile!)." },
+                { headline: "Mobilität", text: "Es strampelt wild, will sich vielleicht drehen. Frust, wenn es nicht klappt." }
+            ]
+        },
+        mom: {
+            summary: "Das Thema 'Beikost' wirft seine Schatten voraus.",
+            details: [
+                { headline: "Info-Dschungel", text: "Brei oder Baby-Led-Weaning? Helft ihr, den Druck rauszunehmen. Milch bleibt Hauptnahrung." },
+                { headline: "Vergleiche", text: "'Die anderen Babys drehen sich schon?' - Stoppt das Vergleichen. Jedes Kind hat sein Tempo." },
+                { headline: "Energie", text: "Nutzt gute Phasen für Ausflüge. Das Baby ist noch relativ 'transportabel' (robbt nicht weg)." }
+            ]
+        }
+    },
+    17: {
+        title: "Mobilität & Drehen",
+        feeling: "In Action",
+        tip: "Sicher machen: Ab jetzt nie mehr unbeaufsichtigt auf dem Wickeltisch!",
+        baby: {
+            summary: "Viele Babys drehen sich jetzt (Rücken auf Bauch).",
+            details: [
+                { headline: "Dreh-Moment", text: "Der große Sport-Moment: Die Drehung. Erst Zufall, dann Absicht. Und dann: Frust (weil es nicht zurück geht)." },
+                { headline: "Fuß-Entdecker", text: "Die Füße werden entdeckt und in den Mund gesteckt. Super Dehnung für den Rücken!" },
+                { headline: "Schlaf", text: "Nächtliches Üben (Drehen im Schlaf) kann wieder für Unruhe sorgen." }
+            ]
+        },
+        mom: {
+            summary: "Grenzen setzen gegenüber Ratschlägen.",
+            details: [
+                { headline: "Nervige Tipps", text: "'Hat es Hunger?', 'Ist ihm kalt?' - Lernt, solche Kommentare freundlich aber bestimmt zu überhören." },
+                { headline: "Abgrenzung", text: "Ihr seid die Experten für EUER Kind. Niemand sonst." },
+                { headline: "Erholung", text: "Wenn die Nächte unruhig sind: Wer kann tagsüber mal den Kinderwagen schieben, damit sie schlafen kann?" }
+            ]
+        }
+    },
+    18: {
+        title: "Fremdeln?",
+        feeling: "Mama-Fixiert",
+        tip: "Nimm es nicht persönlich, wenn es nur zu Mama will.",
+        baby: {
+            summary: "Erste Anzeichen von Fremdeln oder '8-Monats-Angst' (verfrüht).",
+            details: [
+                { headline: "Klammern", text: "Es unterscheidet scharf zwischen Bezugsperson und 'Fremd'. Oma wird vielleicht angebrüllt." },
+                { headline: "Objektpermanenz", text: "Es beginnt zu verstehen: Wenn Mama weg ist, ist sie weg (und das ist doof)." },
+                { headline: "Wachstum", text: "Die Kleidung wird schon wieder zu klein. Aussortieren steht an." }
+            ]
+        },
+        mom: {
+            summary: "Mental Load Thema: Kleidung & Ausstattung.",
+            details: [
+                { headline: "Aussortieren", text: "Das Wegpacken der 'ganz kleinen' Sachen kann emotional sein. Mach mit, sei da." },
+                { headline: "Rücken", text: "Das Tragen eines 'klammernden' Babys ist anstrengend. Biete Massagen an." },
+                { headline: "Geduld", text: "Wenn das Baby nur zu ihr will: Bring ihr Getränke, Snacks, Handy. Sei der Assistent." }
+            ]
+        }
+    },
+    19: {
+        title: "Zähne im Anmarsch?",
+        feeling: "Aua",
+        tip: "Beißring kühlen oder Veilchenwurzel anbieten.",
+        baby: {
+            summary: "Alles wird angekaut. Rote Backen, viel Sabber.",
+            details: [
+                { headline: "Zahnen", text: "Die Zähne schießen in den Kiefer (oder brechen durch). Das tut weh. Osanit oder Dentinox bereit halten." },
+                { headline: "Beißen", text: "Es beißt auf allem herum – auch auf der Brust/Flasche. Autsch." },
+                { headline: "Infekte", text: "Zahnen schwächt oft das Immunsystem leicht -> Schnupfen oder Fieber möglich." }
+            ]
+        },
+        mom: {
+            summary: "Spagat zwischen Arbeit (Gedanken) und Baby.",
+            details: [
+                { headline: "Zukunftssorgen", text: "Finanzen, Job-Rückkehr, KiTa-Suche. Diese Themen können drücken. Redet offen darüber." },
+                { headline: "Kraft", text: "Ein zahnendes Baby ist 'High Need'. Sie braucht Pausen, in denen sie NICHTS hören muss." },
+                { headline: "Ernährung", text: "Achte darauf, dass sie genug isst. Stress killt den Appetit." }
+            ]
+        }
+    },
+    20: {
+        title: "Halbzeit!",
+        feeling: "Stolz",
+        tip: "Macht ein Foto: 'Genau so groß wie bei der Geburt' (Vergleich).",
+        baby: {
+            summary: "Fast 5 Monate alt. Reagiert oft schon auf den Namen.",
+            details: [
+                { headline: "Namen", text: "Es dreht den Kopf, wenn man seinen Namen ruft (oder zumindest die Tonlage erkennt)." },
+                { headline: "Sitzen?", text: "Es will hoch hinaus. Sitzen (mit Stütze!) findet es toll, aber der Rücken muss noch geschont werden." },
+                { headline: "Beikost", text: "Vielleicht startet ihr bald? Besorgt schon mal Lätzchen und Löffel." }
+            ]
+        },
+        mom: {
+            summary: "Self-Care Reminder. Akkus aufladen.",
+            details: [
+                { headline: "Rückblick", text: "5 Monate! Die Zeit rennt. Gönnt euch einen Moment, um alte Fotos anzusehen." },
+                { headline: "Auszeit", text: "Wie wäre es mit einem Wochenende (oder einer Nacht) 'Schichtfrei' für sie (bei Oma/Opa?), falls möglich?" },
+                { headline: "Gesundheit", text: "Vitamine, Eisen, Schilddrüse. Ein kleiner Check-up beim Hausarzt kann bei Müdigkeit nicht schaden." }
             ]
         }
     }

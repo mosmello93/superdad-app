@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { CheckCircle, Lock, X, Camera, Image as ImageIcon } from 'lucide-react';
+import CalendarExportButton from '../shared/CalendarExportButton';
 import { MILESTONES_PREGNANCY, MILESTONES_POSTPARTUM } from '../../data/milestones';
 
 const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mode, milestonePhotos = {}, onSavePhoto, milestoneDates = {}, onUpdateDate }) => {
@@ -111,13 +112,23 @@ const MilestoneOverlay = ({ unlockedMilestones = [], toggleMilestone, close, mod
                                     {isUnlocked && (
                                         <div className="mt-1 mb-2">
                                             <p className="text-[10px] text-stone-400 dark:text-stone-500 font-medium mb-1">{milestone.timing}</p>
-                                            <input
-                                                type="date"
-                                                value={milestoneDates && milestoneDates[milestone.id] ? milestoneDates[milestone.id] : ''}
-                                                onChange={(e) => onUpdateDate(milestone.id, e.target.value)}
-                                                onClick={(e) => e.stopPropagation()} // Prevent closing/toggling
-                                                className="text-xs bg-transparent border-b border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 w-full"
-                                            />
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="date"
+                                                    value={milestoneDates && milestoneDates[milestone.id] ? milestoneDates[milestone.id] : ''}
+                                                    onChange={(e) => onUpdateDate(milestone.id, e.target.value)}
+                                                    onClick={(e) => e.stopPropagation()} // Prevent closing/toggling
+                                                    className="flex-1 text-xs bg-transparent border-b border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 focus:outline-none focus:border-stone-400 dark:focus:border-stone-500"
+                                                />
+                                                {milestoneDates && milestoneDates[milestone.id] && (
+                                                    <CalendarExportButton
+                                                        title={`Meilenstein: ${milestone.title}`}
+                                                        description={`Erinnerung an: ${milestone.title}. ${milestone.description || ''}`}
+                                                        date={milestoneDates[milestone.id]}
+                                                        className="px-2 py-1 text-xs"
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

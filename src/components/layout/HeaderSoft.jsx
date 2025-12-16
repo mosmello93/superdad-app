@@ -1,8 +1,8 @@
 import React from 'react';
-import { Trophy, Moon, Sun, Settings } from 'lucide-react';
+import { Trophy, Moon, Sun, Settings, Bell } from 'lucide-react';
 import { calculateLevel } from '../../utils/gamification';
 
-const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamification, onOpenSettings, darkMode, toggleDarkMode }) => {
+const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamification, onOpenSettings, darkMode, toggleDarkMode, onRequestNotifications }) => {
     const isLoss = mode === 'loss';
     let title = statusData.status === 'NotSet' ? 'Willkommen' : statusData.label;
     if (userName) title = `Moin, ${userName}`; // Personalized Greeting
@@ -29,6 +29,14 @@ const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamificati
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {/* NOTIFICATIONS */}
+                    <button
+                        onClick={onRequestNotifications}
+                        className="bg-white dark:bg-stone-800 p-2 rounded-full border border-stone-100 dark:border-stone-700 shadow-sm text-stone-400 dark:text-stone-300 hover:text-stone-600 dark:hover:text-amber-300 transition-colors"
+                    >
+                        <Bell size={16} />
+                    </button>
+
                     {/* SETTINGS */}
                     <button
                         onClick={onOpenSettings}
