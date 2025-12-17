@@ -20,7 +20,7 @@ export const checkAndSendNotifications = (mode, currentWeek, lastSeenWeek, setLa
             ? "Dein Baby hat wieder einen Sprung gemacht. Schau dir die neuen Updates an!"
             : "Neue Meilensteine warten auf euch. Sieh nach, was diese Woche passiert.";
 
-        new Notification(title, {
+        safeShowNotification(title, {
             body: body,
             icon: '/pwa-192x192.png', // Fallback icon
             badge: '/pwa-192x192.png'
@@ -42,7 +42,7 @@ export const checkAndSendNotifications = (mode, currentWeek, lastSeenWeek, setLa
 
         // Delay slightly so it doesn't pop immediately on load
         setTimeout(() => {
-            new Notification("Gute Tat des Tages 🌟", {
+            safeShowNotification("Gute Tat des Tages 🌟", {
                 body: deed,
                 icon: '/mascot/papa_happy.png' // Use a mascot
             });
@@ -56,9 +56,23 @@ export const requestNotificationPermission = () => {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             console.log("Notification permission granted");
-            new Notification("SuperDad Benachrichtigungen aktiviert! 🔔");
+            safeShowNotification("SuperDad Benachrichtigungen aktiviert! 🔔");
         }
     });
+};
+
+// Helper to prevent "Illegal constructor" error on Android
+const safeShowNotification = (title, options) => {
+    try {
+        new Notification(title, options);
+    } catch (e) {
+        console.warn('Native Notification constructor failed, trying ServiceWorker:', e);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(title, options);
+            }).catch(err => console.error('ServiceWorker notification failed:', err));
+        }
+    }
 };
 
 const getRandomGoodDeed = (mode) => {
