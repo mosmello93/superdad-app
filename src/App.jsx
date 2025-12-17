@@ -46,7 +46,9 @@ import GamificationOverlay from './components/overlays/GamificationOverlay';
 import AIChatOverlay from './components/overlays/AIChatOverlay';
 import SettingsOverlay from './components/overlays/SettingsOverlay';
 import LevelUpOverlay from './components/overlays/LevelUpOverlay';
-import ContractionTimerOverlay from './components/overlays/ContractionTimerOverlay';
+import ContractionTimerOverlayV2 from './components/overlays/ContractionTimerOverlayV2';
+
+
 import BadgesOverlay, { BadgeUnlockOverlay } from './components/overlays/BadgesOverlay';
 import NameSwiperOverlay from './components/overlays/NameSwiperOverlay';
 import BudgetOverlay from './components/overlays/BudgetOverlay';
@@ -467,26 +469,22 @@ const App = () => {
 
                             {activeTab === 'tools' && (
                                 <div className="animate-in fade-in">
-                                    {showTimer ? (
-                                        <ContractionTimer contractions={contractions} saveContractions={saveContractions} closeTimer={() => setShowTimer(false)} />
-                                    ) : (
-                                        <ToolGridSoft
-                                            mode={mode}
-                                            toggleTimer={() => setShowTimer(true)}
-                                            openBag={() => setShowBag(true)}
-                                            openMilestones={() => setShowMilestones(true)}
-                                            openShield={() => setShowShield(true)}
-                                            openBureaucracy={() => setShowBureaucracy(true)}
-                                            openResources={() => setShowResources(true)}
-                                            openEmergency={() => setShowEmergency(true)}
-                                            openNameSwiper={() => setShowNameSwiper(true)}
-                                            openBudget={() => setShowBudget(true)}
-                                            openCalendar={() => setShowCalendar(true)}
-                                            openCryCompass={() => setShowCryCompass(true)}
-                                            openShiftPlanner={() => setShowShiftPlanner(true)}
-                                            openMissions={() => setShowMissions(true)}
-                                        />
-                                    )}
+                                    <ToolGridSoft
+                                        mode={mode}
+                                        toggleTimer={() => setShowContractionTimer(true)}
+                                        openBag={() => setShowBag(true)}
+                                        openMilestones={() => setShowMilestones(true)}
+                                        openShield={() => setShowShield(true)}
+                                        openBureaucracy={() => setShowBureaucracy(true)}
+                                        openResources={() => setShowResources(true)}
+                                        openEmergency={() => setShowEmergency(true)}
+                                        openNameSwiper={() => setShowNameSwiper(true)}
+                                        openBudget={() => setShowBudget(true)}
+                                        openCalendar={() => setShowCalendar(true)}
+                                        openCryCompass={() => setShowCryCompass(true)}
+                                        openShiftPlanner={() => setShowShiftPlanner(true)}
+                                        openMissions={() => setShowMissions(true)}
+                                    />
                                 </div>
                             )}
 
@@ -648,8 +646,9 @@ const App = () => {
             {/* CONTRACTION TIMER */}
             {
                 showContractionTimer && (
-                    <ContractionTimerOverlay
+                    <ContractionTimerOverlayV2
                         onClose={() => setShowContractionTimer(false)}
+                        contacts={contacts}
                     />
                 )
             }

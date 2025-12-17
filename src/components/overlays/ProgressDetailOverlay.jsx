@@ -128,8 +128,8 @@ const ProgressDetailOverlay = ({ statusData, mode, closeDetail }) => {
 
                             <div className="relative z-10 transition-all duration-300">
                                 {mode === 'postpartum' ? (
-                                    <div className="w-40 h-40 bg-white dark:bg-indigo-900 rounded-full flex items-center justify-center shadow-lg">
-                                        <Baby size={64} className="text-indigo-500 dark:text-indigo-300" />
+                                    <div className="w-56 h-56 flex items-center justify-center">
+                                        <img src="/mascot/papa_holding_baby.png" alt="Papa und Baby" className="w-full h-full object-contain drop-shadow-2xl animate-in zoom-in-50" />
                                     </div>
                                 ) : (
                                     weekContent.image && !imgError ? (

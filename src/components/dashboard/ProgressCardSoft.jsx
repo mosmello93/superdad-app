@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Baby, ChevronRight } from 'lucide-react';
-import { PREGNANCY_WEEKS } from '../../data/content';
+import { PREGNANCY_WEEKS, POSTPARTUM_WEEKS } from '../../data/content';
 
 const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
     let sizeInfo = null;
@@ -12,11 +12,20 @@ const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
     let subTextClass = "text-emerald-600 dark:text-emerald-400";
     let badgeClass = "bg-white/60 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300";
 
-    if (mode === 'postpartum') {
+    // Load Postpartum Data
+    if (mode === 'postpartum' && statusData.week !== undefined) {
         bgClass = "bg-[#EEF2FF] dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800";
-        textClass = "text-indigo-800 dark:text-indigo-200";
+        textClass = "text-indigo-900 dark:text-indigo-100";
         subTextClass = "text-indigo-600 dark:text-indigo-400";
-        badgeClass = "bg-white/60 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300";
+        badgeClass = "bg-white/60 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300";
+
+        const weekData = POSTPARTUM_WEEKS[statusData.week];
+        if (weekData) {
+            // Override with rich data
+            statusData.label = weekData.title; // e.g. "Baby-Blues"
+            sizeInfo = weekData.baby.summary;  // e.g. "Nabelschnurrest fällt ab..."
+            imageUrl = "/mascot/papa_holding_baby.png";
+        }
     } else if (mode === 'loss') {
         bgClass = "bg-[#E5E5E0] dark:bg-stone-800/40 border-stone-200 dark:border-stone-700";
         textClass = "text-stone-800 dark:text-stone-200";
@@ -86,7 +95,7 @@ const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
                             {statusData.label}
                         </h2>
                         {sizeInfo && (
-                            <p className={`font-medium text-lg ${subTextClass}`}>
+                            <p className={`font-medium text-lg ${subTextClass} leading-snug mt-2 max-w-[200px]`}>
                                 {sizeInfo}
                             </p>
                         )}
@@ -101,7 +110,7 @@ const ProgressCardSoft = ({ statusData, mode, openDetail }) => {
                     {imageUrl ? (
                         <div className="relative w-28 h-28 flex items-center justify-center">
                             <div className="absolute inset-0 bg-white/30 dark:bg-white/5 rounded-full blur-xl transform group-hover:scale-110 transition-transform duration-500"></div>
-                            <img src={imageUrl} alt="Baby size" className="w-24 h-24 object-contain relative z-10 drop-shadow-sm transform group-hover:scale-105 transition-transform duration-300" />
+                            <img src={imageUrl} alt="Baby state" className="w-full h-full object-contain relative z-10 drop-shadow-sm transform group-hover:scale-105 transition-transform duration-300" />
                         </div>
                     ) : (
                         <div className="w-24 h-24 bg-white/50 dark:bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm group-hover:scale-105 transition-transform">

@@ -88,15 +88,16 @@ const ToolGridSoft = ({ mode, toggleTimer, openBag, openMilestones, openShield, 
                     )}
 
                     {/* SLOT: BUREAUCRACY (All) */}
-                    <div onClick={openBureaucracy} className="bg-[#F0FDF4] dark:bg-emerald-900/40 p-6 rounded-[32px] cursor-pointer transition-transform hover:shadow-md active:scale-95 border border-emerald-100/50 dark:border-emerald-800/50 group overflow-hidden">
-                        <div className="mb-4 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    {/* SLOT: BUREAUCRACY (All) */}
+                    <div onClick={openBureaucracy} className="bg-[#FFF1F2] dark:bg-rose-900/40 p-6 rounded-[32px] cursor-pointer transition-transform hover:shadow-md active:scale-95 border border-rose-100/50 dark:border-rose-800/50 group overflow-hidden">
+                        <div className="mb-4 flex items-center justify-center text-rose-600 dark:text-rose-400">
                             {mode === 'loss' ? (
                                 <FileText size={32} />
                             ) : (
                                 <img src="/mascot/papa_paperwork.png" alt="Bureaucracy" className="w-24 h-24 object-contain transform hover:scale-110 transition-transform" />
                             )}
                         </div>
-                        <h3 className="font-bold text-emerald-900 dark:text-emerald-200">Papier-<br />kram</h3>
+                        <h3 className="font-bold text-rose-900 dark:text-rose-200">Papier-<br />kram</h3>
                     </div>
 
                     {/* SLOT: BUDGET (Pregnancy Only) */}
