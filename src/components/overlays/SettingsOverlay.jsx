@@ -5,7 +5,7 @@ import { exportUserData } from '../../utils/dataManagement';
 import PrivacyPolicyOverlay from './PrivacyPolicyOverlay';
 import ImprintOverlay from './ImprintOverlay';
 
-const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, gender, onSaveProfile }) => {
+const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, gender, mode, dueDate, onSaveProfile }) => {
     const [exportStatus, setExportStatus] = useState('idle'); // idle, success
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [showImprint, setShowImprint] = useState(false);
@@ -53,6 +53,19 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                         <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 ml-1">Baby Profil</h3>
                         <div className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 p-4 space-y-4">
 
+                            {/* Date Input */}
+                            <div>
+                                <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase mb-1.5">
+                                    {mode === 'postpartum' ? 'Geburtsdatum' : 'Errechneter Termin'}
+                                </label>
+                                <input
+                                    type="date"
+                                    defaultValue={dueDate}
+                                    onChange={(e) => onSaveProfile({ dueDate: e.target.value })}
+                                    className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-3 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 mb-4"
+                                />
+                            </div>
+
                             {/* Name Input */}
                             <div>
                                 <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase mb-1.5">Name (Optional)</label>
@@ -79,8 +92,8 @@ const SettingsOverlay = ({ onClose, onResetApp, appVersion = "1.0.0", babyName, 
                                             key={opt.id}
                                             onClick={() => onSaveProfile({ gender: opt.id })}
                                             className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all ${gender === opt.id
-                                                    ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
-                                                    : 'bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                                                ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-500'
+                                                : 'bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                                                 }`}
                                         >
                                             <span className="text-xl">{opt.icon}</span>

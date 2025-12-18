@@ -34,6 +34,29 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'any maskable'
           }
+        ],
+        screenshots: [
+          {
+            src: "screenshots/screen_home.png",
+            sizes: "390x844",
+            type: "image/png",
+            form_factor: "narrow",
+            label: "Home Screen"
+          },
+          {
+            src: "screenshots/screen_team.png",
+            sizes: "390x844",
+            type: "image/png",
+            form_factor: "narrow",
+            label: "Team Features"
+          },
+          {
+            src: "screenshots/screen_tools.png",
+            sizes: "390x844",
+            type: "image/png",
+            form_factor: "narrow",
+            label: "Useful Tools"
+          }
         ]
       }
     })

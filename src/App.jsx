@@ -589,6 +589,8 @@ const App = () => {
                         onClose={() => setShowSettings(false)}
                         babyName={babyName}
                         gender={gender}
+                        mode={mode}
+                        dueDate={dueDate}
                         onSaveProfile={saveProfile}
                         onResetApp={() => {
                             const emptyState = {
