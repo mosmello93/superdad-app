@@ -1,6 +1,6 @@
 {
-    "name": "papa - Dein Begleiter",
-    "short_name": "papa",
+    "name": "HeyPapa - Dein Begleiter",
+    "short_name": "HeyPapa",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7F7F5",

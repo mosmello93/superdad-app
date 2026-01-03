@@ -20,8 +20,8 @@ const CalendarExportButton = ({
         const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
 
         const icsContent = generateICS({
-            title: `SuperDad: ${title}`,
-            description: `${description}\n\nErstellt mit der SuperDad App.`,
+            title: `HeyPapa: ${title}`,
+            description: `${description}\n\nErstellt mit der HeyPapa App.`,
             startTime,
             endTime,
             location

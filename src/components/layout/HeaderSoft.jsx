@@ -19,7 +19,7 @@ const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamificati
                 <div className="flex items-center min-w-0">
                     <img
                         src="/mascot/papa_neutral.png"
-                        alt="papa Logo"
+                        alt="HeyPapa Logo"
                         className="w-12 h-12 md:w-16 md:h-16 object-contain mr-2 rounded-full border-2 border-stone-100 dark:border-stone-700 bg-amber-50 dark:bg-amber-900/20 flex-shrink-0"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />

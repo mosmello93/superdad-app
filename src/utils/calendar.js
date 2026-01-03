@@ -16,11 +16,11 @@ export const generateICS = ({ title, description, startTime, endTime, location =
     const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//SuperDad App//DE',
+        'PRODID:-//HeyPapa App//DE',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH',
         'BEGIN:VEVENT',
-        `UID:superdad-${checkSum}`,
+        `UID:heypapa-${checkSum}`,
         `DTSTAMP:${formatDate(now)}`,
         `DTSTART:${formatDate(start)}`,
         `DTEND:${formatDate(end)}`,

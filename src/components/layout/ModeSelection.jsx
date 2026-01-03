@@ -22,52 +22,54 @@ const ModeSelection = ({ setMode }) => (
             </div>
 
             {/* Selection Buttons */}
-            <div className="space-y-4 w-full">
-                <p className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mb-4">
+            <div className="w-full">
+                <p className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest text-center mb-6">
                     Wo steht ihr gerade?
                 </p>
 
-                <button
-                    onClick={() => setMode('pregnancy')}
-                    className="w-full bg-white dark:bg-stone-900 p-4 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
-                >
-                    <div className="w-16 h-16 mr-4 flex-shrink-0 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl group-hover:scale-105 transition-transform">
-                        <img src="/mascot/papa_pregnant.png" alt="Happy Dad" className="w-14 h-14 object-contain" />
-                    </div>
-                    <div className="text-left z-10">
-                        <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Schwangerschaft</h3>
-                        <p className="text-stone-400 dark:text-stone-500 text-xs mt-0.5">Begleitung bis zur Geburt</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-emerald-500 transition-colors" />
-                </button>
+                <div className="space-y-4">
+                    <button
+                        onClick={() => setMode('pregnancy')}
+                        className="w-full bg-white dark:bg-stone-900 p-5 rounded-[24px] shadow-sm hover:shadow-lg transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
+                    >
+                        <div className="w-16 h-16 mr-5 flex-shrink-0 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                            <img src="/mascot/papa_pregnant.png" alt="Happy Dad" className="w-14 h-14 object-contain drop-shadow-sm" />
+                        </div>
+                        <div className="text-left z-10">
+                            <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Schwangerschaft</h3>
+                            <p className="text-stone-400 dark:text-stone-500 text-sm mt-0.5 font-medium">Begleitung bis zur Geburt</p>
+                        </div>
+                        <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-emerald-500 transition-colors" />
+                    </button>
 
-                <button
-                    onClick={() => setMode('postpartum')}
-                    className="w-full bg-white dark:bg-stone-900 p-4 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
-                >
-                    <div className="w-16 h-16 mr-4 flex-shrink-0 flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl group-hover:scale-105 transition-transform">
-                        <img src="/mascot/papa_holding_baby.png" alt="Dad with Baby" className="w-14 h-14 object-contain" />
-                    </div>
-                    <div className="text-left z-10">
-                        <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Baby ist da</h3>
-                        <p className="text-stone-400 dark:text-stone-500 text-xs mt-0.5">Wochenbett & Alltag</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-indigo-500 transition-colors" />
-                </button>
+                    <button
+                        onClick={() => setMode('postpartum')}
+                        className="w-full bg-white dark:bg-stone-900 p-5 rounded-[24px] shadow-sm hover:shadow-lg transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
+                    >
+                        <div className="w-16 h-16 mr-5 flex-shrink-0 flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                            <img src="/mascot/papa_holding_baby.png" alt="Dad with Baby" className="w-14 h-14 object-contain drop-shadow-sm" />
+                        </div>
+                        <div className="text-left z-10">
+                            <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Baby ist da</h3>
+                            <p className="text-stone-400 dark:text-stone-500 text-sm mt-0.5 font-medium">Wochenbett & Alltag</p>
+                        </div>
+                        <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-indigo-500 transition-colors" />
+                    </button>
+                </div>
 
-                <button
-                    onClick={() => setMode('loss')}
-                    className="w-full bg-white dark:bg-stone-900 p-4 rounded-[24px] shadow-sm hover:shadow-md transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
-                >
-                    <div className="w-16 h-16 mr-4 flex-shrink-0 flex items-center justify-center bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:scale-105 transition-transform">
-                        <img src="/mascot/papa_star.png" alt="Star" className="w-14 h-14 object-contain" />
-                    </div>
-                    <div className="text-left z-10">
-                        <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Verlust</h3>
-                        <p className="text-stone-400 dark:text-stone-500 text-xs mt-0.5">Stille Begleitung & Trost</p>
-                    </div>
-                    <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-stone-500 transition-colors" />
-                </button>
+                {/* Discrete Loss Option */}
+                <div className="mt-8">
+                    <button
+                        onClick={() => setMode('loss')}
+                        className="w-full p-4 rounded-[20px] border-2 border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-900 transition-all flex items-center justify-center gap-3 group text-stone-400 hover:text-stone-600 dark:hover:text-stone-300"
+                    >
+                        <div className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-800 rounded-full group-hover:scale-110 transition-transform">
+                            <img src="/mascot/papa_star.png" alt="Star" className="w-5 h-5 object-contain opacity-50 group-hover:opacity-80 transition-opacity" />
+                        </div>
+                        <span className="font-medium text-sm">Unterstützung bei Verlust / Sternenkind</span>
+                    </button>
+                    <p className="text-[10px] text-center text-stone-300 mt-2">Wir sind auch in schweren Zeiten für dich da.</p>
+                </div>
             </div>
         </div>
     </div>

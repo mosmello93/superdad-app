@@ -56,7 +56,7 @@ export const requestNotificationPermission = () => {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             console.log("Notification permission granted");
-            safeShowNotification("SuperDad Benachrichtigungen aktiviert! 🔔");
+            safeShowNotification("HeyPapa Benachrichtigungen aktiviert! 🔔");
         }
     });
 };

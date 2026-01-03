@@ -46,15 +46,17 @@ export const callGemini = async (prompt, explicitMode = null) => {
 
     try {
         // Strategy: Newest Model (2.5) -> Lite Model (2.0)
+        let errors = [];
 
         // 1. Try Gemini 2.5 Flash
         const result25 = await tryModel('gemini-2.5-flash', cleanKey, prompt);
-        if (result25) return result25;
+        if (result25.success) return result25.text;
+        errors.push(`2.5 Flash: ${result25.error}`);
 
         // 2. Try Gemini 2.0 Flash Lite (Free Tier Optimized)
-        console.warn("2.5 Flash failed, trying 2.0 Lite...");
         const resultLite = await tryModel('gemini-2.0-flash-lite-001', cleanKey, prompt);
-        if (resultLite) return resultLite;
+        if (resultLite.success) return resultLite.text;
+        errors.push(`2.0 Lite: ${resultLite.error}`);
 
         // Both failed
         console.warn("All AI models failed. Using offline fallback.");
@@ -79,16 +81,26 @@ const tryModel = async (model, key, prompt) => {
         );
 
         if (!response.ok) {
-            const txt = await response.text();
-            console.warn(`Model ${model} failed: ${response.status} ${txt}`);
-            return null; // Return null to trigger next fallback
+            const txt = await response.text(); // Google often returns JSON with error details
+            let errorMsg = `${response.status} ${response.statusText}`;
+            try {
+                const errorJson = JSON.parse(txt);
+                if (errorJson.error && errorJson.error.message) {
+                    errorMsg += ` - ${errorJson.error.message}`;
+                }
+            } catch (e) {
+                // Not JSON
+            }
+            return { success: false, error: errorMsg };
         }
 
         const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) return { success: false, error: "No content in response" };
+
+        return { success: true, text: text };
     } catch (e) {
-        console.warn(`Exception trying ${model}:`, e);
-        return null;
+        return { success: false, error: "Network/Fetch Exception: " + e.message };
     }
 };
 

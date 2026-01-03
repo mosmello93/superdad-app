@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronRight, Trophy, Zap, HeartHandshake, ShieldCheck } from 'lucide-react';
-import PrivacyPolicyOverlay from '../overlays/PrivacyPolicyOverlay';
+
 
 const OnboardingFlow = ({ onComplete }) => {
     const [step, setStep] = useState(0);
     const [accepted, setAccepted] = useState(false);
-    const [showPolicy, setShowPolicy] = useState(false);
+
 
     const slides = [
         {
@@ -100,7 +100,7 @@ const OnboardingFlow = ({ onComplete }) => {
                                     <ShieldCheck size={14} className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100" />
                                 </div>
                                 <span className="text-sm text-stone-600 dark:text-stone-300">
-                                    Ich stimme der Datenverarbeitung zu und akzeptiere die <button onClick={(e) => { e.preventDefault(); setShowPolicy(true); }} className="text-indigo-600 font-bold underline decoration-indigo-300 underline-offset-2">Datenschutzerklärung</button>.
+                                    Ich stimme der Datenverarbeitung zu und akzeptiere die <button onClick={(e) => { e.preventDefault(); window.open('/datenschutz.html', '_blank'); }} className="text-indigo-600 font-bold underline decoration-indigo-300 underline-offset-2">Datenschutzerklärung</button>.
                                 </span>
                             </label>
                         </div>
@@ -123,7 +123,7 @@ const OnboardingFlow = ({ onComplete }) => {
                 </button>
             </div>
 
-            {showPolicy && <PrivacyPolicyOverlay onClose={() => setShowPolicy(false)} />}
+
         </div>
     );
 };

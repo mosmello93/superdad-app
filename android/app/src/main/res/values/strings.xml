@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HeyPapa</string>
+    <string name="title_activity_main">SuperDad</string>
+    <string name="package_name">com.heypapa.app</string>
+    <string name="custom_url_scheme">com.heypapa.app</string>
+</resources>

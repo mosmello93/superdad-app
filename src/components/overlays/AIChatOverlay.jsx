@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
 import { callGemini } from '../../utils/gemini';
+import { APP_FEATURES } from '../../data/features';
 
-const AIChatOverlay = ({ onClose, mode, babyName, gender, ssw }) => {
+const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partnerHistory = [] }) => {
+    // ... State ...
     const [messages, setMessages] = useState([
         {
             role: 'bot', text: mode === 'loss'
@@ -32,18 +34,42 @@ const AIChatOverlay = ({ onClose, mode, babyName, gender, ssw }) => {
 
         const genderString = gender === 'boy' ? 'Sohn' : (gender === 'girl' ? 'Tochter' : 'Kind');
 
+        // 1. Analyze Partner History (Trends)
+        let partnerContext = "Keine Daten zu Partner-Stimmung.";
+        if (partnerHistory && partnerHistory.length > 0) {
+            const last3 = partnerHistory.slice(0, 3).map(e => e.moodId).join(', '); // Simple string of mood IDs
+            partnerContext = `Letzte Partner-Stimmungen (neu nach alt): ${last3}.`;
+        }
+
+        // 2. Get Relevant Features
+        const features = APP_FEATURES[mode === 'pregnancy' ? 'pregnancy' : (mode === 'postpartum' ? 'postpartum' : 'general')] || [];
+        const allFeatures = [...features, ...genericFeatures].map(f => `- "${f.name}": ${f.trigger}`).join('\n');
+
+        // 3. Construct Chat History
+        // Filter out initial bot message if desired, or keep it. 
+        // We'll keep last 10 messages to avoid token limits, formatted as "User:" / "Coach:"
+        const historyText = messages.slice(-10).map(m => `${m.role === 'user' ? 'User' : 'Coach'}: ${m.text}`).join('\n');
+
         const context = mode === 'loss'
             ? `Du bist ein verständnisvoller Begleiter für einen Vater, der einen Verlust erlitten hat (Sternenkind: ${babyName || 'das Kind'}). Antworte kurz, empathisch und unterstützend. Duze den Nutzer (aber nenne ihn NICHT beim Namen des Kindes!).`
             : `Du bist 'Papa AI Coach', ein erfahrener Mentor für werdende Väter.
-               Kontext:
+               
+               HARD FACT CONTEXT:
                - Phase: ${mode === 'postpartum' ? 'Baby ist da!' : 'Schwangerschaft'}
+               - User Name (Papa): ${userName || 'Papa'} (Sprich ihn gerne damit an!)
                - Woche: ${ssw || '?'}
                - Baby: ${babyName || 'das Baby'} (${genderString})
+               - Partner-Stimmung (Trend): ${partnerContext}
                
-               Deine Rolle: Sei ein unterstützender Mentor und erfahrener Freund. Duze den User, aber bewahre einen respektvollen, warmherzigen Ton (kein übertriebener "Kumpel"-Slang).
-               Antworte kurz (max. 3-4 Sätze). Gehe auf die aktuelle Woche ein, wenn passend.`;
+               APP-WISSEN (Empfiehl diese Tools, wenn passend!):
+               ${allFeatures}
+               
+               Deine Rolle: Sei ein unterstützender Mentor und erfahrener Freund (Typ: Coole Hebamme + bester Kumpel). 
+               Duze den User (${userName || 'Kumpel'}). Sei professionell aber warmherzig.
+               WICHTIG: Antworte kurz (max. 3-4 Sätze). Wenn der User Stress hat, gib sofortige Handlungshilfen.`;
 
-        const prompt = `${context}\n\nUser: ${userMsg}\nAntwort:`;
+        // Combine Context + History + New Message
+        const prompt = `${context}\n\nVERLAUF DES GESPÄCHS:\n${historyText}\n\nUser: ${userMsg}\nAntwort (als Coach):`;
 
         try {
             const answer = await callGemini(prompt, mode);

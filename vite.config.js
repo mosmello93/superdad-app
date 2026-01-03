@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'papa',
-        short_name: 'papa',
+        name: 'HeyPapa',
+        short_name: 'HeyPapa',
         description: 'Der Begleiter für werdende Väter',
         theme_color: '#FDFCF8',
         background_color: '#FDFCF8',

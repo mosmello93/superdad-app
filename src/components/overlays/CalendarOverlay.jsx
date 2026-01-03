@@ -77,7 +77,7 @@ const CalendarOverlay = ({ onClose, dueDate, birthDate, mode }) => {
             <div className="bg-white dark:bg-stone-900 px-6 pt-12 pb-6 shadow-sm flex items-center justify-between z-10 shrink-0 border-b border-stone-100 dark:border-stone-800">
                 <div>
                     <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100 font-serif">Wichtige Termine</h2>
-                    <p className="text-stone-500 dark:text-stone-400 text-sm">U-Untersuchungen & Meilensteine</p>
+                    <span className="text-xs text-stone-500 dark:text-stone-400">Exportiere deine Termine in deinen Kalender (HeyPapa Einträge).</span>
                 </div>
                 <button onClick={onClose} className="bg-stone-100 dark:bg-stone-800 p-2 rounded-full text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
                     <X size={24} />

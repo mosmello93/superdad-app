@@ -61,6 +61,8 @@ import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
 import TabOnboarding from './components/setup/TabOnboarding';
 import NotificationSimulator from './components/shared/NotificationSimulator';
+import ReviewPromptOverlay from './components/overlays/ReviewPromptOverlay';
+import { useReviewPrompt } from './hooks/useReviewPrompt';
 
 // Global variables provided by the Canvas environment
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -69,6 +71,10 @@ const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial
 const App = () => {
     const [userId, setUserId] = useState(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
+    const [authError, setAuthError] = useState(null); // DEBUG STATE
+    const [debugLogs, setDebugLogs] = useState([]); // VISUAL LOGS
+    const addLog = (msg) => setDebugLogs(prev => [...prev, `${new Date().toISOString().split('T')[1].slice(0, 8)} ${msg}`]);
+
     const [mode, setMode] = useState(null);
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
     const [dueDate, setDueDate] = useState(null);
@@ -97,6 +103,14 @@ const App = () => {
 
     // New State for Features
     const [showMilestones, setShowMilestones] = useState(false);
+
+    // Review Prompt Logic
+    const {
+        showPrompt: showReviewPrompt,
+        handleRate: onRateApp,
+        handleFeedback: onSendFeedback,
+        handleClose: onCloseReview
+    } = useReviewPrompt();
     const [showShield, setShowShield] = useState(false);
     const [showBureaucracy, setShowBureaucracy] = useState(false);
     const [showResources, setShowResources] = useState(false);
@@ -173,23 +187,40 @@ const App = () => {
     const { currentXP, newLevelUnlocked, dismissLevelUp, newBadgeUnlocked, dismissBadge, unlockedBadges } = useGamification(tasks, habitXP, habits);
 
     useEffect(() => {
+        addLog("Auth: Starting Effect");
         // Auth Listener setup
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
+                addLog(`Auth: User found ${user.uid.slice(0, 4)}`);
                 setUserId(user.uid);
                 setIsAuthReady(true);
             } else {
-                signInAnonymously(auth).catch((err) => console.error("Auth Fail:", err));
+                addLog("Auth: No user, signing in anon...");
+                signInAnonymously(auth)
+                    .then(() => addLog("Auth: Anon sign-in success"))
+                    .catch((err) => {
+                        console.error("Auth Fail:", err);
+                        addLog(`Auth Error: ${err.message}`);
+                        setAuthError(err.message);
+                    });
             }
         });
 
         // Initial Auth Attempt
         if (!auth.currentUser) {
+            addLog("Auth: Init check - no currentUser");
             if (initialAuthToken) {
-                signInWithCustomToken(auth, initialAuthToken).catch(e => console.error(e));
+                addLog("Auth: Using Custom Token");
+                signInWithCustomToken(auth, initialAuthToken).catch(e => setAuthError(e.message));
             } else {
-                signInAnonymously(auth).catch(e => console.error(e));
+                addLog("Auth: Requesting Anon Sign-In");
+                signInAnonymously(auth).catch(e => {
+                    addLog(`Auth Init Error: ${e.message}`);
+                    setAuthError(e.message);
+                });
             }
+        } else {
+            addLog("Auth: Init check - currentUser exists");
         }
 
         return () => unsubscribe();
@@ -197,9 +228,16 @@ const App = () => {
 
     // Data Loading
     useEffect(() => {
-        if (!isAuthReady || !userId || !db) return;
+        if (!isAuthReady || !userId || !db) {
+            if (isAuthReady && userId && !db) addLog("DB Error: db object missing");
+            return;
+        }
+
+        addLog(`DB: Connecting for user ${userId.slice(0, 4)}...`);
         const docRef = doc(db, `artifacts/${appId}/users/${userId}/dad_support_data`, 'user_profile');
+
         const unsub = onSnapshot(docRef, (snap) => {
+            addLog(`DB: Snapshot received (Exists: ${snap.exists()})`);
             if (snap.exists()) {
                 const data = snap.data();
                 setMode(data.mode);
@@ -238,6 +276,10 @@ const App = () => {
                 if (data.shiftHistory) setShiftHistory(data.shiftHistory);
             }
             setLoading(false);
+        }, (error) => {
+            console.error("Firestore Error:", error);
+            addLog(`DB Error: ${error.code} - ${error.message}`);
+            setAuthError(`Datenbank-Fehler: ${error.message}`);
         });
         return () => unsub();
     }, [isAuthReady, userId]);
@@ -404,7 +446,24 @@ const App = () => {
         }
     };
 
-    if (!isAuthReady || loading) return <div className="flex h-screen items-center justify-center text-stone-400">Lade...</div>;
+    if (authError) return (
+        <div className="flex flex-col h-screen items-center justify-center p-8 text-center space-y-4">
+            <div className="text-red-500 font-bold text-xl">Start-Fehler</div>
+            <div className="text-stone-500 max-w-md bg-stone-100 p-4 rounded-xl font-mono text-xs text-left overflow-auto">
+                {authError}
+            </div>
+            <div className="text-stone-400 font-mono text-[10px] text-left w-full mt-4 border-t pt-2">
+                {debugLogs.map((l, i) => <div key={i}>{l}</div>)}
+            </div>
+            <button onClick={() => window.location.reload()} className="px-4 py-2 bg-stone-800 text-white rounded-full">Neustart</button>
+        </div>
+    );
+
+    if (!isAuthReady || loading) return (
+        <div className="flex flex-col h-screen items-center justify-center text-stone-400 space-y-4">
+            <div className="text-stone-300 text-sm animate-pulse">Lade HeyPapa...</div>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-sans text-stone-800 dark:text-stone-100 pb-safe selection:bg-stone-200 dark:selection:bg-stone-800 flex flex-col transition-colors duration-300">
@@ -576,8 +635,15 @@ const App = () => {
                     <AIChatOverlay
                         mode={mode}
                         babyName={babyName}
+                        userName={userName} // Pass Dad's Name
                         gender={gender}
-                        ssw={statusData.week} // Pass current week
+                        ssw={statusData.week}
+                        partnerHistory={partnerHistory}
+                        // NEW CONTEXT DATA
+                        bagItems={bagItems}
+                        completedTasks={completedTasks}
+                        unlockedMilestones={unlockedMilestones}
+                        dadLogs={dadLogs}
                         onClose={() => setShowAIChat(false)}
                     />
                 )
