@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Home, LayoutGrid, BookOpen, Users, MessageCircle } from 'lucide-react';
+import { Home, LayoutGrid, BookOpen, Users, MessageCircle, Baby, ChevronRight } from 'lucide-react';
 import { signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -46,6 +46,7 @@ import GamificationOverlay from './components/overlays/GamificationOverlay';
 import AIChatOverlay from './components/overlays/AIChatOverlay';
 import SettingsOverlay from './components/overlays/SettingsOverlay';
 import LevelUpOverlay from './components/overlays/LevelUpOverlay';
+import CookieBanner from './components/shared/CookieBanner';
 import ContractionTimerOverlayV2 from './components/overlays/ContractionTimerOverlayV2';
 
 
@@ -56,12 +57,15 @@ import CalendarOverlay from './components/overlays/CalendarOverlay';
 import CryCompassOverlay from './components/overlays/CryCompassOverlay';
 import ShiftPlannerOverlay from './components/overlays/ShiftPlannerOverlay';
 import MissionsOverlay from './components/overlays/MissionsOverlay';
+import DateNightOverlay from './components/overlays/DateNightOverlay';
+import HealthOverlay from './components/overlays/HealthOverlay';
 
 import DueDateSetup from './components/setup/DueDateSetup';
 import OnboardingFlow from './components/setup/OnboardingFlow';
 import TabOnboarding from './components/setup/TabOnboarding';
 import NotificationSimulator from './components/shared/NotificationSimulator';
 import ReviewPromptOverlay from './components/overlays/ReviewPromptOverlay';
+import BabyBornOverlay from './components/overlays/BabyBornOverlay';
 import { useReviewPrompt } from './hooks/useReviewPrompt';
 
 // Global variables provided by the Canvas environment
@@ -82,6 +86,8 @@ const App = () => {
     const [userName, setUserName] = useState(''); // New: Dad's Name
     const [gender, setGender] = useState('surprise');
     const [ssw, setSsw] = useState(null);
+    const [cycleLength, setCycleLength] = useState(28);
+    const [periodLength, setPeriodLength] = useState(5);
 
     const [vibeCheck, setVibeCheck] = useState('');
     const [vibeHistory, setVibeHistory] = useState([]);
@@ -119,6 +125,7 @@ const App = () => {
     const [showSettings, setShowSettings] = useState(false);
     const [showNameSwiper, setShowNameSwiper] = useState(false);
     const [showBudget, setShowBudget] = useState(false);
+    const [showBabyBorn, setShowBabyBorn] = useState(false);
 
     // Onboarding State
     const [showOnboarding, setShowOnboarding] = useState(true);
@@ -169,6 +176,8 @@ const App = () => {
     const [showCryCompass, setShowCryCompass] = useState(false);
     const [showShiftPlanner, setShowShiftPlanner] = useState(false);
     const [showMissions, setShowMissions] = useState(false);
+    const [showDateNight, setShowDateNight] = useState(false);
+    const [showHealth, setShowHealth] = useState(false);
 
     // Shift Data
     const [activeShift, setActiveShift] = useState(null); // { person: 'Papa', startTime: ts }
@@ -273,7 +282,12 @@ const App = () => {
                 if (data.partnerHistory) setPartnerHistory(data.partnerHistory);
                 if (data.lastSeenWeek) setLastSeenWeek(data.lastSeenWeek);
                 if (data.activeShift) setActiveShift(data.activeShift);
+                if (data.activeShift) setActiveShift(data.activeShift);
                 if (data.shiftHistory) setShiftHistory(data.shiftHistory);
+
+                // Conception Data
+                if (data.cycleLength) setCycleLength(data.cycleLength);
+                if (data.periodLength) setPeriodLength(data.periodLength);
             }
             setLoading(false);
         }, (error) => {
@@ -396,7 +410,7 @@ const App = () => {
         }
     };
 
-    const statusData = useMemo(() => calculateStatus(dueDate, mode), [dueDate, mode]);
+    const statusData = useMemo(() => calculateStatus(dueDate, mode, cycleLength, periodLength), [dueDate, mode, cycleLength, periodLength]);
 
     // Initial Notification Check
     useEffect(() => {
@@ -446,6 +460,19 @@ const App = () => {
         }
     };
 
+    // Unified Cycle Update Handler
+    const handleCycleUpdate = (newData) => {
+        if (newData.date) setDueDate(newData.date);
+        if (newData.cycleLength) setCycleLength(Number(newData.cycleLength));
+        if (newData.periodLength) setPeriodLength(Number(newData.periodLength));
+
+        saveProfile({
+            dueDate: newData.date || dueDate,
+            cycleLength: Number(newData.cycleLength) || cycleLength,
+            periodLength: Number(newData.periodLength) || periodLength
+        });
+    };
+
     if (authError) return (
         <div className="flex flex-col h-screen items-center justify-center p-8 text-center space-y-4">
             <div className="text-red-500 font-bold text-xl">Start-Fehler</div>
@@ -478,7 +505,7 @@ const App = () => {
                         <ModeSelection setMode={saveMode} />
                     )
                 )}
-                {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} />}
+                {mode && !dueDate && <DueDateSetup saveProfile={saveProfile} mode={mode} goBack={() => setMode(null)} />}
 
                 {mode && dueDate && (
                     <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -499,10 +526,36 @@ const App = () => {
                             {activeTab === 'home' && (
                                 <div className="space-y-6">
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-100 fill-mode-backwards">
+                                        {/* BABY BORN TRIGGER - Only in Pregnancy & late weeks */}
+                                        {mode === 'pregnancy' && statusData.week >= 36 && (
+                                            <div className="mb-6">
+                                                <button
+                                                    onClick={() => setShowBabyBorn(true)}
+                                                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200 dark:shadow-none flex items-center justify-between group hover:scale-[1.02] transition-transform"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+                                                            <img src="/mascot/papa_holding_baby.png" alt="Papa" className="w-full h-full object-cover transform scale-125 translate-y-1" />
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <h3 className="font-bold text-lg leading-tight">Das Baby ist da?</h3>
+                                                            <p className="text-white/80 text-xs font-medium">Hier tippen zum Wechseln</p>
+                                                        </div>
+                                                    </div>
+                                                    <ChevronRight className="text-white/80 group-hover:translate-x-1 transition-transform" />
+                                                </button>
+                                            </div>
+                                        )}
                                         <DailyTipWidget mode={mode} week={statusData.week} babyName={babyName} userName={userName} gender={gender} />
                                     </div>
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200 fill-mode-backwards">
-                                        <ProgressCardSoft statusData={statusData} mode={mode} openDetail={() => setShowDetail(true)} />
+                                        <ProgressCardSoft
+                                            statusData={statusData}
+                                            mode={mode}
+                                            openDetail={() => setShowDetail(true)}
+                                            onUpdateCycle={handleCycleUpdate}
+                                            onSwitchToKnowledge={() => setActiveTab('knowledge')}
+                                        />
                                     </div>
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300 fill-mode-backwards">
                                         <HabitGridSoft
@@ -513,7 +566,7 @@ const App = () => {
                                         />
                                     </div>
                                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-500 fill-mode-backwards">
-                                        <DadLog logs={dadLogs} saveLog={saveLog} />
+                                        <DadLog logs={dadLogs} saveLog={saveLog} mode={mode} />
                                     </div>
                                 </div>
                             )}
@@ -543,6 +596,8 @@ const App = () => {
                                         openCryCompass={() => setShowCryCompass(true)}
                                         openShiftPlanner={() => setShowShiftPlanner(true)}
                                         openMissions={() => setShowMissions(true)}
+                                        openDateNight={() => setShowDateNight(true)}
+                                        openHealth={() => setShowHealth(true)}
                                     />
                                 </div>
                             )}
@@ -582,7 +637,15 @@ const App = () => {
             }
 
             {/* OVERLAYS */}
-            {showDetail && <ProgressDetailOverlay statusData={statusData} mode={mode} closeDetail={() => setShowDetail(false)} />}
+            {showDetail && (
+                <ProgressDetailOverlay
+                    statusData={statusData}
+                    mode={mode}
+                    dueDate={dueDate} // Added prop
+                    closeDetail={() => setShowDetail(false)}
+                    onUpdateCycle={handleCycleUpdate}
+                />
+            )}
             {
                 getOverlayData() && (
                     <HabitActionOverlay
@@ -598,7 +661,7 @@ const App = () => {
             }
 
             {showBag && <HospitalBagOverlay bagItems={bagItems} toggleItem={toggleBagItem} closeBag={() => setShowBag(false)} mode={mode} ssw={ssw} />}
-            {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} />}
+            {showEmergency && <EmergencyOverlay contacts={contacts} updateContact={updateContact} closeEmergency={() => setShowEmergency(false)} mode={mode} />}
 
             {/* NEW OVERLAYS */}
             {
@@ -644,6 +707,9 @@ const App = () => {
                         completedTasks={completedTasks}
                         unlockedMilestones={unlockedMilestones}
                         dadLogs={dadLogs}
+                        habits={habits}
+                        xp={currentXP}
+                        currentVibe={vibeCheck}
                         onClose={() => setShowAIChat(false)}
                     />
                 )
@@ -684,6 +750,8 @@ const App = () => {
                             setGender('surprise');
                             setMode(null);
                             setDueDate(null);
+                            setCycleLength(28);
+                            setPeriodLength(5);
                             setInitialHabits(null); // Clear initial habits to prevent re-merge
                             resetHabits(); // Force hook to reset to defaults
 
@@ -739,7 +807,8 @@ const App = () => {
                         allBadges={ACHIEVEMENTS}
                         onClose={() => setShowBadges(false)}
                         currentXP={currentXP}
-                        levelInfo={calculateLevel(currentXP)}
+                        levelInfo={calculateLevel(currentXP, mode)}
+                        mode={mode}
                     />
                 )
             }
@@ -759,6 +828,7 @@ const App = () => {
                 showBudget && (
                     <BudgetOverlay
                         onClose={() => setShowBudget(false)}
+                        mode={mode}
                     />
                 )
             }
@@ -768,6 +838,29 @@ const App = () => {
                 showCryCompass && (
                     <CryCompassOverlay
                         onClose={() => setShowCryCompass(false)}
+                    />
+                )
+            }
+            {
+                showBabyBorn && (
+                    <BabyBornOverlay
+                        defaultName={babyName}
+                        onClose={() => setShowBabyBorn(false)}
+                        onSave={(name, date) => {
+                            // 1. Update Profile
+                            saveProfile({
+                                mode: 'postpartum',
+                                dueDate: date.toISOString().split('T')[0], // Treat birth date as "due date" for postpartum calc
+                                babyName: name
+                            });
+
+                            // 2. Local State Updates
+                            setMode('postpartum');
+                            setDueDate(date.toISOString().split('T')[0]);
+                            setBabyName(name);
+                            setShowBabyBorn(false); // Close overlay
+                            window.scrollTo(0, 0); // Scroll to top
+                        }}
                     />
                 )
             }
@@ -825,12 +918,33 @@ const App = () => {
                 )
             }
 
+            {/* DATE NIGHT OVERLAY */}
+            {
+                showDateNight && (
+                    <DateNightOverlay
+                        onClose={() => setShowDateNight(false)}
+                    />
+                )
+            }
+
+            {/* HEALTH OVERLAY */}
+            {
+                showHealth && (
+                    <HealthOverlay
+                        onClose={() => setShowHealth(false)}
+                        updateXP={updateHabitXP}
+                    />
+                )
+            }
+
             {/* TAB ONBOARDING (Only if main onboarding is done AND setup is complete) */}
             {
                 !showOnboarding && mode && dueDate && !seenTabs[activeTab] && (
                     <TabOnboarding mode={mode} activeTab={activeTab} onDismiss={dismissTabOnboarding} babyName={babyName} gender={gender} />
                 )
             }
+            {/* Cookie Banner (Global) */}
+            <CookieBanner />
         </div >
     );
 };

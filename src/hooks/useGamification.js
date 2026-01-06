@@ -27,10 +27,20 @@ export const useGamification = (tasks, habitXP, habits) => {
             // Mocking streak for MVP (in reality this needs date tracking in local storage)
             currentStreak: (habitXP > 200) ? 3 : 1,
             nightShifts: habits.nightshift ? 1 : 0,
-            nestingTasks: tasks.filter(t => t.completed && t.category === 'Nestbau').length, // Assuming category exists or similar
-            supportActions: Math.floor(habitXP / 20), // Rough proxy for MVP
-            articlesRead: habits.reading ? 5 : 0, // Mock for MVP
-            shieldActivated: habits.shield ? 1 : 0
+            nestingTasks: tasks.filter(t => t.completed && t.category === 'Nestbau').length,
+            supportActions: Math.floor(habitXP / 20),
+            articlesRead: habits.reading ? 5 : 0,
+            shieldActivated: habits.shield ? 1 : 0,
+            // New Stats for Conception Badges
+            spermScore: (() => {
+                try {
+                    const tracker = JSON.parse(localStorage.getItem('mens_health_tracker') || '{}');
+                    const checkedCount = Object.values(tracker).filter(v => v).length;
+                    // Assuming 6 items in total (Zinc, Sleep, Heat, Alcohol, Sport, Sex)
+                    return (checkedCount / 6) * 100;
+                } catch { return 0; }
+            })(),
+            cycleChecks: habits.reading ? 3 : 0 // Proxy: If reading habit is done, assume checking cycle logic too
         };
 
         // 2. Check Conditions

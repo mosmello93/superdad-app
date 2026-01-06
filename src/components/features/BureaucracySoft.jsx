@@ -13,6 +13,9 @@ const BureaucracySoft = ({ completedTasks = [], toggleTask, close, mode }) => {
         if (mode === 'loss') {
             return task.timing.type === 'loss';
         }
+        if (mode === 'conception') {
+            return task.timing.type === 'conception';
+        }
         if (mode === 'postpartum') {
             // Show birth tasks + Unfinished pregnancy tasks
             if (task.timing.type === 'birth') return true;

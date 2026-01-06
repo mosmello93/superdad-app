@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, ChevronUp, CheckCircle, Circle, Edit2, RotateCcw, PieChart } from 'lucide-react';
-import { BUDGET_CATEGORIES } from '../../data/budget';
+import { BUDGET_CATEGORIES, CONCEPTION_BUDGET_CATEGORIES } from '../../data/budget';
 
-const BudgetOverlay = ({ onClose }) => {
+const BudgetOverlay = ({ onClose, mode }) => {
+    const categories = mode === 'conception' ? CONCEPTION_BUDGET_CATEGORIES : BUDGET_CATEGORIES;
+    const storageKey = mode === 'conception' ? 'user_budget_conception' : 'user_budget';
     // State for user data: { [itemId]: { bought: boolean, cost: number } }
     const [userData, setUserData] = useState({});
     const [expandedCategory, setExpandedCategory] = useState(null);
@@ -11,7 +13,7 @@ const BudgetOverlay = ({ onClose }) => {
 
     // Load from LocalStorage
     useEffect(() => {
-        const saved = localStorage.getItem('user_budget');
+        const saved = localStorage.getItem(storageKey);
         if (saved) {
             setUserData(JSON.parse(saved));
         }
@@ -20,7 +22,7 @@ const BudgetOverlay = ({ onClose }) => {
     // Save to LocalStorage
     const saveUserData = (newData) => {
         setUserData(newData);
-        localStorage.setItem('user_budget', JSON.stringify(newData));
+        localStorage.setItem(storageKey, JSON.stringify(newData));
     };
 
     // Toggle Bought Status
@@ -63,7 +65,7 @@ const BudgetOverlay = ({ onClose }) => {
     let totalItems = 0;
     let itemsBought = 0;
 
-    BUDGET_CATEGORIES.forEach(cat => {
+    categories.forEach(cat => {
         cat.items.forEach(item => {
             const userItem = userData[item.id] || {};
             const cost = userItem.cost !== undefined ? userItem.cost : item.defaultCost;
@@ -97,7 +99,7 @@ const BudgetOverlay = ({ onClose }) => {
                                 <span className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400">
                                     <PieChart size={20} />
                                 </span>
-                                Baby-Budget
+                                Budgetplaner
                             </h2>
                             <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">Plane die Erstausstattung</p>
                         </div>
@@ -138,7 +140,7 @@ const BudgetOverlay = ({ onClose }) => {
 
                 {/* Content List */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-20">
-                    {BUDGET_CATEGORIES.map(cat => (
+                    {categories.map(cat => (
                         <div key={cat.id} className="bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 overflow-hidden">
 
                             {/* Category Header */}

@@ -29,6 +29,20 @@ const ModeSelection = ({ setMode }) => (
 
                 <div className="space-y-4">
                     <button
+                        onClick={() => setMode('conception')}
+                        className="w-full bg-white dark:bg-stone-900 p-5 rounded-[24px] shadow-sm hover:shadow-lg transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
+                    >
+                        <div className="w-16 h-16 mr-5 flex-shrink-0 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                            <img src="/mascot/papa_nest.png" alt="Hopeful Dad" className="w-14 h-14 object-contain drop-shadow-sm" />
+                        </div>
+                        <div className="text-left z-10">
+                            <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Kinderwunsch</h3>
+                            <p className="text-stone-400 dark:text-stone-500 text-sm mt-0.5 font-medium">Wir planen ein Baby</p>
+                        </div>
+                        <ChevronRight className="ml-auto text-stone-300 dark:text-stone-600 group-hover:text-rose-500 transition-colors" />
+                    </button>
+
+                    <button
                         onClick={() => setMode('pregnancy')}
                         className="w-full bg-white dark:bg-stone-900 p-5 rounded-[24px] shadow-sm hover:shadow-lg transition-all flex items-center group border border-stone-100 dark:border-stone-800 relative overflow-hidden"
                     >

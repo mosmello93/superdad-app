@@ -6,7 +6,7 @@ const Baby3DOverlay = ({ week, onClose }) => {
 
     const availableWeeks = Array.from({ length: 38 }, (_, i) => i + 4); // Weeks 4 to 41
     const closestWeek = availableWeeks.reduce((prev, curr) => Math.abs(curr - week) < Math.abs(prev - week) ? curr : prev);
-    const imagePath = `/images/fetus_3d/week_${closestWeek}.png`;
+    const imagePath = `/images/fetus_3d/SSW${closestWeek}.png`;
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">

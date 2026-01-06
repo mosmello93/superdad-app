@@ -9,7 +9,7 @@ const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamificati
     if (isLoss) title = 'Für euch';
     if (mode === 'postpartum') title = `${statusData.week} Wochen`;
 
-    const levelInfo = calculateLevel(xp || 0);
+    const levelInfo = calculateLevel(xp || 0, mode);
     const progressPercent = Math.min(100, (xp / levelInfo.next) * 100);
 
     return (
@@ -18,13 +18,13 @@ const HeaderSoft = ({ statusData, mode, babyName, userName, xp, onOpenGamificati
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center min-w-0">
                     <img
-                        src="/mascot/papa_neutral.png"
+                        src={levelInfo.image || "/mascot/papa_neutral.png"}
                         alt="HeyPapa Logo"
                         className="w-12 h-12 md:w-16 md:h-16 object-contain mr-2 rounded-full border-2 border-stone-100 dark:border-stone-700 bg-amber-50 dark:bg-amber-900/20 flex-shrink-0"
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
                     <div className="flex flex-col justify-center min-w-0">
-                        {babyName && <span className="text-stone-500 dark:text-stone-400 font-medium text-sm truncate block">für {babyName}</span>}
+
                     </div>
                 </div>
 

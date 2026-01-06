@@ -54,9 +54,9 @@ const LevelUpOverlay = ({ levelInfo, onClose }) => {
                 <div className="absolute -top-24 left-1/2 transform -translate-x-1/2">
                     <div className="bg-amber-400 p-3 rounded-full shadow-2xl border-4 border-white dark:border-stone-900 animate-bounce">
                         <img
-                            src={`/mascot/papa_level${Math.min(5, levelInfo.level)}.png`}
+                            src={levelInfo.image || `/mascot/papa_level${Math.min(5, levelInfo.level)}.png`}
                             onError={(e) => { e.target.src = '/mascot/papa_happy.png'; }}
-                            alt={`Papa Level ${levelInfo.level}`}
+                            alt={`Papa ${levelInfo.title}`}
                             className="w-40 h-40 object-contain"
                         />
                     </div>

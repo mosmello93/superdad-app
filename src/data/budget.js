@@ -1,4 +1,4 @@
-import { Car, Home, Shirt, Milk, Bath, Shield, ShoppingBag } from 'lucide-react';
+import { Car, Home, Shirt, Milk, Bath, Shield, ShoppingBag, PiggyBank, Pill, Thermometer, Stethoscope } from 'lucide-react';
 
 export const BUDGET_CATEGORIES = [
     {
@@ -75,6 +75,52 @@ export const BUDGET_CATEGORIES = [
             { id: 'bouncer', label: 'Wippe', defaultCost: 70 },
             { id: 'playmat', label: 'Krabbeldecke', defaultCost: 40 },
             { id: 'mobile', label: 'Mobile', defaultCost: 30 }
+        ]
+    }
+];
+
+export const CONCEPTION_BUDGET_CATEGORIES = [
+    {
+        id: 'saving',
+        title: 'Sparziel: Baby',
+        icon: PiggyBank,
+        color: 'emerald',
+        items: [
+            { id: 'stroller_fund', label: 'Kinderwagen-Fonds', defaultCost: 800 },
+            { id: 'room_fund', label: 'Babyzimmer-Fonds', defaultCost: 1000 },
+            { id: 'initial_fund', label: 'Erstausstattung (Puffer)', defaultCost: 500 }
+        ]
+    },
+    {
+        id: 'supplements',
+        title: 'Gesundheit & Vitamine',
+        icon: Pill,
+        color: 'rose',
+        items: [
+            { id: 'supp_her', label: 'Folsäure & Vitamine (Sie)', defaultCost: 30 },
+            { id: 'supp_him', label: 'Vitamine/Zink (Er)', defaultCost: 20 },
+            { id: 'tea', label: 'Zyklustees', defaultCost: 15 }
+        ]
+    },
+    {
+        id: 'tracking',
+        title: 'Tracking & Tests',
+        icon: Thermometer,
+        color: 'indigo',
+        items: [
+            { id: 'ovu', label: 'Ovulationstests', defaultCost: 20 },
+            { id: 'preg_test', label: 'Schwangerschaftstests', defaultCost: 15 },
+            { id: 'track_app', label: 'Zyklus-App (Premium)', defaultCost: 10 }
+        ]
+    },
+    {
+        id: 'medical',
+        title: 'Medizinische Kosten',
+        icon: Stethoscope,
+        color: 'blue',
+        items: [
+            { id: 'checkup', label: 'Spermiogramm (Selbstzahler?)', defaultCost: 80 },
+            { id: 'gyn', label: 'Zusatzuntersuchungen', defaultCost: 50 }
         ]
     }
 ];

@@ -18,6 +18,15 @@ export const OASIS_IDEAS = {
         { title: "Kissen-Check", text: "Braucht sie ein extra Kissen für den Rücken? Frag einfach mal." },
         { title: "Digital Detox", text: "Legt beide die Handys weg und redet 15 Min nur über euch (nicht über Sorgen)." }
     ],
+    conception: [
+        { title: "Zuversicht", text: "Erinnere sie daran, dass ihr ein Team seid, egal was passiert." },
+        { title: "Ablenkung", text: "Plan ein Date, bei dem das Thema 'Baby' tabu ist." },
+        { title: "Kleine Geste", text: "Bring ihr Blumen oder Schokolade mit - einfach so." },
+        { title: "Zuhörer", text: "Frag sie, wie es ihr wirklich geht, und hör einfach nur zu." },
+        { title: "Entspannung", text: "Lass ihr ein Bad einlaufen oder biete eine Massage an." },
+        { title: "Gesundheit", text: "Koch heute mal besonders frisch und gesund für euch beide." },
+        { title: "Bewegung", text: "Macht zusammen Sport oder einen langen Spaziergang." }
+    ],
     trimester2: [
         { title: "Date Night", text: "Plan ein kleines Date (Kino oder schick essen), solange es noch leicht geht." },
         { title: "Bauch-Öl", text: "Besorg ein gutes Pflegeöl und biete an, den Bauch einzucremen." },
@@ -63,7 +72,7 @@ export const OASIS_IDEAS = {
 
 export const PREGNANCY_WEEKS = {
     4: {
-        size: 'ein Mohnsamen', image: '/images/mohnsamen.png', cm: 0.1, g: 1, feeling: 'Hoffnung & Geheimnis', tip: 'Noch nix sagen, aber Folsäure checken.',
+        size: 'ein Mohnsamen', image: '/images/mohnsamen.png', color: 'from-indigo-100/80 to-white/50 border-indigo-200', cm: 0.1, g: 1, feeling: 'Hoffnung & Geheimnis', tip: 'Noch nix sagen, aber Folsäure checken.',
         development: {
             summary: 'Die Eizelle nistet sich in der Gebärmutter ein. Der Beginn von allem.',
             details: [
@@ -82,7 +91,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     5: {
-        size: 'ein Sesamkorn', image: '/images/sesam.png', cm: 0.2, g: 1, feeling: 'Ahnung & Aufregung', tip: 'Verzicht auf Alkohol/Zigaretten unterstützen.',
+        size: 'ein Sesamkorn', image: '/images/sesam.png', color: 'from-amber-100/80 to-white/50 border-amber-200', cm: 0.2, g: 1, feeling: 'Ahnung & Aufregung', tip: 'Verzicht auf Alkohol/Zigaretten unterstützen.',
         development: {
             summary: 'Das Herz beginnt zu schlagen (noch nicht hörbar).',
             details: [
@@ -101,7 +110,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     6: {
-        size: 'eine Erbse', image: '/images/erbse.png', cm: 0.5, g: 1, feeling: 'Müdigkeit kickt rein', tip: 'Lass sie schlafen. Übernimm den Einkauf.',
+        size: 'eine Erbse', image: '/images/erbse.png', color: 'from-green-100/80 to-white/50 border-green-200', cm: 0.5, g: 1, feeling: 'Müdigkeit kickt rein', tip: 'Lass sie schlafen. Übernimm den Einkauf.',
         development: {
             summary: 'Das Neuralrohr (Vorläufer von Gehirn & Rückenmark) schließt sich.',
             details: [
@@ -120,7 +129,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     7: {
-        size: 'eine Blaubeere', image: '/images/blaubeere.png', cm: 1.0, g: 1, feeling: 'Übelkeit & Ekel', tip: 'Koche geruchsneutral. Ingwertee besorgen.',
+        size: 'eine Blaubeere', image: '/images/blaubeere.png', color: 'from-blue-100/80 to-white/50 border-blue-200', cm: 1.0, g: 1, feeling: 'Übelkeit & Ekel', tip: 'Koche geruchsneutral. Ingwertee besorgen.',
         development: {
             summary: 'Arm- und Beinknospen werden sichtbar. Es wächst rasant.',
             details: [
@@ -139,7 +148,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     8: {
-        size: 'eine Himbeere', image: '/images/himbeere.png', cm: 1.6, g: 1, feeling: 'Gefühlschaos', tip: 'Sei ihr Blitzableiter für Launen.',
+        size: 'eine Himbeere', image: '/images/himbeere.png', color: 'from-rose-200/80 to-white/50 border-rose-300', cm: 1.6, g: 1, feeling: 'Gefühlschaos', tip: 'Sei ihr Blitzableiter für Launen.',
         development: {
             summary: 'Finger und Zehen beginnen sich zu formen. Schwimmhäute verschwinden.',
             details: [
@@ -158,7 +167,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     9: {
-        size: 'eine Olive', image: '/images/olive.png', cm: 2.3, g: 2, feeling: 'Erschöpfung', tip: 'Bring ihr Snacks ans Bett bevor sie aufsteht.',
+        size: 'eine Olive', image: '/images/olive.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 2.3, g: 2, feeling: 'Erschöpfung', tip: 'Bring ihr Snacks ans Bett bevor sie aufsteht.',
         development: {
             summary: 'Muskeln bilden sich, erste spontane Bewegungen.',
             details: [
@@ -177,7 +186,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     10: {
-        size: 'eine Pflaume', image: '/images/pflaume.png', cm: 3.1, g: 4, feeling: 'Hormon-Party', tip: 'Erster Ultraschall? Nimm dir frei!',
+        size: 'eine Pflaume', image: '/images/pflaume.png', color: 'from-purple-200/80 to-white/50 border-purple-300', cm: 3.1, g: 4, feeling: 'Hormon-Party', tip: 'Erster Ultraschall? Nimm dir frei!',
         development: {
             summary: 'Alle lebenswichtigen Organe sind angelegt. Die kritischste Phase endet bald.',
             details: [
@@ -196,7 +205,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     11: {
-        size: 'eine Limette', image: '/images/limette.png', cm: 4.1, g: 7, feeling: 'Durst & Harndrang', tip: 'Immer Wasserflasche auffüllen.',
+        size: 'eine Limette', image: '/images/limette.png', color: 'from-lime-200/80 to-white/50 border-lime-300', cm: 4.1, g: 7, feeling: 'Durst & Harndrang', tip: 'Immer Wasserflasche auffüllen.',
         development: {
             summary: 'Die Haut ist noch durchsichtig; Finger sind getrennt.',
             details: [
@@ -215,7 +224,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     12: {
-        size: 'eine Aprikose', image: '/images/aprikose.png', cm: 5.4, g: 14, feeling: 'Aufatmen (1. Etappe)', tip: 'Verkündet es der Familie!',
+        size: 'eine Aprikose', image: '/images/aprikose.png', color: 'from-orange-100/80 to-white/50 border-orange-200', cm: 5.4, g: 14, feeling: 'Aufatmen (1. Etappe)', tip: 'Verkündet es der Familie!',
         development: {
             summary: 'Die einzigartigen Fingerabdrücke entstehen. Ein Meilenstein!',
             details: [
@@ -234,7 +243,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     13: {
-        size: 'eine Zitrone', image: '/images/zitrone.png', cm: 7.4, g: 23, feeling: 'Energie kehrt zurück', tip: 'Plant einen kleinen Ausflug.',
+        size: 'eine Zitrone', image: '/images/zitrone.png', color: 'from-yellow-200/80 to-white/50 border-yellow-300', cm: 7.4, g: 23, feeling: 'Energie kehrt zurück', tip: 'Plant einen kleinen Ausflug.',
         development: {
             summary: 'Der Saugreflex entwickelt sich (Daumenlutschen möglich).',
             details: [
@@ -253,7 +262,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     14: {
-        size: 'eine Orange', image: '/images/orange.png', cm: 8.7, g: 43, feeling: 'Babybauch wächst', tip: 'Mach die ersten Bauch-Fotos.',
+        size: 'eine Orange', image: '/images/orange.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 8.7, g: 43, feeling: 'Babybauch wächst', tip: 'Mach die ersten Bauch-Fotos.',
         development: {
             summary: 'Das Baby beginnt, Fruchtwasser zu trinken und auszuscheiden.',
             details: [
@@ -272,7 +281,7 @@ export const PREGNANCY_WEEKS = {
         },
     },
     15: {
-        size: 'ein Apfel', image: '/images/apfel.png', cm: 10.1, g: 70, feeling: 'Libido schwankt', tip: 'Geduld und Zärtlichkeit ohne Druck.',
+        size: 'ein Apfel', image: '/images/apfel.png', color: 'from-red-200/80 to-white/50 border-red-200', cm: 10.1, g: 70, feeling: 'Libido schwankt', tip: 'Geduld und Zärtlichkeit ohne Druck.',
         development: {
             summary: 'Es kann jetzt Lichtveränderungen wahrnehmen, obwohl die Augen zu sind.',
             details: [
@@ -291,7 +300,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     16: {
-        size: 'eine Avocado', image: '/images/avocado.png', cm: 11.6, g: 100, feeling: 'Nestbautrieb startet', tip: 'Entrümple das Arbeitszimmer/Zukünftiges Kinderzimmer.',
+        size: 'eine Avocado', image: '/images/avocado.png', color: 'from-emerald-200/80 to-white/50 border-emerald-300', cm: 11.6, g: 100, feeling: 'Nestbautrieb startet', tip: 'Entrümple das Arbeitszimmer/Zukünftiges Kinderzimmer.',
         development: {
             summary: 'Das Herz pumpt ca. 24 Liter Blut pro Tag. Rückenmuskeln werden stärker.',
             details: [
@@ -310,7 +319,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     17: {
-        size: 'eine Birne', image: '/images/birne.png', cm: 13.0, g: 140, feeling: 'Bänderdehnung', tip: 'Biete ihr eine Rückenmassage an.',
+        size: 'eine Birne', image: '/images/birne.png', color: 'from-lime-100/80 to-white/50 border-lime-200', cm: 13.0, g: 140, feeling: 'Bänderdehnung', tip: 'Biete ihr eine Rückenmassage an.',
         development: {
             summary: 'Das Skelett verknöchert langsam. Die Knorpel werden zu festen Knochen.',
             details: [
@@ -329,7 +338,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     18: {
-        size: 'eine Paprika', image: '/images/paprika.png', cm: 14.2, g: 190, feeling: 'Erstes Flattern?', tip: 'Hand auf den Bauch, Geduld haben.',
+        size: 'eine Paprika', image: '/images/paprika.png', color: 'from-red-200/80 to-white/50 border-red-300', cm: 14.2, g: 190, feeling: 'Erstes Flattern?', tip: 'Hand auf den Bauch, Geduld haben.',
         development: {
             summary: 'Die Ohren sind an der richtigen Stelle; Hören beginnt. Es kann dich hören!',
             details: [
@@ -348,7 +357,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     19: {
-        size: 'eine Mango', image: '/images/mango.png', cm: 15.3, g: 240, feeling: 'Heißhunger', tip: 'Geh auch nachts für Eis zur Tanke.',
+        size: 'eine Mango', image: '/images/mango.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 15.3, g: 240, feeling: 'Heißhunger', tip: 'Geh auch nachts für Eis zur Tanke.',
         development: {
             summary: 'Vernix (Käseschmiere) bildet sich zum Hautschutz im Fruchtwasser.',
             details: [
@@ -367,7 +376,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     20: {
-        size: 'eine Banane', image: '/images/banane.png', cm: 16.4, g: 300, feeling: 'Halbzeit!', tip: 'Feiert Bergfest. Geht schick essen.',
+        size: 'eine Banane', image: '/images/banane.png', color: 'from-yellow-200/80 to-white/50 border-yellow-300', cm: 16.4, g: 300, feeling: 'Halbzeit!', tip: 'Feiert Bergfest. Geht schick essen.',
         development: {
             summary: 'Geschlechtsorgane sind im Ultraschall gut erkennbar. Mädchen oder Junge?',
             details: [
@@ -386,7 +395,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     21: {
-        size: 'eine Karotte', image: '/images/karotte.png', cm: 26.7, g: 360, feeling: 'Bewegungsdrang', tip: 'Geht zusammen schwimmen (entlastet den Rücken).',
+        size: 'eine Karotte', image: '/images/karotte.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 26.7, g: 360, feeling: 'Bewegungsdrang', tip: 'Geht zusammen schwimmen (entlastet den Rücken).',
         development: {
             summary: 'Der Schlaf-Wach-Rhythmus pendelt sich ein.',
             details: [
@@ -405,7 +414,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     22: {
-        size: 'eine Papaya', image: '/images/papaya.png', cm: 27.8, g: 430, feeling: 'Tritte werden stärker', tip: 'Sprich mit dem Bauch, er hört dich jetzt.',
+        size: 'eine Papaya', image: '/images/papaya.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 27.8, g: 430, feeling: 'Tritte werden stärker', tip: 'Sprich mit dem Bauch, er hört dich jetzt.',
         development: {
             summary: 'Der Tastsinn verfeinert sich, es greift nach der Nabelschnur.',
             details: [
@@ -424,7 +433,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     23: {
-        size: 'eine Grapefruit', image: '/images/grapefruit.png', cm: 28.9, g: 500, feeling: 'Schwere Beine', tip: 'Besorg ihr Kompressionsstrümpfe oder Fußmassage.',
+        size: 'eine Grapefruit', image: '/images/grapefruit.png', color: 'from-red-200/80 to-white/50 border-red-300', cm: 28.9, g: 500, feeling: 'Schwere Beine', tip: 'Besorg ihr Kompressionsstrümpfe oder Fußmassage.',
         development: {
             summary: 'Die Lungen entwickeln sich weiter (Atembewegungen werden geübt).',
             details: [
@@ -443,7 +452,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     24: {
-        size: 'ein Maiskolben', image: '/images/mais.png', cm: 30.0, g: 600, feeling: 'Sodbrennen', tip: 'Milch oder Mandeln bereitstellen.',
+        size: 'ein Maiskolben', image: '/images/mais.png', color: 'bg-yellow-100', cm: 30.0, g: 600, feeling: 'Sodbrennen', tip: 'Milch oder Mandeln bereitstellen.',
         development: {
             summary: 'Gleichgewichtssinn im Innenohr ist entwickelt. Es weiß, wo oben und unten ist.',
             details: [
@@ -462,7 +471,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     25: {
-        size: 'eine Rübe', image: '/images/ruebe.png', cm: 34.6, g: 660, feeling: 'Schlafprobleme', tip: 'Stillkissen zum Schlafen besorgen.',
+        size: 'eine Rübe', image: '/images/ruebe.png', color: 'bg-rose-100', cm: 34.6, g: 660, feeling: 'Schlafprobleme', tip: 'Stillkissen zum Schlafen besorgen.',
         development: {
             summary: 'Die Kapillaren (kleine Blutgefäße) bilden sich aus. Die Haut wird rosiger.',
             details: [
@@ -481,7 +490,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     26: {
-        size: 'eine Zucchini', image: '/images/zucchini.png', cm: 35.6, g: 760, feeling: 'Rückenschmerzen', tip: 'Schuhe binden übernehmen.',
+        size: 'eine Zucchini', image: '/images/zucchini.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 35.6, g: 760, feeling: 'Rückenschmerzen', tip: 'Schuhe binden übernehmen.',
         development: {
             summary: 'Die Augen öffnen sich erstmals. Hallo Welt!',
             details: [
@@ -500,7 +509,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     27: {
-        size: 'ein Blumenkohl', image: '/images/blumenkohl.png', cm: 36.6, g: 875, feeling: 'Atemnot', tip: 'Treppen langsam gehen, Pausen machen.',
+        size: 'ein Blumenkohl', image: '/images/blumenkohl.png', color: 'from-stone-200/80 to-white/50 border-stone-300', cm: 36.6, g: 875, feeling: 'Atemnot', tip: 'Treppen langsam gehen, Pausen machen.',
         development: {
             summary: 'Gehirnwellen zeigen Reaktionen auf Geräusche. Es lernt!',
             details: [
@@ -519,7 +528,7 @@ export const PREGNANCY_WEEKS = {
         },
     },
     28: {
-        size: 'eine Aubergine', image: '/images/aubergine.png', cm: 37.6, g: 1005, feeling: '3. Trimester beginnt', tip: 'Kliniktasche Packliste durchgehen.',
+        size: 'eine Aubergine', image: '/images/aubergine.png', color: 'from-purple-200/80 to-white/50 border-purple-300', cm: 37.6, g: 1005, feeling: '3. Trimester beginnt', tip: 'Kliniktasche Packliste durchgehen.',
         development: {
             summary: 'Es träumt jetzt (REM-Schlaf nachgewiesen). Wovon wohl?',
             details: [
@@ -538,7 +547,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     29: {
-        size: 'ein Butternuss-Kürbis', image: '/images/kuerbis_klein.png', cm: 38.6, g: 1153, feeling: 'Kindsbewegungen', tip: 'Spiel "Tritt-Antwort" mit dem Bauch.',
+        size: 'ein Butternuss-Kürbis', image: '/images/kuerbis_klein.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 38.6, g: 1153, feeling: 'Kindsbewegungen', tip: 'Spiel "Tritt-Antwort" mit dem Bauch.',
         development: {
             summary: 'Es kann die Körpertemperatur ansatzweise regeln.',
             details: [
@@ -557,7 +566,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     30: {
-        size: 'eine Gurke', image: '/images/gurke.png', cm: 39.9, g: 1319, feeling: 'Sorgen & Ängste', tip: 'Geburtsvorbereitungskurs ernst nehmen.',
+        size: 'eine Gurke', image: '/images/gurke.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 39.9, g: 1319, feeling: 'Sorgen & Ängste', tip: 'Geburtsvorbereitungskurs ernst nehmen.',
         development: {
             summary: 'Die Haut wird glatter, das Wollhaar (Lanugo) verschwindet langsam.',
             details: [
@@ -576,7 +585,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     31: {
-        size: 'eine Ananas', image: '/images/ananas.png', cm: 41.1, g: 1502, feeling: 'Alles wird eng', tip: 'Hilf ihr aus dem Bett/Sofa hoch.',
+        size: 'eine Ananas', image: '/images/ananas.png', color: 'from-yellow-200/80 to-white/50 border-yellow-300', cm: 41.1, g: 1502, feeling: 'Alles wird eng', tip: 'Hilf ihr aus dem Bett/Sofa hoch.',
         development: {
             summary: 'Alle 5 Sinne sind jetzt funktionsfähig. Es ist hellwach.',
             details: [
@@ -595,7 +604,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     32: {
-        size: 'ein Chinakohl', image: '/images/chinakohl.png', cm: 42.4, g: 1702, feeling: 'Übungswehen', tip: 'Lerne Wehen zu tracken (Abstand messen).',
+        size: 'ein Chinakohl', image: '/images/chinakohl.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 42.4, g: 1702, feeling: 'Übungswehen', tip: 'Lerne Wehen zu tracken (Abstand messen).',
         development: {
             summary: 'Fingernägel sind komplett ausgebildet. Kratzgefahr!',
             details: [
@@ -614,7 +623,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     33: {
-        size: 'ein Sellerie', image: '/images/sellerie.png', cm: 43.7, g: 1918, feeling: 'Ungeduld', tip: 'Kinderzimmer fertig streichen/aufbauen.',
+        size: 'ein Sellerie', image: '/images/sellerie.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 43.7, g: 1918, feeling: 'Ungeduld', tip: 'Kinderzimmer fertig streichen/aufbauen.',
         development: {
             summary: 'Das Immunsystem übernimmt Antikörper der Mutter.',
             details: [
@@ -633,7 +642,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     34: {
-        size: 'eine Honigmelone', image: '/images/honigmelone.png', cm: 45.0, g: 2146, feeling: 'Mutterschutz!', tip: 'Feiert ihren letzten Arbeitstag.',
+        size: 'eine Honigmelone', image: '/images/honigmelone.png', color: 'from-yellow-200/80 to-white/50 border-yellow-300', cm: 45.0, g: 2146, feeling: 'Mutterschutz!', tip: 'Feiert ihren letzten Arbeitstag.',
         development: {
             summary: 'Bei Jungs wandern die Hoden in den Hodensack. Alles an seinem Platz.',
             details: [
@@ -652,7 +661,7 @@ export const PREGNANCY_WEEKS = {
         },
     },
     35: {
-        size: 'eine Kokosnuss', image: '/images/kokosnuss.png', cm: 46.2, g: 2383, feeling: 'Senkwehen', tip: 'Auto checken, Tank voll?',
+        size: 'eine Kokosnuss', image: '/images/kokosnuss.png', color: 'from-stone-200/80 to-white/50 border-stone-300', cm: 46.2, g: 2383, feeling: 'Senkwehen', tip: 'Auto checken, Tank voll?',
         development: {
             summary: 'Nieren sind voll ausgereift. Leber arbeitet.',
             details: [
@@ -671,7 +680,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     36: {
-        size: 'ein Kopfsalat', image: '/images/salat.png', cm: 47.4, g: 2622, feeling: 'Nestbau-Finale', tip: 'Kliniktasche ins Auto stellen.',
+        size: 'ein Kopfsalat', image: '/images/salat.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 47.4, g: 2622, feeling: 'Nestbau-Finale', tip: 'Kliniktasche ins Auto stellen.',
         development: {
             summary: 'Der Kopf rutscht tiefer ins Becken. Startposition!',
             details: [
@@ -690,7 +699,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     37: {
-        size: 'ein Mangold', image: '/images/mangold.png', cm: 48.6, g: 2859, feeling: 'Bereit (Theoretisch)', tip: 'Dokumente griffbereit legen.',
+        size: 'ein Mangold', image: '/images/mangold.png', color: 'from-emerald-200/80 to-white/50 border-emerald-300', cm: 48.6, g: 2859, feeling: 'Bereit (Theoretisch)', tip: 'Dokumente griffbereit legen.',
         development: {
             summary: 'Lungenreife ist abgeschlossen. Kein Frühchen mehr!',
             details: [
@@ -709,7 +718,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     38: {
-        size: 'ein Lauch', image: '/images/lauch.png', cm: 49.8, g: 3083, feeling: 'Warten...', tip: 'Lenk sie ab. Kino, Essen, Spazieren.',
+        size: 'ein Lauch', image: '/images/lauch.png', color: 'from-green-200/80 to-white/50 border-green-300', cm: 49.8, g: 3083, feeling: 'Warten...', tip: 'Lenk sie ab. Kino, Essen, Spazieren.',
         development: {
             summary: 'Babyspeck wird angesetzt für die Tage nach der Geburt.',
             details: [
@@ -728,7 +737,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     39: {
-        size: 'eine Wassermelone', image: '/images/wassermelone.png', cm: 50.7, g: 3288, feeling: 'Jedes Ziehen zählt', tip: 'Handy immer auf Laut.',
+        size: 'eine Wassermelone', image: '/images/wassermelone.png', color: 'from-red-200/80 to-white/50 border-red-300', cm: 50.7, g: 3288, feeling: 'Jedes Ziehen zählt', tip: 'Handy immer auf Laut.',
         development: {
             summary: 'Platzmangel: Weniger Tritte, mehr Schieben und Drücken.',
             details: [
@@ -747,7 +756,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     40: {
-        size: 'ein Kürbis', image: '/images/kuerbis.png', cm: 51.2, g: 3462, feeling: 'Geburtstermin', tip: 'Ruhepol sein. Du schaffst das.',
+        size: 'ein Kürbis', image: '/images/kuerbis.png', color: 'from-orange-200/80 to-white/50 border-orange-300', cm: 51.2, g: 3462, feeling: 'Geburtstermin', tip: 'Ruhepol sein. Du schaffst das.',
         development: {
             summary: 'Bereit für den ersten Atemzug. Happy Birthday (bald)!',
             details: [
@@ -766,7 +775,7 @@ export const PREGNANCY_WEEKS = {
         }
     },
     41: {
-        size: 'ein Riesen-Kürbis', image: '/images/riesenkuerbis.png', cm: 51.7, g: 3597, feeling: 'Überfällig', tip: 'Nervige Nachfragen von Verwandten abblocken.',
+        size: 'ein Riesen-Kürbis', image: '/images/riesenkuerbis.png', color: 'from-orange-300/80 to-white/50 border-orange-400', cm: 51.7, g: 3597, feeling: 'Überfällig', tip: 'Nervige Nachfragen von Verwandten abblocken.',
         development: {
             summary: 'Die Haut ist jetzt oft etwas trocken ("Waschfrauenhände").',
             details: [
@@ -1324,6 +1333,15 @@ export const getTasks = (mode, stage) => {
     if (mode === 'loss') {
         return [{ id: 'l-1', text: 'Krankmeldung/Mutterschutz klären', category: 'Bürokratie' }, { id: 'l-2', text: 'Bestatter kontaktieren', category: 'Logistik' }, { id: 'l-3', text: 'Abschiedsritual', category: 'Emotional' }, { id: 'l-4', text: 'Umfeld informieren', category: 'Kommunikation' }, { id: 'l-5', text: 'Rückbildung', category: 'Gesundheit' }];
     }
+    if (mode === 'conception') {
+        const common = [{ id: 'c-1', text: 'Folsäure nehmen (Sie)', category: 'Gesundheit' }, { id: 'c-2', text: 'Gesund ernähren', category: 'Lifestyle' }];
+        const fertile = [{ id: 'c-f1', text: 'Zeit zu zweit einplanen', category: 'Romantik' }, { id: 'c-f2', text: 'Stress reduzieren', category: 'Mindset' }];
+        const menstruation = [{ id: 'c-m1', text: 'Wärmflasche bereitstellen', category: 'Care' }, { id: 'c-m2', text: 'Schokolade besorgen', category: 'Support' }];
+
+        if (stage === 'fertile' || stage === 'ovulation') return [...common, ...fertile];
+        if (stage === 'menstruation') return [...common, ...menstruation];
+        return common;
+    }
     return [];
 };
 
@@ -1483,6 +1501,34 @@ export const LOSS_RESOURCES = [
         items: [
             { name: "Sternenpapas", desc: "Austausch für betroffene Väter", url: "https://sternenpapas.de", icon: User },
             { name: "Männerberatungsnetz", desc: "Psychologische Unterstützung", url: "https://www.maennerberatungsnetz.de", icon: ShieldCheck }
+        ]
+    }
+];
+
+export const CONCEPTION_RESOURCES = [
+    {
+        title: "Wissen & Tracking",
+        color: "sky",
+        items: [
+            { name: "Zyklus-Rechner", desc: "Verstehe die fruchtbaren Tage", url: "https://www.familienplanung.de/kinderwunsch/fruchtbarkeit-und-zyklus/fruchtbare-tage-berechnen/", icon: Calendar },
+            { name: "Basaltemperatur", desc: "Anleitung zur NFP-Methode", url: "https://www.mynfp.de/temperatur-messen", icon: Thermometer },
+            { name: "Kinderwunsch-Infos", desc: "Offizielles Portal der BZgA", url: "https://www.familienplanung.de/kinderwunsch/", icon: BookOpen }
+        ]
+    },
+    {
+        title: "Gesundheit Mann",
+        color: "emerald",
+        items: [
+            { name: "Spermien-Fit", desc: "Tipps für bessere Qualität", url: "https://www.maennergesundheit.info/fruchtbarkeit", icon: Activity },
+            { name: "Urologen-Suche", desc: "Finde einen Facharzt", url: "https://www.urologenportal.de/patienten/arztsuche.html", icon: Users }
+        ]
+    },
+    {
+        title: "Kliniken & Hilfe",
+        color: "violet",
+        items: [
+            { name: "Kinderwunsch-Zentren", desc: "Register offizieller Zentren", url: "https://www.deutsches-ivf-register.de/", icon: Home },
+            { name: "Beratung", desc: "Psychosoziale Beratung", url: "https://www.bkid.de/", icon: MessageCircle }
         ]
     }
 ];

@@ -25,6 +25,7 @@ const DailyTipWidget = ({ mode, week, babyName, userName, gender }) => {
         }
 
         // Fetch new
+        if (forceRefresh) setTip(null); // Clear to show change
         setLoading(true);
         try {
             const result = await generateDailyTip(mode, week, babyName, gender, userName);
@@ -63,7 +64,7 @@ const DailyTipWidget = ({ mode, week, babyName, userName, gender }) => {
                 </div>
 
                 <h3 className="text-amber-800 dark:text-amber-200 font-bold mb-2 text-sm uppercase tracking-wider">
-                    {mode === 'loss' ? 'Dein Impuls' : 'Dein Daily Vibe'}
+                    {mode === 'loss' ? 'Dein Impuls' : mode === 'conception' ? 'Kinderwunsch-Tipp' : 'Dein Daily Vibe'}
                 </h3>
 
                 <div className="min-h-[60px]">

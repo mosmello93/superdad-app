@@ -1,11 +1,12 @@
 import React from 'react';
 import { X, ExternalLink, Heart, AlertTriangle, Scale, Baby, Phone, Camera, User, ShieldCheck } from 'lucide-react';
-import { RESOURCES, LOSS_RESOURCES, POSTPARTUM_RESOURCES } from '../../data/content';
+import { RESOURCES, LOSS_RESOURCES, POSTPARTUM_RESOURCES, CONCEPTION_RESOURCES } from '../../data/content';
 
 const ResourceOverlay = ({ close, mode }) => {
     let data = RESOURCES;
     if (mode === 'loss') data = LOSS_RESOURCES;
     if (mode === 'postpartum') data = POSTPARTUM_RESOURCES;
+    if (mode === 'conception') data = CONCEPTION_RESOURCES;
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F0] dark:bg-stone-950 animate-in slide-in-from-bottom-full duration-500">

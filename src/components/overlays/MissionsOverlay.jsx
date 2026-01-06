@@ -45,8 +45,15 @@ const MissionsOverlay = ({ onClose, statusData, tasks, toggleTask, mode }) => {
             {/* Header */}
             <div className="bg-white dark:bg-stone-900 px-6 pt-12 pb-6 shadow-sm flex items-center justify-between z-10 shrink-0 border-b border-stone-100 dark:border-stone-800">
                 <div>
-                    <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100 font-serif">Wochen-Missionen</h2>
-                    <p className="text-stone-500 dark:text-stone-400 text-sm">Deine Aufgaben für Woche {statusData.week}</p>
+                    <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100 font-serif">
+                        {mode === 'conception' ? 'Zyklus-Missionen' : 'Wochen-Missionen'}
+                    </h2>
+                    <p className="text-stone-500 dark:text-stone-400 text-sm">
+                        {mode === 'conception'
+                            ? `Fokus für diese Phase (${statusData.phase === 'menstruation' ? 'Menstruation' : statusData.phase === 'follicular' ? 'Follikelphase' : statusData.phase === 'fertile' ? 'Fruchtbar' : statusData.phase === 'ovulation' ? 'Eisprung' : 'Lutealphase'})`
+                            : `Deine Aufgaben für Woche ${statusData.week}`
+                        }
+                    </p>
                 </div>
                 <button onClick={onClose} className="bg-stone-100 dark:bg-stone-800 p-2 rounded-full text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
                     <X size={24} />
@@ -84,8 +91,8 @@ const MissionsOverlay = ({ onClose, statusData, tasks, toggleTask, mode }) => {
                                 key={task.id}
                                 onClick={() => toggleTask(task.id, task.completed)}
                                 className={`flex items-start p-4 rounded-2xl cursor-pointer transition-all border group ${task.completed
-                                        ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30'
-                                        : 'bg-white dark:bg-stone-900 border-stone-100 dark:border-stone-800 hover:border-emerald-200'
+                                    ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30'
+                                    : 'bg-white dark:bg-stone-900 border-stone-100 dark:border-stone-800 hover:border-emerald-200'
                                     }`}
                             >
                                 <div className={`mt-0.5 mr-4 transition-transform duration-300 ${task.completed ? 'text-emerald-500 dark:text-emerald-400' : 'text-stone-300 dark:text-stone-600'}`}>

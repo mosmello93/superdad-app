@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { BookOpen, Sprout, Sparkles, AlertCircle, Heart, User } from 'lucide-react';
+import { BookOpen, Sprout, Sparkles, AlertCircle, Heart, User, ChevronDown, ChevronUp, Activity } from 'lucide-react';
 import { PREGNANCY_WEEKS, POSTPARTUM_WEEKS, LOSS_CONTENT, ARTICLES, ARTICLES_POSTPARTUM } from '../../data/content';
+import { CONCEPTION_CONTENT, CONCEPTION_ARTICLES } from '../../data/conception_content';
 import ArticleOverlay from '../overlays/ArticleOverlay';
 import Baby3DOverlay from '../overlays/Baby3DOverlay';
+import PreFlightChecklist from '../features/PreFlightChecklist';
+import ScienceSlider from '../features/ScienceSlider';
 
 const KnowledgeView = ({ week, mode, ssw }) => {
     const [selectedArticle, setSelectedArticle] = useState(null);
     const [showBaby3D, setShowBaby3D] = useState(false);
+    const [isPhasesExpanded, setIsPhasesExpanded] = useState(false);
 
     // RENDER: LOSS
     if (mode === 'loss') {
@@ -51,11 +55,125 @@ const KnowledgeView = ({ week, mode, ssw }) => {
         );
     }
 
+    // RENDER: CONCEPTION
+    if (mode === 'conception') {
+        const phases = [
+            { id: 'menstruation', icon: Heart, ...CONCEPTION_CONTENT.phases.menstruation },
+            { id: 'follicular', icon: Sprout, ...CONCEPTION_CONTENT.phases.follicular },
+            { id: 'fertile', icon: Sparkles, ...CONCEPTION_CONTENT.phases.fertile },
+            { id: 'luteal', icon: AlertCircle, ...CONCEPTION_CONTENT.phases.luteal }
+        ];
+
+        return (
+            <div className="space-y-6 animate-in fade-in pb-24">
+                <div className="bg-rose-50 dark:bg-rose-900/10 p-8 rounded-[32px] shadow-sm relative overflow-hidden text-rose-900 dark:text-rose-100 border border-rose-100 dark:border-rose-900/30">
+                    <h2 className="text-2xl font-bold mb-2 font-serif">Kinderwunsch Guide</h2>
+                    <p className="opacity-80">Verstehe den Zyklus und unterstütze sie optimal.</p>
+                    <img src="/mascot/papa_smart.png" className="absolute -bottom-4 -right-4 w-32 opacity-20" alt="Mascot" />
+                </div>
+
+                <div className="space-y-4">
+                    {/* Pre-Flight Checklist */}
+                    <div className="mb-6">
+                        <PreFlightChecklist />
+                    </div>
+
+                    {/* Collapsible Phases Header - NEW DESIGN */}
+                    <button
+                        onClick={() => setIsPhasesExpanded(!isPhasesExpanded)}
+                        className="w-full flex items-center justify-between text-left bg-white dark:bg-stone-900 p-5 rounded-[24px] border border-stone-200 dark:border-stone-800 shadow-sm hover:border-rose-300 dark:hover:border-rose-700 transition-all group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-rose-50 dark:bg-rose-900/20 rounded-2xl text-rose-500">
+                                <Activity size={24} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">Zyklus-Phasen</h3>
+                                <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">Was passiert wann? (Aufklappen)</p>
+                            </div>
+                        </div>
+                        <div className={`text-stone-400 transition-transform duration-300 ${isPhasesExpanded ? 'rotate-180' : ''}`}>
+                            <ChevronDown size={24} />
+                        </div>
+                    </button>
+
+                    {isPhasesExpanded && phases.map(phase => (
+                        <div key={phase.id} className="bg-white dark:bg-stone-900 p-6 rounded-[24px] border border-stone-100 dark:border-stone-800 shadow-sm animate-in slide-in-from-top-4 fade-in duration-300">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-rose-50 dark:bg-rose-900/20 rounded-2xl text-rose-500">
+                                    <phase.icon size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-lg text-stone-800 dark:text-stone-100">{phase.title}</h3>
+                                    <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">{phase.feeling}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                {phase.details.map((detail, idx) => (
+                                    <div key={idx} className="pl-4 border-l-2 border-rose-100 dark:border-stone-700">
+                                        <h4 className="font-bold text-sm text-stone-700 dark:text-stone-300">{detail.headline}</h4>
+                                        <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{detail.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl text-amber-800 dark:text-amber-200 text-sm font-medium flex gap-3">
+                                <Sparkles size={16} className="shrink-0 mt-0.5" />
+                                {phase.tip}
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Science Slider */}
+                    <div className="mb-6">
+                        <ScienceSlider />
+                    </div>
+
+                    {/* CONCEPTION ARTICLES */}
+                    <div className="space-y-3 pt-6 border-t border-stone-100 dark:border-stone-800">
+                        <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest pl-2">Mehr Wissen</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            {Object.entries(CONCEPTION_ARTICLES).map(([key, article]) => {
+                                const colorMap = {
+                                    blue: { card: "bg-blue-50 dark:bg-blue-900/40 border-blue-100 dark:border-blue-800/20 hover:border-blue-200", title: "text-blue-900 dark:text-blue-200", meta: "text-blue-700 dark:text-blue-300", icon: "text-blue-500/30 dark:text-blue-400/30" },
+                                    emerald: { card: "bg-emerald-50 dark:bg-emerald-900/40 border-emerald-100 dark:border-emerald-800/20 hover:border-emerald-200", title: "text-emerald-900 dark:text-emerald-200", meta: "text-emerald-700 dark:text-emerald-300", icon: "text-emerald-500/30 dark:text-emerald-400/30" },
+                                    amber: { card: "bg-amber-50 dark:bg-amber-900/40 border-amber-100 dark:border-amber-800/20 hover:border-amber-200", title: "text-amber-900 dark:text-amber-200", meta: "text-amber-700 dark:text-amber-300", icon: "text-amber-500/30 dark:text-amber-400/30" },
+                                    rose: { card: "bg-rose-50 dark:bg-rose-900/40 border-rose-100 dark:border-rose-800/20 hover:border-rose-200", title: "text-rose-900 dark:text-rose-200", meta: "text-rose-700 dark:text-rose-300", icon: "text-rose-500/30 dark:text-rose-400/30" },
+                                };
+                                const styles = colorMap[article.color] || colorMap.blue;
+
+                                return (
+                                    <div
+                                        key={key}
+                                        onClick={() => setSelectedArticle(article)}
+                                        className={`${styles.card} p-4 rounded-[24px] h-32 flex flex-col justify-end relative overflow-hidden group cursor-pointer border transition-colors`}
+                                    >
+                                        <h4 className={`font-bold ${styles.title} relative z-10 text-sm`}>{article.title}</h4>
+                                        <p className={`text-[10px] ${styles.meta} relative z-10 mt-1`}>Guide lesen →</p>
+                                        <article.icon className={`absolute -top-2 -right-2 ${styles.icon} group-hover:scale-110 transition-transform`} size={60} />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Article Overlay */}
+                    {selectedArticle && (
+                        <ArticleOverlay
+                            article={selectedArticle}
+                            onClose={() => setSelectedArticle(null)}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     // RENDER: PREGNANCY & POSTPARTUM
     if (mode === 'pregnancy' || mode === 'postpartum') {
-        // Data selection based on mode
         const dataSet = mode === 'postpartum' ? POSTPARTUM_WEEKS : PREGNANCY_WEEKS;
-        // Fallback info
+
         const defaultInfo = {
             size: '---',
             feeling: mode === 'postpartum' ? 'Ankommen' : 'Wachstum',
@@ -68,10 +186,8 @@ const KnowledgeView = ({ week, mode, ssw }) => {
         const info = dataSet[week] || defaultInfo;
         const isPostpartum = mode === 'postpartum';
 
-        // Custom Title Logic
         const mainTitle = info.title || (isPostpartum ? `Woche ${week} nach Geburt` : 'Der Fokus der Woche');
 
-        // CATEGORIES
         const categories = [
             {
                 id: 'baby',
@@ -100,8 +216,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                 content: {
                     title: 'Körper & Gefühl',
                     text: (() => {
-                        // In pregnancy: info.mom is string (usually). In postpartum: info.mom is object.
-                        // But we want to support object in pregnancy too.
                         const source = info.mom;
                         if (!source) return info.feeling || 'Alles okay?';
                         return typeof source === 'object' ? source.summary : source;
@@ -127,11 +241,7 @@ const KnowledgeView = ({ week, mode, ssw }) => {
             }
         ];
 
-        console.log('DEBUG CATEGORIES:', categories); // SEE WHAT IS ACTUALLY HERE
-
-
         const handleCardClick = (cat) => {
-            // Check if we have detailed content to show
             if (cat.content.details) {
                 setSelectedArticle({
                     title: cat.title,
@@ -140,9 +250,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     content: cat.content.details
                 });
             } else if (cat.id === 'dad' && isPostpartum) {
-                // Special handling for Dad card in postpartum if we want to show generic dad tips or just the tip
-                // For now, let's keep it simple or maybe expand it later.
-                // Currently just shows the tip as a single item if we click it.
                 setSelectedArticle({
                     title: cat.title,
                     icon: cat.icon,
@@ -150,7 +257,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     content: [{ headline: 'Tipp der Woche', text: cat.content.text }]
                 });
             } else {
-                // Fallback for pregnancy cards or non-detailed cards
                 setSelectedArticle({
                     title: cat.title,
                     icon: cat.icon,
@@ -164,7 +270,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
 
         return (
             <div className="space-y-6 animate-in fade-in pb-24">
-                {/* Header */}
                 <div className="bg-[#E7E5E4] dark:bg-stone-800 p-8 rounded-[32px] shadow-sm text-stone-800 dark:text-stone-100 relative overflow-hidden">
                     <div className="flex justify-between items-start mb-2">
                         <h2 className="text-2xl font-bold font-serif text-stone-700 dark:text-stone-200">{mainTitle}</h2>
@@ -174,7 +279,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     </div>
                     <p className="text-stone-600 dark:text-stone-300 font-medium italic">"{info.feeling}"</p>
 
-                    {/* 3D Visual (Pregnancy Only) */}
                     {!isPostpartum && (
                         <div
                             onClick={() => setShowBaby3D(true)}
@@ -182,7 +286,7 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                         >
                             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
                             <img
-                                src={`/images/fetus_3d/week_${Math.max(4, Math.min(week, 41))}.png`}
+                                src={`/images/fetus_3d/SSW${Math.max(4, Math.min(week, 41))}.png`}
                                 alt={`Baby in Woche ${week}`}
                                 className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
                             />
@@ -194,7 +298,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     )}
                 </div>
 
-                {/* Categories */}
                 <div className="space-y-4">
                     {categories.map((cat) => (
                         <div key={cat.id} className="space-y-2">
@@ -222,7 +325,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     ))}
                 </div>
 
-                {/* Articles / Deep Dives */}
                 <div className="space-y-3 pt-4">
                     <h3 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest pl-2">Mehr Wissen</h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -277,7 +379,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     </div>
                 </div>
 
-                {/* Article Overlay */}
                 {selectedArticle && (
                     <ArticleOverlay
                         article={selectedArticle}
@@ -285,7 +386,6 @@ const KnowledgeView = ({ week, mode, ssw }) => {
                     />
                 )}
 
-                {/* 3D Baby Overlay */}
                 {showBaby3D && (
                     <Baby3DOverlay
                         week={week}

@@ -1,7 +1,25 @@
-
 import { OASIS_IDEAS } from '../data/content';
 
-export const calculateStatus = (dateString, mode) => {
+// Helper to calculate cycle status
+const getCycleStatus = (lastPeriod, cycleLength = 28) => {
+    if (!lastPeriod) return { day: 0, phase: 'unknown' };
+    const start = new Date(lastPeriod);
+    const now = new Date();
+    const diffTime = Math.abs(now - start);
+    const day = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // Normalize day to cycle
+    const currentDay = ((day - 1) % cycleLength) + 1;
+
+    let phase = 'menstruation';
+    if (currentDay > 5 && currentDay < (cycleLength - 14 - 2)) phase = 'follicular';
+    else if (currentDay >= (cycleLength - 14 - 2) && currentDay <= (cycleLength - 14 + 1)) phase = 'fertile';
+    else if (currentDay > (cycleLength - 14 + 1)) phase = 'luteal';
+
+    return { week: currentDay, phase: phase, totalDays: day }; // Reuse 'week' prop for generic day count to keep API consistent
+};
+
+export const calculateStatus = (dateString, mode, cycleLength = 28, periodLength = 5) => {
     if (mode === 'loss') {
         const [y, m, d] = dateString ? dateString.split('-').map(Number) : [0, 0, 0];
         const refDate = dateString ? new Date(y, m - 1, d) : new Date();
@@ -10,7 +28,23 @@ export const calculateStatus = (dateString, mode) => {
         const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
         return { status: 'Loss', progress: 0, stage: 'after', label: 'Sternenkind', week: diffWeeks + 1 };
     }
+
     if (!dateString) return { status: 'NotSet', progress: 0, stage: 0, label: '' };
+
+    if (mode === 'conception') {
+        const cycle = getCycleStatus(dateString, cycleLength);
+        return {
+            week: cycle.week, // Current Cycle Day
+            phase: cycle.phase,
+            progress: (cycle.week / cycleLength) * 100,
+            daysLeft: cycleLength - cycle.week,
+            status: 'Conception',
+            label: `Zyklustag ${cycle.week}`,
+            cycleLength,
+            periodLength,
+            stage: cycle.phase
+        };
+    }
 
     const [y, m, d] = dateString.split('-').map(Number);
     const refDate = new Date(y, m - 1, d);
@@ -52,7 +86,7 @@ export const calculateStatus = (dateString, mode) => {
         status: 'Pregnant',
         progress,
         stage: trimester,
-        label: `SSW ${currentWeek} (${completedWeeks}+${currentDays})`
+        label: `SSW ${currentWeek} (${completedWeeks} +${currentDays})`
     };
 };
 
@@ -62,6 +96,7 @@ export const getDailyOasis = (mode, week) => {
     let pool = [];
     if (mode === 'loss') pool = OASIS_IDEAS.loss;
     else if (mode === 'postpartum') pool = OASIS_IDEAS.postpartum;
+    else if (mode === 'conception') pool = OASIS_IDEAS.conception;
     else {
         if (week < 14) pool = OASIS_IDEAS.trimester1;
         else if (week < 28) pool = OASIS_IDEAS.trimester2;

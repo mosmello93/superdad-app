@@ -8,6 +8,7 @@ export const ACHIEVEMENTS = [
         icon: Star,
         image: '/badges/first_steps.png',
         color: 'amber',
+        modes: ['all'],
         condition: (stats) => stats.totalTasksCompleted >= 1
     },
     {
@@ -17,6 +18,7 @@ export const ACHIEVEMENTS = [
         icon: Zap,
         image: '/badges/streak_3.png',
         color: 'blue',
+        modes: ['all'],
         condition: (stats) => stats.currentStreak >= 3
     },
     {
@@ -26,6 +28,7 @@ export const ACHIEVEMENTS = [
         icon: Trophy,
         image: '/badges/streak_7.png',
         color: 'violet',
+        modes: ['all'],
         condition: (stats) => stats.currentStreak >= 7
     },
     {
@@ -35,6 +38,7 @@ export const ACHIEVEMENTS = [
         icon: Moon,
         image: '/badges/night_owl.png',
         color: 'indigo',
+        modes: ['pregnancy', 'postpartum', 'loss'],
         condition: (stats) => stats.nightShifts >= 1
     },
     {
@@ -44,6 +48,7 @@ export const ACHIEVEMENTS = [
         icon: Home,
         image: '/badges/nest_builder.png',
         color: 'emerald',
+        modes: ['pregnancy', 'postpartum'],
         condition: (stats) => stats.nestingTasks >= 5
     },
     {
@@ -53,6 +58,7 @@ export const ACHIEVEMENTS = [
         icon: Heart,
         image: '/badges/supporter.png',
         color: 'rose',
+        modes: ['all'], // Relevant in all phases
         condition: (stats) => stats.supportActions >= 10
     },
     {
@@ -62,6 +68,7 @@ export const ACHIEVEMENTS = [
         icon: BookOpen,
         image: '/badges/knowledge_seeker.png',
         color: 'cyan',
+        modes: ['all'],
         condition: (stats) => stats.articlesRead >= 5
     },
     {
@@ -71,6 +78,7 @@ export const ACHIEVEMENTS = [
         icon: Shield,
         image: '/badges/protector.png',
         color: 'stone',
+        modes: ['loss', 'pregnancy', 'postpartum'],
         condition: (stats) => stats.shieldActivated >= 1
     },
     {
@@ -80,6 +88,7 @@ export const ACHIEVEMENTS = [
         icon: FileText,
         image: '/badges/paper_warrior.png',
         color: 'slate',
+        modes: ['pregnancy', 'postpartum'],
         condition: (stats) => stats.bureaucracyTasks >= 3
     },
     {
@@ -89,6 +98,7 @@ export const ACHIEVEMENTS = [
         icon: Sun,
         image: '/badges/zen_master.png',
         color: 'teal',
+        modes: ['all'],
         condition: (stats) => stats.zenActions >= 1
     },
     {
@@ -98,6 +108,7 @@ export const ACHIEVEMENTS = [
         icon: Trophy,
         image: '/badges/high_performer.png',
         color: 'yellow',
+        modes: ['all'],
         condition: (stats) => stats.level >= 5
     },
     {
@@ -107,6 +118,27 @@ export const ACHIEVEMENTS = [
         icon: Heart,
         image: '/badges/team_player.png',
         color: 'pink',
+        modes: ['all'],
         condition: (stats) => stats.dateNights >= 1
+    },
+    {
+        id: 'sperm_pro',
+        title: 'Health-Guru',
+        description: 'Über 80% beim Sperm-Fit Score. Deine Schwimmer danken dir!',
+        icon: Zap,
+        image: '/badges/badge_sperm_pro.png',
+        color: 'emerald',
+        modes: ['conception'],
+        condition: (stats) => stats.spermScore >= 80
+    },
+    {
+        id: 'cycle_hero',
+        title: 'Zyklus-Versteher',
+        description: 'Du kennst dich aus. Mindestens 3 Cycle-Checks oder Artikel gelesen.',
+        icon: BookOpen,
+        image: '/badges/badge_cycle_hero.png',
+        color: 'indigo',
+        modes: ['conception'],
+        condition: (stats) => stats.cycleChecks >= 3
     }
 ];

@@ -3,7 +3,7 @@ import { X, Send, Bot, User } from 'lucide-react';
 import { callGemini } from '../../utils/gemini';
 import { APP_FEATURES } from '../../data/features';
 
-const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partnerHistory = [] }) => {
+const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partnerHistory = [], bagItems = [], completedTasks = [], unlockedMilestones = [], dadLogs = [], habits = {}, xp = 0, currentVibe = '' }) => {
     // ... State ...
     const [messages, setMessages] = useState([
         {
@@ -42,17 +42,57 @@ const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partner
         }
 
         // 2. Get Relevant Features
+        const genericFeatures = APP_FEATURES.general || [];
         const features = APP_FEATURES[mode === 'pregnancy' ? 'pregnancy' : (mode === 'postpartum' ? 'postpartum' : 'general')] || [];
-        const allFeatures = [...features, ...genericFeatures].map(f => `- "${f.name}": ${f.trigger}`).join('\n');
+        // prevent duplicating general if mode is fallback
+        const uniqueFeatures = mode === 'loss' ? [] : [...features];
+        if (mode !== 'loss' && mode !== 'unknown') {
+            // Basic de-dupe not strictly needed if structure is clean, but safe:
+            // actually just combining logic cleanly:
+        }
 
-        // 3. Construct Chat History
+        const effectiveFeatures = [...features, ...genericFeatures];
+        // Filter duplicates if any
+        const allFeatures = effectiveFeatures.map(f => `- "${f.name}": ${f.trigger}`).join('\n');
+
+        // 3. Construct RICH App Context
+        const activeHabits = Object.entries(habits || {}).filter(([_, v]) => v).map(([k]) => k).join(', ') || 'Keine heute erledigt';
+        const recentLogs = dadLogs.slice(0, 3).map(l => `"${l.text.slice(0, 50)}..."`).join('; ') || 'Keine Logs';
+        const milestones = unlockedMilestones.join(', ') || 'Keine';
+
+        const technicalContext = `
+        APP-STATUS (Nutzer-Daten):
+        - XP / Level: ${xp} XP
+        - Heutige Gewohnheiten erledigt: ${activeHabits}
+        - Aktueller Vibe (Papa): ${currentVibe || 'Nicht angegeben'}
+        - Kliniktasche: ${bagItems.length} Items gepackt
+        - Erledigte Bürokratie: ${completedTasks.length} Tasks
+        - Meilensteine: ${milestones}
+        - Letzte Dad-Logs: ${recentLogs}
+        `;
+
+        // 4. Construct Chat History
         // Filter out initial bot message if desired, or keep it. 
         // We'll keep last 10 messages to avoid token limits, formatted as "User:" / "Coach:"
         const historyText = messages.slice(-10).map(m => `${m.role === 'user' ? 'User' : 'Coach'}: ${m.text}`).join('\n');
 
         const context = mode === 'loss'
             ? `Du bist ein verständnisvoller Begleiter für einen Vater, der einen Verlust erlitten hat (Sternenkind: ${babyName || 'das Kind'}). Antworte kurz, empathisch und unterstützend. Duze den Nutzer (aber nenne ihn NICHT beim Namen des Kindes!).`
-            : `Du bist 'Papa AI Coach', ein erfahrener Mentor für werdende Väter.
+            : mode === 'conception'
+                ? `Du bist 'HeyPapa AI Coach' für Kinderwunsch. 
+               Dein Ziel: Den Nutzer unterstützen, Druck rausnehmen, Beziehung stärken.
+               
+               HARD FACTS:
+               - Phase: Kinderwunsch (Wir üben!)
+               - Zyklus-Tag: ${ssw || '?'} (Basierend auf letzter Periode)
+               - Stimmung (Partner): ${partnerContext}
+               ${technicalContext}
+
+               WICHTIG:
+               - Kein medizinischer Rat (Disclaimer wenn nötig).
+               - Fokus auf: Entspannung, Romantik, Gesundheit, Partnerschaft.
+               - Vermeide Sätze wie "Es wird schon klappen". Sei eher pragmatisch und ermutigend.`
+                : `Du bist 'HeyPapa AI Coach', ein erfahrener Mentor für werdende Väter.
                
                HARD FACT CONTEXT:
                - Phase: ${mode === 'postpartum' ? 'Baby ist da!' : 'Schwangerschaft'}
@@ -60,6 +100,7 @@ const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partner
                - Woche: ${ssw || '?'}
                - Baby: ${babyName || 'das Baby'} (${genderString})
                - Partner-Stimmung (Trend): ${partnerContext}
+               ${technicalContext}
                
                APP-WISSEN (Empfiehl diese Tools, wenn passend!):
                ${allFeatures}
@@ -72,9 +113,12 @@ const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partner
         const prompt = `${context}\n\nVERLAUF DES GESPÄCHS:\n${historyText}\n\nUser: ${userMsg}\nAntwort (als Coach):`;
 
         try {
+            console.log("Sending prompt to Gemini...", prompt.slice(0, 50));
             const answer = await callGemini(prompt, mode);
+            console.log("Gemini answer received:", answer ? "Yes" : "No");
             setMessages(prev => [...prev, { role: 'bot', text: answer }]);
         } catch (error) {
+            console.error("Gemini Error Handler:", error);
             setMessages(prev => [...prev, { role: 'bot', text: "Sorry, ich habe gerade Verbindungsprobleme. Versuch es gleich nochmal." }]);
         }
         setLoading(false);
@@ -90,7 +134,7 @@ const AIChatOverlay = ({ onClose, mode, babyName, userName, gender, ssw, partner
                             <img src="/mascot/papa_smart.png" alt="AI Coach" className="w-16 h-16 object-contain drop-shadow-sm filter hover:brightness-110 transition" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-stone-800 dark:text-stone-100">papa AI Coach</h3>
+                            <h3 className="font-bold text-stone-800 dark:text-stone-100">HeyPapa AI Coach</h3>
                             <span className="text-[10px] text-green-500 font-bold uppercase tracking-wider flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Online
                             </span>

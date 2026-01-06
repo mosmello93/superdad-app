@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { PenTool, Save, Trash2, Lock, ChevronDown, ChevronUp, Camera, X, Loader2 } from 'lucide-react';
 import { compressImage } from '../../utils/imageCompression';
 
-const DadLog = ({ logs = [], saveLog }) => {
+const DadLog = ({ logs = [], saveLog, mode }) => {
     const [text, setText] = useState('');
     const [image, setImage] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -43,7 +43,7 @@ const DadLog = ({ logs = [], saveLog }) => {
                     <PenTool size={20} />
                 </div>
                 <div>
-                    <h3 className="font-bold text-stone-800 dark:text-stone-100 leading-none">Dad Log</h3>
+                    <h3 className="font-bold text-stone-800 dark:text-stone-100 leading-none">{mode === 'conception' ? 'Gedanken-Log' : 'Dad Log'}</h3>
                     <p className="text-[10px] text-stone-400 dark:text-stone-500 font-medium flex items-center gap-1"><Lock size={8} /> Privat & Lokal</p>
                 </div>
             </div>

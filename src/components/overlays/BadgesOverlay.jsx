@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trophy, Share2, X, Lock } from 'lucide-react';
 
-const BadgesOverlay = ({ unlockedBadges, allBadges, onClose, currentXP, levelInfo }) => {
+const BadgesOverlay = ({ unlockedBadges, allBadges, onClose, currentXP, levelInfo, mode }) => {
     // unlockedBadges is an array of IDs
     // allBadges is the full config array
 
@@ -17,7 +17,7 @@ const BadgesOverlay = ({ unlockedBadges, allBadges, onClose, currentXP, levelInf
                         <div className="flex items-center gap-6">
                             <div className="w-28 h-28 rounded-full bg-stone-50 dark:bg-stone-800 flex items-center justify-center border-4 border-amber-100 dark:border-amber-900/50 overflow-hidden shadow-md">
                                 <img
-                                    src={`/mascot/papa_level${levelInfo.level}.png`}
+                                    src={levelInfo.image || `/mascot/papa_level${levelInfo.level}.png`}
                                     alt={`Level ${levelInfo.level} Mascot`}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
@@ -63,7 +63,7 @@ const BadgesOverlay = ({ unlockedBadges, allBadges, onClose, currentXP, levelInf
 
                 {/* Grid */}
                 <div className="overflow-y-auto p-6 pt-2 grid grid-cols-2 gap-4 bg-stone-50 dark:bg-stone-900/50">
-                    {allBadges.map((badge) => {
+                    {allBadges.filter(b => b.modes.includes('all') || b.modes.includes(mode)).map((badge) => {
                         const isUnlocked = unlockedBadges.includes(badge.id);
 
                         // Color Logic
@@ -98,9 +98,16 @@ const BadgesOverlay = ({ unlockedBadges, allBadges, onClose, currentXP, levelInf
                                 </div>
 
                                 <h3 className="font-bold text-stone-800 dark:text-stone-200 mb-1">{badge.title}</h3>
-                                <p className="text-xs text-stone-500 dark:text-stone-400 leading-tight">
-                                    {isUnlocked ? badge.description : "??? (Noch gesperrt)"}
-                                </p>
+                                <div className="text-xs text-stone-500 dark:text-stone-400 leading-tight">
+                                    {isUnlocked ? (
+                                        badge.description
+                                    ) : (
+                                        <span className="opacity-70 flex items-center justify-center gap-1">
+                                            <Lock size={10} />
+                                            {badge.description}
+                                        </span>
+                                    )}
+                                </div>
 
                                 {isUnlocked && (
                                     <div className="absolute top-2 right-2">

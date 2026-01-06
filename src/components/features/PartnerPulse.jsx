@@ -34,6 +34,14 @@ const TIPS = {
         pain: ["Körperliche Schmerzen sind oft Ausdruck der Trauer.", "Kontaktiere den Hausarzt, wenn es nicht besser wird.", "Check Embryotox/Arzt bei Medikamenten."],
         overwhelmed: ["Entscheide kleine Dinge für sie (Essen, Einkauf).", "Sag Termine ab.", "Schaff ihr einen Rückzugsort."],
         happy: ["Darf sie sein! Hab kein schlechtes Gewissen.", "Lacht zusammen, wenn es geht.", "Erinnert euch an schöne Momente."]
+    },
+    conception: {
+        tired: ["Entspannung ist wichtig für den Zyklus. Massier sie.", "Koch was Gesundes (Vitamine & Eisen).", "Mach den Abwasch, damit sie früh ins Bett kann."],
+        sad: ["Der 'negative Test' Frust ist real. Nimm sie in den Arm.", "Erinnere sie: 'Wir sind ein Team. Kein Druck.'", "Lenk sie ab: Kino oder Lieblingsserie?"],
+        angry: ["PMS ist kein Mythos. Sei geduldig.", "Bring ihr Schokolade oder Snacks (ohne Kommentar).", "Frag nicht 'Ist es wieder so weit?', sondern 'Kann ich helfen?'."],
+        pain: ["Wärmflasche machen (hilft bei PMS & Mittelschmerz).", "Tee kochen (Frauenmantel oder Kamille).", "Magnesium anbieten."],
+        overwhelmed: ["Entschleunige den Alltag. Stress schadet der Fruchtbarkeit.", "Nimm Tempo raus: 'Wir haben Zeit.'", "Plant ein 'KiWu-freies' Wochenende."],
+        happy: ["Nutzt die positive Energie (wink, wink). 😉", "Macht ein Date nur für euch zwei.", "Träumt zusammen von der Zukunft."]
     }
 };
 

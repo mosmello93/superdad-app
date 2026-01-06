@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { CheckCircle, Droplets, Sparkles, Utensils, Moon, ShieldCheck, ChevronDown, ChevronUp, Info, X } from 'lucide-react';
 import { HABITS_PREGNANCY, HABITS_POSTPARTUM, HABITS_LOSS } from '../../data/content';
+import { HABITS_CONCEPTION } from '../../data/conception_content';
 
 const HabitGridSoft = ({ habits, toggleHabit, mode, openOverlay }) => {
     const [infoHabit, setInfoHabit] = useState(null);
-    let habitConfig = mode === 'loss' ? HABITS_LOSS : (mode === 'postpartum' ? HABITS_POSTPARTUM : HABITS_PREGNANCY);
+    let habitConfig = mode === 'loss' ? HABITS_LOSS : (mode === 'postpartum' ? HABITS_POSTPARTUM : (mode === 'conception' ? HABITS_CONCEPTION : HABITS_PREGNANCY));
 
     // Helper to calculate time ago
     const getTimeLabel = (timestamp) => {
@@ -36,7 +37,7 @@ const HabitGridSoft = ({ habits, toggleHabit, mode, openOverlay }) => {
 
     return (
         <div className="mb-8 relative">
-            <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 px-2 font-serif">Daily Dads</h2>
+            <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 mb-4 px-2 font-serif">{mode === 'conception' ? 'Dein Fokus' : 'Daily Dads'}</h2>
             <div className="grid grid-cols-2 gap-3 mb-4">
                 {habitConfig.map((habit) => {
                     const isActive = habits[habit.key];

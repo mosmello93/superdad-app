@@ -55,6 +55,29 @@ const getOnboardingContent = (mode, babyName, gender) => {
                 { title: "Neue Realität", text: "Wissen über Rückbildung, Baby-Schlaf und das 'Vierte Trimester'. Alles, um die erste Zeit zu meistern.", image: "/mascot/papa_research.png" }
             ]
         },
+        conception: {
+            home: [
+                { title: "Dein Cockpit", text: "Hier siehst du, wo ihr im Zyklus steht. Fruchtbare Tage oder chillen? Ein Blick genügt.", image: "/mascot/papa_smart_cycle.png", fallback: "/mascot/papa_neutral.png" },
+                { title: "Dein Fokus", text: "Kleine tägliche Ziele (Habits) für deine Gesundheit und eure Beziehung. Besser als jede Pille.", image: "/mascot/papa_strong.png" },
+                { title: "Gedanken-Log", text: "Nutze das Tagebuch als Ventil. Der Weg zum Wunschkind kann stressig sein. Schreib es dir von der Seele.", image: "/mascot/papa_writing.png" },
+                { title: "Support", text: "Brauchst du medizinischen Rat oder einfach Aufmunterung? Der AI Coach unten rechts hilft.", image: "/mascot/papa_smart.png" }
+            ],
+            team: [
+                { title: "Starkes Wir", text: "Kinderwunsch kann belasten. Hier stärkt ihr eure Basis, damit 'Wir' nicht verloren geht.", image: "/mascot/papa_team.png", fallback: "/mascot/papa_caring.png" },
+                { title: "Vibe Check", text: "Wie ist die Stimmung wirklich? Analysiert euren Chat-Vibe, um Missverständnisse zu vermeiden.", image: "/mascot/papa_smart.png" },
+                { title: "Deep Talk", text: "Tiefe Fragen statt 'Wann klappt es endlich?'. Findet wieder zueinander.", image: "/mascot/papa_caring.png" }
+            ],
+            tools: [
+                { title: "Deine Upgrades", text: "Tools, die dich und deine Schwimmer fit machen.", image: "/mascot/papa_builder.png" },
+                { title: "Sperm-Fit", text: "Nüsse, Sport & kein heißes Bad. Dein Guide für Top-Qualität.", image: "/mascot/papa_strong.png" },
+                { title: "Date-O-Mat", text: "Plant Dates abseits von Eisprung-Kalendern. Romantik first!", image: "/mascot/papa_romantic.png", fallback: "/mascot/papa_caring.png" },
+                { title: "Support & Kontakte", text: "Alle wichtigen Nummern von Klinik bis Urologe an einem Ort.", image: "/mascot/papa_emergency.png" }
+            ],
+            knowledge: [
+                { title: "Fakten statt Mythen", text: "Verstehe den Zyklus, Spermien-Booster und medizinische Wege (IUI/IVF).", image: "/mascot/papa_research.png" },
+                { title: "Deep Dives", text: "Artikel, die wirklich in die Tiefe gehen. Von Biologie bis Adoption.", image: "/mascot/papa_smart.png" }
+            ]
+        },
         loss: {
             home: [
                 { title: "Euer Schutzraum", text: "Kein Leistungsdruck. Hier geht es nur um kleine Gesten der Achtsamkeit." },

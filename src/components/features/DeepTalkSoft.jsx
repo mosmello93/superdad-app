@@ -7,7 +7,7 @@ const DeepTalkSoft = ({ mode, statusData }) => {
     const [loading, setLoading] = useState(false);
     const fetchQuestion = useCallback(async () => {
         setLoading(true);
-        const context = mode === 'loss' ? "Eltern, die um ihr Kind trauern. Fokus auf sanftem Austausch, Erinnerung, gegenseitiger Stütze." : (mode === 'postpartum' ? "Eltern mit Neugeborenem." : "Werdende Eltern.");
+        const context = mode === 'loss' ? "Eltern, die um ihr Kind trauern. Fokus auf sanftem Austausch, Erinnerung, gegenseitiger Stütze." : (mode === 'postpartum' ? "Eltern mit Neugeborenem." : (mode === 'conception' ? "Paar mit Kinderwunsch. Fokus auf Beziehung, Träume, Stärkung. VERMEIDE Fragen, die Druck aufbauen oder nach dem 'Wann' fragen." : "Werdende Eltern."));
         const prompt = `Eine kurze, tiefe Frage für ein Paar (${context}). Nur die Frage.`;
         const result = await callGemini(prompt, mode);
         setQuestion(result);

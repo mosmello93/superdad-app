@@ -239,5 +239,49 @@ Lasst euch Zeit. Ihr habt oft 24-48h, bevor ihr entscheiden müsst.
 Du kannst deine Partnerin nicht stützen, wenn du zusammenbrichst.
     `,
         icon: UserCheck
+    },
+    // --- CONCEPTION SPECIFIC TASKS ---
+    {
+        id: 'fertility_check',
+        title: 'Gesundheits-Check (Mann)',
+        category: 'health',
+        urgency: 'medium',
+        timing: { type: 'conception', weeks: 0 },
+        description: 'Lass dich durchchecken. Fruchtbarkeit ist Teamsport.',
+        guide: `
+**Warum?**
+In 40-50% der Fälle liegen Ursachen für einen unerfüllten Kinderwunsch (auch) beim Mann. Ein Spermiogramm beim Urologen bringt Klarheit.
+
+**Was passiert da?**
+Keine Sorge, es tut nicht weh. Es ist ein Standard-Checkup plus eine Probe.
+    `,
+        icon: UserCheck
+    },
+    {
+        id: 'insurance_check',
+        title: 'Krankenkasse checken',
+        category: 'financial',
+        urgency: 'medium',
+        timing: { type: 'conception', weeks: 0 },
+        description: 'Was wird übernommen? (Heilpraktiker, Zusatzleistungen)',
+        guide: `
+**Infos:**
+Prüft eure Kassenleistungen. Manche zahlen Zuschüsse zu Vitaminen, Akupunktur oder Osteopathie – Dinge, die in der Kinderwunschzeit helfen können.
+    `,
+        icon: Euro
+    },
+    {
+        id: 'budget_planning',
+        title: 'Baby-Budget anlegen',
+        category: 'financial',
+        urgency: 'low',
+        timing: { type: 'conception', weeks: 0 },
+        description: 'Ein Baby kostet Geld. Fangt an zu sparen.',
+        guide: `
+**Sparplan:**
+Legt monatlich einen kleinen Betrag zur Seite. Nicht erst, wenn der Test positiv ist.
+Die Erstausstattung (Kinderwagen, Zimmer) kann schnell 2.000€+ kosten.
+    `,
+        icon: Calculator
     }
 ];
